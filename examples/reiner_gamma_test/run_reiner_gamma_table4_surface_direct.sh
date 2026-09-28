@@ -19,8 +19,8 @@ fi
 
 "${GRAVMAG_DIR}/build_gravmag_tools.sh"
 
-echo "+ running point_source solver on ${INPUT_IN}"
-"${GRAVMAG_DIR}/gravmag_sphere_point_source" \
+echo "+ running direct_sum solver on ${INPUT_IN}"
+"${GRAVMAG_DIR}/gravmag_sphere_direct_sum" \
   "${RSPHERE_KM}" \
   "${INPUT_IN}" \
   "${OUTPUT_XYZ}" \

@@ -1,6 +1,6 @@
-# Python modeling with GravMag Sphere
+# Python modeling with GravMagPy
 
-GravMag Sphere Fortran programs live directly in `fortran/` and support both executable/input-card workflows and a named, dictionary-based Python interface. Python handles model construction, validation, file translation, and result assembly. Fortran performs the forward calculations and equivalent-dipole fit.
+GravMagPy (`gravmagpy`) is the Python frontend for GravMagSphere. The Fortran programs live directly in `fortran/` and support both executable/input-card workflows and a named, dictionary-based Python interface. Python handles model construction, validation, file translation, and result assembly. Fortran performs the forward calculations and equivalent-dipole fit.
 
 ## Blocks, polygons, and equivalent volume grids
 
@@ -16,7 +16,7 @@ sources = [
 ]
 model = sphere_model(sources, latitude_deg=np.linspace(5, 9, 21),
                      longitude_deg=np.linspace(-62, -57, 26), altitude_km=40, radius_km=1737.4)
-result = run_sphere_model(model, solver="point_source", solver_options={"refine_factor": 2})
+result = run_sphere_model(model, solver="direct_sum", solver_options={"refine_factor": 2})
 bx, by, bz, btot = (result[key] for key in ("bx_nt", "by_nt", "bz_nt", "btot_nt"))
 ```
 
@@ -44,9 +44,11 @@ Property arrays broadcast to `(ndepth, nlat, nlon, 3)` for magnetization or `(nd
 
 `run_sphere_model` generates input cards and executes the selected Fortran tool. No user-managed files are required. Pass `output_dir="output/my_model"` to retain `model.in` and `field.txt` for inspection or plotting.
 
-Point-source options: `refine_factor`, `source_nlat`, `source_nlon`, and `source_nr`. The last three default to zero, meaning the per-source `mesh` settings are used. Default mesh is `radial=4, latitude=16, longitude=16`; point_source horizontal sampling is multiplied by `refine_factor`.
+`solver="direct_sum"` evaluates extended bodies through direct summation of numerical integration elements. Magnetic mode approximates the surface-charge integral with charges at top/bottom patch centers and side-wall triangle centroids. Gravity mode uses midpoint-volume quadrature with each cell represented by its mass at the midpoint. The mesh controls these integration points; the source model remains a finite block or polygonal body. The former `direct` selector is a supported alias.
 
-The point_source magnetic solver orients side-wall surface charges from the polygon winding in unwrapped longitude/latitude coordinates. This supports concave footprints in either vertex order, with optional repeated closing vertices. Horizontal and radial refinement still control integration accuracy.
+Direct summation options: `refine_factor`, `source_nlat`, `source_nlon`, and `source_nr`. The last three default to zero, meaning the per-source `mesh` settings are used. Default mesh is `radial=4, latitude=16, longitude=16`; horizontal sampling is multiplied by `refine_factor`.
+
+The direct_sum magnetic solver orients side-wall surface charges from the polygon winding in unwrapped longitude/latitude coordinates. This supports concave footprints in either vertex order, with optional repeated closing vertices. Horizontal and radial refinement still control integration accuracy.
 
 Spectral options use the Fortran names: `lmax`, `refine_factor`, `ntheta_fit`, `nphi_fit`, `reg_lambda`, `reg_power`, `source_nlat`, `source_nlon`, `source_nr`, `auto_mode`, `joint_strength`, `edge_correction`, `hybrid_mode`, `hybrid_band_deg`, `complex_vertex_threshold`, and `hybrid_transition_deg`. Defaults match the executable. Set `auto_mode=0` to prevent its automatic parameter selection. Compiler/cache/timeout options can be passed through as keyword arguments.
 
@@ -67,9 +69,9 @@ Polygon edges are straight in unwrapped longitude/latitude coordinates. Integrat
 
 This restores the numerical method from `gravmag_sphere_brtp.f` at historical Git revision `71d13a1`, using computed roots/weights, modern SI properties and XYZ output. It does not reproduce the old single-precision program or its obsolete card conventions bit for bit. Cards 4 and 6 remain compatibility metadata. See the [executed comparison report](../diagnostics/gauss_legendre_comparison/README.md) for convergence, timing and spectral limitations.
 
-Returned `field` has shape `(nlat, nlon, 3)` in the input grid order; `total` has shape `(nlat, nlon)`. Magnetic aliases are `bx_nt`, `by_nt`, `bz_nt`, `btot_nt`; gravity aliases are `gx_mgal`, `gy_mgal`, `gz_mgal`, `gtot_mgal`. Point-source and Gauss–Legendre body contributions are summed as vectors before calculating total magnitude. Spectral output already represents the collective model and is not multiplied by the source count. `raw_output`, `stdout`, and `stderr` are available for diagnostics.
+Returned `field` has shape `(nlat, nlon, 3)` in the input grid order; `total` has shape `(nlat, nlon)`. Magnetic aliases are `bx_nt`, `by_nt`, `bz_nt`, `btot_nt`; gravity aliases are `gx_mgal`, `gy_mgal`, `gz_mgal`, `gtot_mgal`. Direct summation and Gauss–Legendre body contributions are summed as vectors before calculating total magnitude. Spectral output already represents the collective model and is not multiplied by the source count. `raw_output`, `stdout`, and `stderr` are available for diagnostics.
 
-For magnetic plotting, retain outputs and call `gravmagpy.plotting.plot_fields(result['input_path'], result['output_path'])`. Figures default to the owning input directory's `figs/`; an explicit third `image_path` argument overrides it. `run_grid_model(input_path)` defaults numeric output to `output/<input-stem>.txt` for the point_source solver. See [output paths](output_paths.md).
+For magnetic plotting, retain outputs and call `gravmagpy.plotting.plot_fields(result['input_path'], result['output_path'])`. Figures default to the owning input directory's `figs/`; an explicit third `image_path` argument overrides it. `run_grid_model(input_path)` defaults numeric output to `output/<input-stem>.txt` for the direct_sum solver. See [output paths](output_paths.md).
 
 ## Input-card interoperability
 

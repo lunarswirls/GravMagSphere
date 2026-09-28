@@ -23,7 +23,7 @@ The Reiner Gamma case uses `reiner_gamma_test/output/` for tables and caches and
 
 | Program | Omitted output argument |
 |---|---|
-| `gravmag_sphere_point_source R input.in` | `input-directory/output/input.txt` |
+| `gravmag_sphere_direct_sum R input.in` | `input-directory/output/input.txt` |
 | `gravmag_sphere_spectral R input.in` | `input-directory/output/input_spectral.txt` |
 | `gravmag_sphere_gauss_legendre R input.in` | `input-directory/output/input_quadrature.txt` |
 | `gravmag_xyz_to_brtp input_xyz.txt` | `case-directory/output/input_brtp.txt` |

@@ -7,7 +7,7 @@ module gravmag_sphere_physics
   !***********************************************************************
   ! gravmag_sphere_physics
   !
-  ! compact physics kernels used by gravmag_sphere_point_source
+  ! compact physics kernels used by gravmag_sphere_direct_sum
   !
   ! legacy context:
   ! - old sphere workflows used larger monolithic subroutine trees

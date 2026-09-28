@@ -14,7 +14,7 @@ program gravmag_sphere_spectral
   ! resolution note:
   ! - this file implements a regularized least-squares spherical-harmonic fit
   ! - for compact/sharp sources, low lmax can smooth and spread anomalies
-  ! - gravmag_sphere_point_source and gravmag_sphere_gauss_legendre avoid harmonic truncation
+  ! - gravmag_sphere_direct_sum and gravmag_sphere_gauss_legendre avoid harmonic truncation
   !***********************************************************************
 
   integer, parameter :: wp = real64

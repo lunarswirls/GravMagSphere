@@ -1,4 +1,4 @@
-"""python interface to fortran magnetic models and orbital source fitting"""
+"""gravmagpy python frontend for the gravmagsphere solver and inversion toolkit"""
 
 from .data import load_lpmag_csv
 from .cards import read_input, write_source_input, run_grid_model

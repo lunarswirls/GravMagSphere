@@ -11,7 +11,7 @@ set -euo pipefail
 #
 # solver options:
 #   - spectral (default)
-#   - point_source
+#   - direct_sum
 #
 # method:
 #   - compiles tools once
@@ -24,7 +24,7 @@ SOLVER="${1:-spectral}"
 
 # accept legacy selectors while dispatching canonical method names
 case "${SOLVER}" in
-  direct) SOLVER="point_source" ;;
+  direct) SOLVER="direct_sum" ;;
   gauss) SOLVER="spectral" ;;
 esac
 R_SPHERE_KM="${2:-1737.4}"
@@ -40,8 +40,8 @@ SOURCE_NLAT="${11:-0}"
 SOURCE_NLON="${12:-0}"
 SOURCE_NR="${13:-0}"
 
-if [[ "${SOLVER}" != "spectral" && "${SOLVER}" != "point_source" && "${SOLVER}" != "gauss_legendre" ]]; then
-  echo "ERROR: solver must be 'spectral', 'point_source', or 'gauss_legendre' (got: ${SOLVER})"
+if [[ "${SOLVER}" != "spectral" && "${SOLVER}" != "direct_sum" && "${SOLVER}" != "gauss_legendre" ]]; then
+  echo "ERROR: solver must be 'spectral', 'direct_sum', or 'gauss_legendre' (got: ${SOLVER})"
   exit 2
 fi
 

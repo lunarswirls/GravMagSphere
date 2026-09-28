@@ -8,7 +8,7 @@ The GravMag Sphere `.in` format describes finite magnetized bodies rather than z
 
 ### `bangui_equivalent_dipoles.in`
 
-Default numeric output for the point_source executable is `output/bangui_equivalent_dipoles.txt` inside this case directory. Python figures default to `figs/` here. Explicit paths override these defaults; see [output path conventions](../../docs/output_paths.md).
+Default numeric output for the direct_sum executable is `output/bangui_equivalent_dipoles.txt` inside this case directory. Python figures default to `figs/` here. Explicit paths override these defaults; see [output path conventions](../../docs/output_paths.md).
 
 - 163 half-degree source cells within 400 km of `4.37 deg N, 18.56 deg E`
 - source layer from 3.0 to 7.5 km depth

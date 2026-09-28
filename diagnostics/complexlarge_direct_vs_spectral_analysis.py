@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Analyze complexlarge point_source vs spectral boundary visibility in XYZ components."""
+"""Analyze complexlarge direct_sum vs spectral boundary visibility in XYZ components."""
 
 from __future__ import annotations
 
@@ -108,7 +108,7 @@ def plot_side_by_side_fields(
     *,
     lon: np.ndarray,
     lat: np.ndarray,
-    point_source: Dict[str, np.ndarray],
+    direct_sum: Dict[str, np.ndarray],
     spectral: Dict[str, np.ndarray],
     out_path: Path,
     title: str,
@@ -124,12 +124,12 @@ def plot_side_by_side_fields(
     for i, (k, lbl) in enumerate(labels):
         ax_l = axes[i, 0]
         ax_r = axes[i, 1]
-        ulon, ulat, z_d = to_grid(lon, lat, point_source[k])
+        ulon, ulat, z_d = to_grid(lon, lat, direct_sum[k])
         _, _, z_s = to_grid(lon, lat, spectral[k])
         vmin, vmax = robust_limits(z_d, z_s)
         im = ax_l.pcolormesh(ulon, ulat, z_d, shading="nearest", cmap="RdBu_r", vmin=vmin, vmax=vmax)
         ax_r.pcolormesh(ulon, ulat, z_s, shading="nearest", cmap="RdBu_r", vmin=vmin, vmax=vmax)
-        ax_l.set_title(f"{lbl} point_source")
+        ax_l.set_title(f"{lbl} direct_sum")
         ax_r.set_title(f"{lbl} spectral")
         ax_l.set_xlabel("Longitude [deg]")
         ax_r.set_xlabel("Longitude [deg]")
@@ -175,7 +175,7 @@ def plot_residuals(
         if grad_mask is not None and k == "btot":
             ax.contour(ulon, ulat, grad_mask.astype(float), levels=[0.5], colors="k", linewidths=0.6)
         cbar = fig.colorbar(im, ax=ax, orientation="horizontal", pad=0.12, shrink=0.85)
-        cbar.set_label("Pred - point_source")
+        cbar.set_label("Pred - direct_sum")
     fig.suptitle(title)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=220)
@@ -195,13 +195,13 @@ def compute_gradient_mask(lon: np.ndarray, lat: np.ndarray, btot: np.ndarray, pe
 def summarize_boundary_contrast(
     lon: np.ndarray,
     lat: np.ndarray,
-    point_source: Dict[str, np.ndarray],
+    direct_sum: Dict[str, np.ndarray],
     spectral: Dict[str, np.ndarray],
     spectral_nolocal: Dict[str, np.ndarray],
 ) -> Dict[str, float]:
-    mask = compute_gradient_mask(lon, lat, point_source["btot"], percentile=90.0)
-    _, _, r_s = to_grid(lon, lat, spectral["btot"] - point_source["btot"])
-    _, _, r_n = to_grid(lon, lat, spectral_nolocal["btot"] - point_source["btot"])
+    mask = compute_gradient_mask(lon, lat, direct_sum["btot"], percentile=90.0)
+    _, _, r_s = to_grid(lon, lat, spectral["btot"] - direct_sum["btot"])
+    _, _, r_n = to_grid(lon, lat, spectral_nolocal["btot"] - direct_sum["btot"])
     out: Dict[str, float] = {}
     for name, r in (("spectral", r_s), ("spectral_nolocal", r_n)):
         near = float(np.nanmean(np.abs(r[mask])))
@@ -225,14 +225,14 @@ def write_summary_md(
     residual_nolocal_path: Path,
 ) -> None:
     lines = [
-        "# Complexlarge Point-source vs Spectral Boundary Analysis",
+        "# Complexlarge Direct summation vs Spectral Boundary Analysis",
         "",
         f"- run directory: `{run_dir}`",
         f"- side-by-side fields: `{side_by_side_path}`",
-        f"- residuals (spectral - point_source): `{residual_local_path}`",
-        f"- residuals (spectral no-local-correction - point_source): `{residual_nolocal_path}`",
+        f"- residuals (spectral - direct_sum): `{residual_local_path}`",
+        f"- residuals (spectral no-local-correction - direct_sum): `{residual_nolocal_path}`",
         "",
-        "## Metrics: Spectral - Point-source",
+        "## Metrics: Spectral - Direct summation",
         "",
         "| Component | RMSE | MAE | MaxAbs |",
         "|---|---:|---:|---:|",
@@ -243,7 +243,7 @@ def write_summary_md(
         )
     lines += [
         "",
-        "## Metrics: Spectral(no local correction) - Point-source",
+        "## Metrics: Spectral(no local correction) - Direct summation",
         "",
         "| Component | RMSE | MAE | MaxAbs |",
         "|---|---:|---:|---:|",
@@ -265,7 +265,7 @@ def write_summary_md(
         )
     lines += [
         "",
-        "## Edge-Region Contrast (using top-10% point_source Btot gradient as boundary proxy)",
+        "## Edge-Region Contrast (using top-10% direct_sum Btot gradient as boundary proxy)",
         "",
         "| Model | MeanAbsResidual Near Edge | MeanAbsResidual Far From Edge | Near/Far Ratio |",
         "|---|---:|---:|---:|",
@@ -295,11 +295,11 @@ def write_summary_md(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Complexlarge point_source vs spectral boundary analysis.")
+    parser = argparse.ArgumentParser(description="Complexlarge direct_sum vs spectral boundary analysis.")
     parser.add_argument(
         "--run-dir",
         default="diagnostics/complexlarge_direct_vs_spectral",
-        help="Directory containing point_source/spectral xyz outputs (relative to repository root unless absolute).",
+        help="Directory containing direct_sum/spectral xyz outputs (relative to repository root unless absolute).",
     )
     args = parser.parse_args()
 
@@ -316,16 +316,16 @@ def main() -> int:
     spectral_raw = load_xyz_aggregate(spectral_path)
     spectral_nolocal_raw = load_xyz_aggregate(spectral_nolocal_path)
 
-    lon, lat, point_source, spectral = align_maps(direct_raw, spectral_raw)
+    lon, lat, direct_sum, spectral = align_maps(direct_raw, spectral_raw)
     _, _, _, spectral_nolocal = align_maps(direct_raw, spectral_nolocal_raw)
     _, _, spectral_local, spectral_nolocal_aligned = align_maps(spectral_raw, spectral_nolocal_raw)
 
-    metrics_spec = metric_summary(point_source, spectral)
-    metrics_spec_nolocal = metric_summary(point_source, spectral_nolocal)
+    metrics_spec = metric_summary(direct_sum, spectral)
+    metrics_spec_nolocal = metric_summary(direct_sum, spectral_nolocal)
     metrics_diff_local = metric_summary(spectral_local, spectral_nolocal_aligned)
-    edge_summary = summarize_boundary_contrast(lon, lat, point_source, spectral, spectral_nolocal)
+    edge_summary = summarize_boundary_contrast(lon, lat, direct_sum, spectral, spectral_nolocal)
 
-    grad_mask = compute_gradient_mask(lon, lat, point_source["btot"], percentile=90.0)
+    grad_mask = compute_gradient_mask(lon, lat, direct_sum["btot"], percentile=90.0)
 
     side_by_side_path = run_dir / "complexlarge_direct_vs_spectral_side_by_side.png"
     residual_local_path = run_dir / "complexlarge_spectral_minus_direct_residuals.png"
@@ -335,27 +335,27 @@ def main() -> int:
     plot_side_by_side_fields(
         lon=lon,
         lat=lat,
-        point_source=point_source,
+        direct_sum=direct_sum,
         spectral=spectral,
         out_path=side_by_side_path,
-        title="Complexlarge: GravMagSphere point_source vs spectral (Bx/By/Bz/Btot)",
+        title="Complexlarge: GravMagSphere direct_sum vs spectral (Bx/By/Bz/Btot)",
     )
     plot_residuals(
         lon=lon,
         lat=lat,
-        ref=point_source,
+        ref=direct_sum,
         pred=spectral,
         out_path=residual_local_path,
-        title="Complexlarge: spectral - point_source residuals (with local edge correction)",
+        title="Complexlarge: spectral - direct_sum residuals (with local edge correction)",
         grad_mask=grad_mask,
     )
     plot_residuals(
         lon=lon,
         lat=lat,
-        ref=point_source,
+        ref=direct_sum,
         pred=spectral_nolocal,
         out_path=residual_nolocal_path,
-        title="Complexlarge: spectral(no local correction) - point_source residuals",
+        title="Complexlarge: spectral(no local correction) - direct_sum residuals",
         grad_mask=grad_mask,
     )
     write_summary_md(

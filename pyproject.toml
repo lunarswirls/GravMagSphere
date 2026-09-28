@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gravmagpy"
 version = "2026.9.22"
-description = "Python interface to Fortran magnetic forward models and orbital source inversion"
+description = "Python frontend for the GravMagSphere magnetic and gravity solver and inversion toolkit"
 readme = "README.md"
 requires-python = ">=3.13,<4"
 license = {file = "LICENSE"}

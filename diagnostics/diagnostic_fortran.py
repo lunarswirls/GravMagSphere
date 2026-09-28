@@ -122,7 +122,7 @@ def build_binaries(
     state = source_dir / "gravmag_sphere_state.f90"
     subs = source_dir / "gravmag_sphere_subs.f90"
     physics = source_dir / "gravmag_sphere_physics.f90"
-    point_source = source_dir / "gravmag_sphere_point_source.f90"
+    direct_sum = source_dir / "gravmag_sphere_direct_sum.f90"
     spectral = source_dir / "gravmag_sphere_spectral.f90"
     conv = source_dir / "gravmag_xyz_to_brtp.f90"
     paths = source_dir / "gravmag_paths.f90"
@@ -132,7 +132,7 @@ def build_binaries(
 
     compile_times: Dict[str, float] = {}
 
-    cmd_point_source = [
+    cmd_direct_sum = [
         *common,
         *omp_flags,
         f"-J{mod_dir}",
@@ -141,11 +141,11 @@ def build_binaries(
         str(state),
         str(subs),
         str(physics),
-        str(point_source),
+        str(direct_sum),
         "-o",
-        str(bin_dir / "gravmag_sphere_point_source"),
+        str(bin_dir / "gravmag_sphere_direct_sum"),
     ]
-    compile_times["gravmag_sphere_point_source"], _ = run_cmd(cmd_point_source, cwd=root)
+    compile_times["gravmag_sphere_direct_sum"], _ = run_cmd(cmd_direct_sum, cwd=root)
 
     cmd_spectral = [
         *common,
@@ -168,7 +168,7 @@ def build_binaries(
     return {
         "build_root": str(build_root),
         "binaries": {
-            "point_source": str(bin_dir / "gravmag_sphere_point_source"),
+            "direct_sum": str(bin_dir / "gravmag_sphere_direct_sum"),
             "spectral": str(bin_dir / "gravmag_sphere_spectral"),
             "convert": str(bin_dir / "gravmag_xyz_to_brtp"),
         },
@@ -323,7 +323,7 @@ def benchmark_subcommand(args: argparse.Namespace) -> Dict[str, object]:
     extra_flags = shlex.split(args.extra_flags) if args.extra_flags else []
 
     benchmark_cases = [
-        BenchmarkCase(name="direct_polygon", solver="point_source"),
+        BenchmarkCase(name="direct_polygon", solver="direct_sum"),
         BenchmarkCase(name="spectral_polygon", solver="spectral"),
     ]
 
@@ -364,9 +364,9 @@ def benchmark_subcommand(args: argparse.Namespace) -> Dict[str, object]:
                 run_dir.mkdir(parents=True, exist_ok=True)
                 xyz_out = run_dir / f"{case.name}.xyz.txt"
 
-                if case.solver == "point_source":
+                if case.solver == "direct_sum":
                     cmd = [
-                        binaries["point_source"],  # type: ignore[index]
+                        binaries["direct_sum"],  # type: ignore[index]
                         rsphere,
                         str(example),
                         str(xyz_out),
@@ -536,7 +536,7 @@ def lmax_sweep_subcommand(args: argparse.Namespace) -> Dict[str, object]:
 
     rsphere = str(args.rsphere_km)
     direct_cmd = [
-        binaries["point_source"],  # type: ignore[index]
+        binaries["direct_sum"],  # type: ignore[index]
         rsphere,
         str(example),
         str(direct_xyz),

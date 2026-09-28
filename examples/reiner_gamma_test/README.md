@@ -1,12 +1,12 @@
 # Reiner Gamma Test
 
-This case approximates a published equivalent-dipole array with finite magnetized volumes for point_source field calculations.
+This case approximates a published equivalent-dipole array with finite magnetized volumes for direct_sum field calculations.
 
 ## Files and outputs
 
 - `reiner_gamma_table4_direct.in` and `reiner_gamma_table4_surface_direct.in`: orbital-height and surface observation grids
 - `generate_reiner_gamma_test.py`: source/input-card generation
-- `run_reiner_gamma_table4_direct.sh` and `run_reiner_gamma_table4_surface_direct.sh`: point_source solver and component conversion workflows
+- `run_reiner_gamma_table4_direct.sh` and `run_reiner_gamma_table4_surface_direct.sh`: direct_sum solver and component conversion workflows
 - `plot_reiner_gamma_table4_*.py`: field maps and three-dimensional field-line views
 - `output/`: numeric field tables and field-line caches
 - `figs`: PNG maps and HTML views
@@ -23,12 +23,12 @@ Run the Python case scripts with `/Users/danywaller/code/venvs/gravmagpy/bin/pyt
 - Equal moment per dipole: `1.820e+11 Am2`
 - Local dipole orientation: `I=2.0 deg`, `D=-8.0 deg`
 
-## GravMagPy definitions
+## GravMagSphere definitions
 
-- Global GravMagPy orientation: `inc=77.639 deg`, `dec=161.754 deg`
+- Global GravMagSphere orientation: `inc=77.639 deg`, `dec=161.754 deg`
   - Obtained by converting the Table 4 local direction to global direction at the source-set centroid (`lat=7.439 deg`, `lon=-58.765 deg`).
 - Finite-body approximation: `0.0196 deg x 0.0196 deg x 1.0 km`
-  - This is necessary because Table 4 defines dipole-array source centers, while `gravmag_sphere_point_source` models finite uniformly magnetized bodies.
+  - This is necessary because Table 4 defines dipole-array source centers, while `gravmag_sphere_direct_sum` models finite uniformly magnetized bodies.
 - Constant magnetization strength derived from the Table-4 dipole moment using the centroid box volume, then applied to every source body.
 - Uniform magnetization in Card 5: `5.248018e+02 A/m`
   - Because the finite boxes sit at slightly different latitudes, their physical volumes differ slightly and therefore their implied finite-body moments vary slightly even though all Card-5 magnetization strengths are identical.

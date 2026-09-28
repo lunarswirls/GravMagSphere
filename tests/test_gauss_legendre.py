@@ -124,12 +124,12 @@ class gauss_legendre_tests(unittest.TestCase):
             self.assertIn("Br_mGal", converted.read_text())
             self.assertIn("# solver=gauss_legendre", converted.read_text())
 
-    def test_point_source_and_pure_spectral_far_field_convergence(self):
+    def test_direct_sum_and_pure_spectral_far_field_convergence(self):
         source = block([6, 8], [-60, -58], [2, 8], magnetization_a_m=[1, -2, 3])
         model = make_model([source], altitude=5000)
         reference = quadrature(model)["field"]
-        point_source = run_sphere_model(model, solver="point_source", solver_options={"refine_factor": 2})["field"]
-        self.assertLess(relative_difference(point_source, reference), 0.005)
+        direct_sum = run_sphere_model(model, solver="direct_sum", solver_options={"refine_factor": 2})["field"]
+        self.assertLess(relative_difference(direct_sum, reference), 0.005)
         residuals = []
         for degree in (4, 8, 12):
             result = run_sphere_model(model, solver="spectral", solver_options={
@@ -140,16 +140,16 @@ class gauss_legendre_tests(unittest.TestCase):
         self.assertLess(residuals[2], residuals[1]/10)
         self.assertLess(residuals[2], 1e-4)
 
-    def test_point_source_gravity_and_polygon_orbital_agreement(self):
+    def test_direct_sum_gravity_and_polygon_orbital_agreement(self):
         for material in ({"magnetization_a_m": [1, -2, 3]}, {"density_kg_m3": 400}):
             source = polygon([[6, -60], [8, -59.5], [7, -58]], [2, 8], **material)
             model = make_model([source])
             reference = quadrature(model, 24)["field"]
-            point_source = run_sphere_model(model, solver="point_source", solver_options={
+            direct_sum = run_sphere_model(model, solver="direct_sum", solver_options={
                 "source_nlat": 96, "source_nlon": 96, "source_nr": 12})["field"]
-            self.assertLess(relative_difference(point_source, reference), 0.01)
+            self.assertLess(relative_difference(direct_sum, reference), 0.01)
 
-    def test_point_source_concave_polygon_winding_closure_and_convergence(self):
+    def test_direct_sum_concave_polygon_winding_closure_and_convergence(self):
         vertices = [[6, -60], [6, -58], [6.5, -58], [6.5, -59],
                     [7.5, -59], [7.5, -58], [8, -58], [8, -60]]
         material = {"magnetization_a_m": [1, -2, 3]}
@@ -162,7 +162,7 @@ class gauss_legendre_tests(unittest.TestCase):
                 model = make_model([polygon(outline, [2, 8], **material)])
                 residuals = []
                 for refine in (1, 4):
-                    result = run_sphere_model(model, solver="point_source", solver_options={
+                    result = run_sphere_model(model, solver="direct_sum", solver_options={
                         "refine_factor": refine, "source_nr": 12})
                     residuals.append(relative_difference(result["field"], reference))
                 self.assertLess(residuals[1], 0.002)

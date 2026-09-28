@@ -22,7 +22,7 @@ def small_model(sources):
 class sphere_tests(unittest.TestCase):
     def test_fortran_sources_are_peers(self):
         directory = fortran_source_dir()
-        for solver in ("point_source", "spectral", "gauss_legendre"):
+        for solver in ("direct_sum", "spectral", "gauss_legendre"):
             self.assertTrue((directory / f"gravmag_sphere_{solver}.f90").is_file())
         self.assertTrue((directory / "gravmag_sphere_dipole_grid_fit.f90").is_file())
         self.assertFalse((directory / "legacy").exists())
@@ -31,10 +31,10 @@ class sphere_tests(unittest.TestCase):
         source = block([6, 7], [-60, -59], [2, 8], magnetization_a_m=[1, 0, 0])
         model = small_model([source, source])
         for solver, alias, options in (
-                ("point_source", "direct", {"refine_factor": 1}),
+                ("direct_sum", "direct", {"refine_factor": 1}),
                 ("spectral", "gauss", {"lmax": 3, "ntheta_fit": 8, "nphi_fit": 16,
                                       "auto_mode": 0, "edge_correction": 0, "hybrid_mode": 0})):
-            with self.subTest(solver=solver), patch.dict(os.environ, {"GRAVMAG_DIAGNOSTICS": "1"}):
+            with self.subTest(solver=solver, alias=alias), patch.dict(os.environ, {"GRAVMAG_DIAGNOSTICS": "1"}):
                 self.assertEqual(build_fortran(solver), build_fortran(alias))
                 expected = run_sphere_model(model, solver=solver, solver_options=options)
                 actual = run_sphere_model(model, solver=alias, solver_options=options)

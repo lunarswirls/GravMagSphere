@@ -57,8 +57,8 @@
   "compiler": "GNU Fortran (Homebrew GCC 15.2.0_1) 15.2.0",
   "binaries": {
     "gauss_legendre": "/var/folders/bl/rkl9bvxs1yj6cfb239dm1vb40000gn/T/gravmagpy-build/a760cbe5aab269db2405/gauss_legendre",
-    "point_source": "/var/folders/bl/rkl9bvxs1yj6cfb239dm1vb40000gn/T/gravmagpy-build/84e016c1180f0e9ae3bd/point_source",
-    "spectral": "/var/folders/bl/rkl9bvxs1yj6cfb239dm1vb40000gn/T/gravmagpy-build/fec3543f3459c7a15197/spectral"
+    "direct_sum": "/var/folders/bl/rkl9bvxs1yj6cfb239dm1vb40000gn/T/gravmagpy-build/ec972c83e65331e53653/direct_sum",
+    "spectral": "/var/folders/bl/rkl9bvxs1yj6cfb239dm1vb40000gn/T/gravmagpy-build/da4a8ceb28ff8d5d99fd/spectral"
   },
   "cases": [
     {
@@ -436,7 +436,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "nt",
-      "elapsed_s": 0.014520625001750886,
+      "elapsed_s": 0.014943334041163325,
       "relative_l2": 1.5435017976894962,
       "component_rmse": [
         481.26697524431887,
@@ -458,7 +458,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=4",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291094E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000146"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000134"
       ],
       "stderr": ""
     },
@@ -467,7 +467,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "nt",
-      "elapsed_s": 0.014013874984811991,
+      "elapsed_s": 0.014285750046838075,
       "relative_l2": 2.4257734240756195,
       "component_rmse": [
         655.9119637413627,
@@ -489,7 +489,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291102E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000188"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000186"
       ],
       "stderr": ""
     },
@@ -498,7 +498,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "nt",
-      "elapsed_s": 0.01458008395275101,
+      "elapsed_s": 0.0143571249791421,
       "relative_l2": 0.4106262486322839,
       "component_rmse": [
         110.73126324210347,
@@ -529,7 +529,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "nt",
-      "elapsed_s": 0.017852374992799014,
+      "elapsed_s": 0.017168041958939284,
       "relative_l2": 0.04995779498756198,
       "component_rmse": [
         12.311052768228956,
@@ -551,7 +551,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291203E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003773"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003862"
       ],
       "stderr": ""
     },
@@ -560,7 +560,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "nt",
-      "elapsed_s": 0.045682083000428975,
+      "elapsed_s": 0.04467412503436208,
       "relative_l2": 0.0006499356560148548,
       "component_rmse": [
         0.16190036436528019,
@@ -582,7 +582,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291605E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.031291"
+        "DIAG|gauss_legendre|time|body_total_s=      0.031199"
       ],
       "stderr": ""
     },
@@ -591,7 +591,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "nt",
-      "elapsed_s": 0.018670624995138496,
+      "elapsed_s": 0.017615624994505197,
       "relative_l2": 0.001406088301506287,
       "component_rmse": [
         0.3711227216872234,
@@ -614,16 +614,16 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291016E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003991"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003791"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_block_surface",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "nt",
-      "elapsed_s": 0.014730166993103921,
+      "elapsed_s": 0.013870250026229769,
       "relative_l2": 0.17418489995164313,
       "component_rmse": [
         48.03093942775889,
@@ -639,25 +639,25 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 16, 16, 4",
         "  Source elements (mag surface charges): 1024",
-        "DIAG|point_source|meta|source_capacity=4096",
-        "DIAG|point_source|meta|source_elements=1024",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.078125",
-        "DIAG|point_source|memory|total_est_mib=    0.079247",
-        "DIAG|point_source|time|obs_grid_s=    0.000001",
-        "DIAG|point_source|time|source_mesh_s=    0.000015",
-        "DIAG|point_source|time|field_accum_s=    0.000099",
-        "DIAG|point_source|time|output_write_s=    0.000084",
-        "DIAG|point_source|time|body_total_s=    0.000215"
+        "DIAG|direct_sum|meta|source_capacity=4096",
+        "DIAG|direct_sum|meta|source_elements=1024",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.078125",
+        "DIAG|direct_sum|memory|total_est_mib=    0.079247",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000017",
+        "DIAG|direct_sum|time|field_accum_s=    0.000091",
+        "DIAG|direct_sum|time|output_write_s=    0.000079",
+        "DIAG|direct_sum|time|body_total_s=    0.000203"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_block_surface",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "nt",
-      "elapsed_s": 0.014105708978604525,
+      "elapsed_s": 0.014404832967557013,
       "relative_l2": 0.023883496648268533,
       "component_rmse": [
         7.274823167841269,
@@ -673,25 +673,25 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 32, 32, 4",
         "  Source elements (mag surface charges): 3072",
-        "DIAG|point_source|meta|source_capacity=4352",
-        "DIAG|point_source|meta|source_elements=3072",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.083008",
-        "DIAG|point_source|memory|total_est_mib=    0.084129",
-        "DIAG|point_source|time|obs_grid_s=    0.000002",
-        "DIAG|point_source|time|source_mesh_s=    0.000031",
-        "DIAG|point_source|time|field_accum_s=    0.000291",
-        "DIAG|point_source|time|output_write_s=    0.000089",
-        "DIAG|point_source|time|body_total_s=    0.000429"
+        "DIAG|direct_sum|meta|source_capacity=4352",
+        "DIAG|direct_sum|meta|source_elements=3072",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.083008",
+        "DIAG|direct_sum|memory|total_est_mib=    0.084129",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000030",
+        "DIAG|direct_sum|time|field_accum_s=    0.000274",
+        "DIAG|direct_sum|time|output_write_s=    0.000083",
+        "DIAG|direct_sum|time|body_total_s=    0.000404"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_block_surface",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "nt",
-      "elapsed_s": 0.015009415976237506,
+      "elapsed_s": 0.014436166966333985,
       "relative_l2": 0.0074894569095753484,
       "component_rmse": [
         2.284928021016419,
@@ -707,16 +707,16 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 64, 64, 4",
         "  Source elements (mag surface charges): 10240",
-        "DIAG|point_source|meta|source_capacity=16896",
-        "DIAG|point_source|meta|source_elements=10240",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.322266",
-        "DIAG|point_source|memory|total_est_mib=    0.323387",
-        "DIAG|point_source|time|obs_grid_s=    0.000002",
-        "DIAG|point_source|time|source_mesh_s=    0.000102",
-        "DIAG|point_source|time|field_accum_s=    0.000968",
-        "DIAG|point_source|time|output_write_s=    0.000085",
-        "DIAG|point_source|time|body_total_s=    0.001173"
+        "DIAG|direct_sum|meta|source_capacity=16896",
+        "DIAG|direct_sum|meta|source_elements=10240",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
+        "DIAG|direct_sum|memory|total_est_mib=    0.323387",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000098",
+        "DIAG|direct_sum|time|field_accum_s=    0.001030",
+        "DIAG|direct_sum|time|output_write_s=    0.000084",
+        "DIAG|direct_sum|time|body_total_s=    0.001229"
       ],
       "stderr": ""
     },
@@ -725,7 +725,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "nt",
-      "elapsed_s": 0.1277146670036018,
+      "elapsed_s": 0.12913637497695163,
       "relative_l2": 1.0000678324332417,
       "component_rmse": [
         287.1249196555491,
@@ -763,15 +763,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
-        "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000553",
-        "DIAG|spectral|time|fit_assembly_s=    0.111311",
-        "DIAG|spectral|time|linear_solve_s=    0.000576",
-        "DIAG|spectral|time|field_eval_s=    0.000009",
+        "DIAG|spectral|time|obs_grid_s=    0.000002",
+        "DIAG|spectral|time|source_mesh_s=    0.000546",
+        "DIAG|spectral|time|fit_assembly_s=    0.114511",
+        "DIAG|spectral|time|linear_solve_s=    0.000545",
+        "DIAG|spectral|time|field_eval_s=    0.000006",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000117",
+        "DIAG|spectral|time|output_write_s=    0.000112",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.112624"
+        "DIAG|spectral|time|body_total_s=    0.115780"
       ],
       "stderr": ""
     },
@@ -780,7 +780,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "nt",
-      "elapsed_s": 0.12892349995672703,
+      "elapsed_s": 0.13296050002099946,
       "relative_l2": 1.0002220922272829,
       "component_rmse": [
         287.16219861661386,
@@ -819,14 +819,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000608",
-        "DIAG|spectral|time|fit_assembly_s=    0.109607",
-        "DIAG|spectral|time|linear_solve_s=    0.003365",
-        "DIAG|spectral|time|field_eval_s=    0.000020",
+        "DIAG|spectral|time|source_mesh_s=    0.000562",
+        "DIAG|spectral|time|fit_assembly_s=    0.113823",
+        "DIAG|spectral|time|linear_solve_s=    0.003198",
+        "DIAG|spectral|time|field_eval_s=    0.000019",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000119",
+        "DIAG|spectral|time|output_write_s=    0.000129",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.113773"
+        "DIAG|spectral|time|body_total_s=    0.117790"
       ],
       "stderr": ""
     },
@@ -835,7 +835,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "nt",
-      "elapsed_s": 0.16297249996569008,
+      "elapsed_s": 0.16379099996993318,
       "relative_l2": 1.0002071776376573,
       "component_rmse": [
         287.16831424062156,
@@ -873,15 +873,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
-        "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000618",
-        "DIAG|spectral|time|fit_assembly_s=    0.131362",
-        "DIAG|spectral|time|linear_solve_s=    0.015701",
-        "DIAG|spectral|time|field_eval_s=    0.000042",
+        "DIAG|spectral|time|obs_grid_s=    0.000002",
+        "DIAG|spectral|time|source_mesh_s=    0.000612",
+        "DIAG|spectral|time|fit_assembly_s=    0.131973",
+        "DIAG|spectral|time|linear_solve_s=    0.015782",
+        "DIAG|spectral|time|field_eval_s=    0.000047",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000112",
+        "DIAG|spectral|time|output_write_s=    0.000088",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.147895"
+        "DIAG|spectral|time|body_total_s=    0.148557"
       ],
       "stderr": ""
     },
@@ -890,7 +890,7 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "nt",
-      "elapsed_s": 1.4117986669880338,
+      "elapsed_s": 1.4098835830227472,
       "relative_l2": 0.9939844761420821,
       "component_rmse": [
         288.3454938329897,
@@ -929,14 +929,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
         "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000579",
-        "DIAG|spectral|time|fit_assembly_s=    0.486233",
-        "DIAG|spectral|time|linear_solve_s=    0.909487",
-        "DIAG|spectral|time|field_eval_s=    0.000150",
+        "DIAG|spectral|time|source_mesh_s=    0.000576",
+        "DIAG|spectral|time|fit_assembly_s=    0.485758",
+        "DIAG|spectral|time|linear_solve_s=    0.908312",
+        "DIAG|spectral|time|field_eval_s=    0.000136",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000122",
+        "DIAG|spectral|time|output_write_s=    0.000118",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.396640"
+        "DIAG|spectral|time|body_total_s=    1.394957"
       ],
       "stderr": ""
     },
@@ -945,7 +945,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "nt",
-      "elapsed_s": 0.01523262495175004,
+      "elapsed_s": 0.01460383302764967,
       "relative_l2": 0.004923504129782206,
       "component_rmse": [
         0.15870223045826082,
@@ -967,7 +967,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=4",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291094E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000135"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000137"
       ],
       "stderr": ""
     },
@@ -976,7 +976,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "nt",
-      "elapsed_s": 0.014924333023373038,
+      "elapsed_s": 0.013724584016017616,
       "relative_l2": 4.464613056767102e-06,
       "component_rmse": [
         0.00015413758918280835,
@@ -998,7 +998,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291102E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000191"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000192"
       ],
       "stderr": ""
     },
@@ -1007,7 +1007,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "nt",
-      "elapsed_s": 0.014487250009551644,
+      "elapsed_s": 0.013783791975583881,
       "relative_l2": 1.76285285120796e-12,
       "component_rmse": [
         5.826125410127747e-11,
@@ -1029,7 +1029,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=16",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585290992E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000587"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000600"
       ],
       "stderr": ""
     },
@@ -1038,7 +1038,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "nt",
-      "elapsed_s": 0.01748154201777652,
+      "elapsed_s": 0.017351290967781097,
       "relative_l2": 1.4454774878628453e-15,
       "component_rmse": [
         5.978410822226232e-14,
@@ -1060,7 +1060,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291203E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003974"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003870"
       ],
       "stderr": ""
     },
@@ -1069,7 +1069,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "nt",
-      "elapsed_s": 0.0457412910182029,
+      "elapsed_s": 0.0442622079863213,
       "relative_l2": 8.2357374714311e-16,
       "component_rmse": [
         3.5471185069345456e-14,
@@ -1091,7 +1091,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291605E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.031755"
+        "DIAG|gauss_legendre|time|body_total_s=      0.030744"
       ],
       "stderr": ""
     },
@@ -1100,7 +1100,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "nt",
-      "elapsed_s": 0.018471917021088302,
+      "elapsed_s": 0.01792783400742337,
       "relative_l2": 8.595397790583498e-15,
       "component_rmse": [
         2.9914015312926163e-13,
@@ -1123,16 +1123,16 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291016E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003889"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003908"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_block_orbital",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "nt",
-      "elapsed_s": 0.014248666004277766,
+      "elapsed_s": 0.013581625011283904,
       "relative_l2": 0.0012327388112857497,
       "component_rmse": [
         0.04822803510482,
@@ -1148,25 +1148,25 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 16, 16, 4",
         "  Source elements (mag surface charges): 1024",
-        "DIAG|point_source|meta|source_capacity=4096",
-        "DIAG|point_source|meta|source_elements=1024",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.078125",
-        "DIAG|point_source|memory|total_est_mib=    0.079247",
-        "DIAG|point_source|time|obs_grid_s=    0.000001",
-        "DIAG|point_source|time|source_mesh_s=    0.000015",
-        "DIAG|point_source|time|field_accum_s=    0.000092",
-        "DIAG|point_source|time|output_write_s=    0.000083",
-        "DIAG|point_source|time|body_total_s=    0.000206"
+        "DIAG|direct_sum|meta|source_capacity=4096",
+        "DIAG|direct_sum|meta|source_elements=1024",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.078125",
+        "DIAG|direct_sum|memory|total_est_mib=    0.079247",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000019",
+        "DIAG|direct_sum|time|field_accum_s=    0.000111",
+        "DIAG|direct_sum|time|output_write_s=    0.000096",
+        "DIAG|direct_sum|time|body_total_s=    0.000247"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_block_orbital",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "nt",
-      "elapsed_s": 0.014483042003121227,
+      "elapsed_s": 0.013496999978087842,
       "relative_l2": 0.00031531428621696834,
       "component_rmse": [
         0.012136526086652532,
@@ -1182,25 +1182,25 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 32, 32, 4",
         "  Source elements (mag surface charges): 3072",
-        "DIAG|point_source|meta|source_capacity=4352",
-        "DIAG|point_source|meta|source_elements=3072",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.083008",
-        "DIAG|point_source|memory|total_est_mib=    0.084129",
-        "DIAG|point_source|time|obs_grid_s=    0.000001",
-        "DIAG|point_source|time|source_mesh_s=    0.000036",
-        "DIAG|point_source|time|field_accum_s=    0.000286",
-        "DIAG|point_source|time|output_write_s=    0.000082",
-        "DIAG|point_source|time|body_total_s=    0.000420"
+        "DIAG|direct_sum|meta|source_capacity=4352",
+        "DIAG|direct_sum|meta|source_elements=3072",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.083008",
+        "DIAG|direct_sum|memory|total_est_mib=    0.084129",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000031",
+        "DIAG|direct_sum|time|field_accum_s=    0.000274",
+        "DIAG|direct_sum|time|output_write_s=    0.000084",
+        "DIAG|direct_sum|time|body_total_s=    0.000405"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_block_orbital",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "nt",
-      "elapsed_s": 0.014711958996485919,
+      "elapsed_s": 0.014043500006664544,
       "relative_l2": 0.00011858834807174921,
       "component_rmse": [
         0.004168814563959231,
@@ -1216,16 +1216,16 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 64, 64, 4",
         "  Source elements (mag surface charges): 10240",
-        "DIAG|point_source|meta|source_capacity=16896",
-        "DIAG|point_source|meta|source_elements=10240",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.322266",
-        "DIAG|point_source|memory|total_est_mib=    0.323387",
-        "DIAG|point_source|time|obs_grid_s=    0.000002",
-        "DIAG|point_source|time|source_mesh_s=    0.000096",
-        "DIAG|point_source|time|field_accum_s=    0.000970",
-        "DIAG|point_source|time|output_write_s=    0.000092",
-        "DIAG|point_source|time|body_total_s=    0.001177"
+        "DIAG|direct_sum|meta|source_capacity=16896",
+        "DIAG|direct_sum|meta|source_elements=10240",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
+        "DIAG|direct_sum|memory|total_est_mib=    0.323387",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000091",
+        "DIAG|direct_sum|time|field_accum_s=    0.000979",
+        "DIAG|direct_sum|time|output_write_s=    0.000081",
+        "DIAG|direct_sum|time|body_total_s=    0.001169"
       ],
       "stderr": ""
     },
@@ -1234,7 +1234,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "nt",
-      "elapsed_s": 0.12631437496747822,
+      "elapsed_s": 0.12540354195516557,
       "relative_l2": 1.0013435243438835,
       "component_rmse": [
         37.06131121180685,
@@ -1272,15 +1272,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
-        "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000568",
-        "DIAG|spectral|time|fit_assembly_s=    0.111240",
-        "DIAG|spectral|time|linear_solve_s=    0.000580",
-        "DIAG|spectral|time|field_eval_s=    0.000008",
+        "DIAG|spectral|time|obs_grid_s=    0.000001",
+        "DIAG|spectral|time|source_mesh_s=    0.000579",
+        "DIAG|spectral|time|fit_assembly_s=    0.109883",
+        "DIAG|spectral|time|linear_solve_s=    0.000548",
+        "DIAG|spectral|time|field_eval_s=    0.000007",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000117",
+        "DIAG|spectral|time|output_write_s=    0.000108",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.112563"
+        "DIAG|spectral|time|body_total_s=    0.111180"
       ],
       "stderr": ""
     },
@@ -1289,7 +1289,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "nt",
-      "elapsed_s": 0.12907895899843425,
+      "elapsed_s": 0.12920433399267495,
       "relative_l2": 1.0036602894010644,
       "component_rmse": [
         37.14659443429741,
@@ -1327,15 +1327,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
-        "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000572",
-        "DIAG|spectral|time|fit_assembly_s=    0.110280",
-        "DIAG|spectral|time|linear_solve_s=    0.002961",
+        "DIAG|spectral|time|obs_grid_s=    0.000002",
+        "DIAG|spectral|time|source_mesh_s=    0.000586",
+        "DIAG|spectral|time|fit_assembly_s=    0.110144",
+        "DIAG|spectral|time|linear_solve_s=    0.003202",
         "DIAG|spectral|time|field_eval_s=    0.000019",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000109",
+        "DIAG|spectral|time|output_write_s=    0.000132",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.113997"
+        "DIAG|spectral|time|body_total_s=    0.114141"
       ],
       "stderr": ""
     },
@@ -1344,7 +1344,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "nt",
-      "elapsed_s": 0.16164220799691975,
+      "elapsed_s": 0.16272687498712912,
       "relative_l2": 1.0023898095271198,
       "component_rmse": [
         37.115708904103364,
@@ -1383,14 +1383,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000547",
-        "DIAG|spectral|time|fit_assembly_s=    0.130331",
-        "DIAG|spectral|time|linear_solve_s=    0.015947",
-        "DIAG|spectral|time|field_eval_s=    0.000037",
+        "DIAG|spectral|time|source_mesh_s=    0.000561",
+        "DIAG|spectral|time|fit_assembly_s=    0.130375",
+        "DIAG|spectral|time|linear_solve_s=    0.015968",
+        "DIAG|spectral|time|field_eval_s=    0.000051",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000114",
+        "DIAG|spectral|time|output_write_s=    0.000125",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.147030"
+        "DIAG|spectral|time|body_total_s=    0.147141"
       ],
       "stderr": ""
     },
@@ -1399,7 +1399,7 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "nt",
-      "elapsed_s": 1.4128527080174536,
+      "elapsed_s": 1.4163933329982683,
       "relative_l2": 0.809705718443265,
       "component_rmse": [
         31.604395903937657,
@@ -1438,14 +1438,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
         "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000581",
-        "DIAG|spectral|time|fit_assembly_s=    0.483742",
-        "DIAG|spectral|time|linear_solve_s=    0.912718",
-        "DIAG|spectral|time|field_eval_s=    0.000140",
+        "DIAG|spectral|time|source_mesh_s=    0.000567",
+        "DIAG|spectral|time|fit_assembly_s=    0.488342",
+        "DIAG|spectral|time|linear_solve_s=    0.911961",
+        "DIAG|spectral|time|field_eval_s=    0.000132",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000137",
+        "DIAG|spectral|time|output_write_s=    0.000120",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.397392"
+        "DIAG|spectral|time|body_total_s=    1.401183"
       ],
       "stderr": ""
     },
@@ -1454,7 +1454,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "nt",
-      "elapsed_s": 0.01661437499569729,
+      "elapsed_s": 0.01592908299062401,
       "relative_l2": 0.003383263542907649,
       "component_rmse": [
         0.07133355641779171,
@@ -1476,7 +1476,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=4",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  1.6332293383881217E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000169"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000174"
       ],
       "stderr": ""
     },
@@ -1485,7 +1485,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "nt",
-      "elapsed_s": 0.0163642909610644,
+      "elapsed_s": 0.014759291021618992,
       "relative_l2": 2.7339490789845667e-06,
       "component_rmse": [
         5.528965145375853e-05,
@@ -1507,7 +1507,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  1.6332293383881262E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000340"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000322"
       ],
       "stderr": ""
     },
@@ -1516,7 +1516,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "nt",
-      "elapsed_s": 0.015778916946146637,
+      "elapsed_s": 0.015486084041185677,
       "relative_l2": 1.2467887143536167e-12,
       "component_rmse": [
         2.4590091320024524e-11,
@@ -1538,7 +1538,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=16",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  1.6332293383881098E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.001499"
+        "DIAG|gauss_legendre|time|body_total_s=      0.001500"
       ],
       "stderr": ""
     },
@@ -1547,7 +1547,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "nt",
-      "elapsed_s": 0.02528112503932789,
+      "elapsed_s": 0.025567584030795842,
       "relative_l2": 1.5313898690694542e-15,
       "component_rmse": [
         5.0557727387474845e-14,
@@ -1569,7 +1569,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  1.6332293383881551E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.011444"
+        "DIAG|gauss_legendre|time|body_total_s=      0.011599"
       ],
       "stderr": ""
     },
@@ -1578,7 +1578,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "nt",
-      "elapsed_s": 0.1078928749775514,
+      "elapsed_s": 0.10718541598180309,
       "relative_l2": 7.479855219026807e-16,
       "component_rmse": [
         2.3750640004864572e-14,
@@ -1600,7 +1600,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  1.6332293383881436E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.093416"
+        "DIAG|gauss_legendre|time|body_total_s=      0.092802"
       ],
       "stderr": ""
     },
@@ -1609,7 +1609,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "nt",
-      "elapsed_s": 0.026036207971628755,
+      "elapsed_s": 0.02647583303041756,
       "relative_l2": 5.5099050348477385e-15,
       "component_rmse": [
         1.1033296217097735e-13,
@@ -1632,16 +1632,16 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  1.6332293383880930E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.011553"
+        "DIAG|gauss_legendre|time|body_total_s=      0.011758"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_concave_polygon_orbital",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "nt",
-      "elapsed_s": 0.015508125012274832,
+      "elapsed_s": 0.014486625033896416,
       "relative_l2": 0.001374648334796459,
       "component_rmse": [
         0.03910012734248906,
@@ -1657,25 +1657,25 @@
         "Body 1: polygon",
         "  Source mesh cells (nlat,nlon,nr): 16, 16, 4",
         "  Source elements (mag surface charges): 1024",
-        "DIAG|point_source|meta|source_capacity=4096",
-        "DIAG|point_source|meta|source_elements=1024",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.078125",
-        "DIAG|point_source|memory|total_est_mib=    0.079247",
-        "DIAG|point_source|time|obs_grid_s=    0.000001",
-        "DIAG|point_source|time|source_mesh_s=    0.000015",
-        "DIAG|point_source|time|field_accum_s=    0.000093",
-        "DIAG|point_source|time|output_write_s=    0.000097",
-        "DIAG|point_source|time|body_total_s=    0.000222"
+        "DIAG|direct_sum|meta|source_capacity=4096",
+        "DIAG|direct_sum|meta|source_elements=1024",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.078125",
+        "DIAG|direct_sum|memory|total_est_mib=    0.079247",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000003",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000020",
+        "DIAG|direct_sum|time|field_accum_s=    0.000105",
+        "DIAG|direct_sum|time|output_write_s=    0.000094",
+        "DIAG|direct_sum|time|body_total_s=    0.000238"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_concave_polygon_orbital",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "nt",
-      "elapsed_s": 0.014320167014375329,
+      "elapsed_s": 0.014608374971430749,
       "relative_l2": 0.000336607883050311,
       "component_rmse": [
         0.00940280724229796,
@@ -1691,25 +1691,25 @@
         "Body 1: polygon",
         "  Source mesh cells (nlat,nlon,nr): 32, 32, 4",
         "  Source elements (mag surface charges): 2816",
-        "DIAG|point_source|meta|source_capacity=4352",
-        "DIAG|point_source|meta|source_elements=2816",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.083008",
-        "DIAG|point_source|memory|total_est_mib=    0.084129",
-        "DIAG|point_source|time|obs_grid_s=    0.000001",
-        "DIAG|point_source|time|source_mesh_s=    0.000037",
-        "DIAG|point_source|time|field_accum_s=    0.000275",
-        "DIAG|point_source|time|output_write_s=    0.000080",
-        "DIAG|point_source|time|body_total_s=    0.000413"
+        "DIAG|direct_sum|meta|source_capacity=4352",
+        "DIAG|direct_sum|meta|source_elements=2816",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.083008",
+        "DIAG|direct_sum|memory|total_est_mib=    0.084129",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000037",
+        "DIAG|direct_sum|time|field_accum_s=    0.000293",
+        "DIAG|direct_sum|time|output_write_s=    0.000081",
+        "DIAG|direct_sum|time|body_total_s=    0.000430"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_concave_polygon_orbital",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "nt",
-      "elapsed_s": 0.015973832982126623,
+      "elapsed_s": 0.014969499956350774,
       "relative_l2": 0.0001321153554261338,
       "component_rmse": [
         0.0034736146032392974,
@@ -1725,16 +1725,16 @@
         "Body 1: polygon",
         "  Source mesh cells (nlat,nlon,nr): 64, 64, 4",
         "  Source elements (mag surface charges): 8704",
-        "DIAG|point_source|meta|source_capacity=16896",
-        "DIAG|point_source|meta|source_elements=8704",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.322266",
-        "DIAG|point_source|memory|total_est_mib=    0.323387",
-        "DIAG|point_source|time|obs_grid_s=    0.000001",
-        "DIAG|point_source|time|source_mesh_s=    0.000091",
-        "DIAG|point_source|time|field_accum_s=    0.000848",
-        "DIAG|point_source|time|output_write_s=    0.000081",
-        "DIAG|point_source|time|body_total_s=    0.001037"
+        "DIAG|direct_sum|meta|source_capacity=16896",
+        "DIAG|direct_sum|meta|source_elements=8704",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
+        "DIAG|direct_sum|memory|total_est_mib=    0.323387",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000091",
+        "DIAG|direct_sum|time|field_accum_s=    0.000820",
+        "DIAG|direct_sum|time|output_write_s=    0.000083",
+        "DIAG|direct_sum|time|body_total_s=    0.001016"
       ],
       "stderr": ""
     },
@@ -1743,7 +1743,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "nt",
-      "elapsed_s": 0.09864716697484255,
+      "elapsed_s": 0.09897437499603257,
       "relative_l2": 1.0014870310080501,
       "component_rmse": [
         27.552604823070247,
@@ -1782,14 +1782,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000433",
-        "DIAG|spectral|time|fit_assembly_s=    0.082918",
-        "DIAG|spectral|time|linear_solve_s=    0.000575",
-        "DIAG|spectral|time|field_eval_s=    0.000007",
+        "DIAG|spectral|time|source_mesh_s=    0.000453",
+        "DIAG|spectral|time|fit_assembly_s=    0.083509",
+        "DIAG|spectral|time|linear_solve_s=    0.000672",
+        "DIAG|spectral|time|field_eval_s=    0.000008",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000101",
+        "DIAG|spectral|time|output_write_s=    0.000107",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.084087"
+        "DIAG|spectral|time|body_total_s=    0.084821"
       ],
       "stderr": ""
     },
@@ -1798,7 +1798,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "nt",
-      "elapsed_s": 0.10317787498934194,
+      "elapsed_s": 0.10232220904435962,
       "relative_l2": 1.004070316031148,
       "component_rmse": [
         27.62498516024487,
@@ -1837,14 +1837,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
         "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000430",
-        "DIAG|spectral|time|fit_assembly_s=    0.083895",
-        "DIAG|spectral|time|linear_solve_s=    0.003222",
-        "DIAG|spectral|time|field_eval_s=    0.000020",
+        "DIAG|spectral|time|source_mesh_s=    0.000431",
+        "DIAG|spectral|time|fit_assembly_s=    0.084015",
+        "DIAG|spectral|time|linear_solve_s=    0.003180",
+        "DIAG|spectral|time|field_eval_s=    0.000019",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000117",
+        "DIAG|spectral|time|output_write_s=    0.000106",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.087746"
+        "DIAG|spectral|time|body_total_s=    0.087810"
       ],
       "stderr": ""
     },
@@ -1853,7 +1853,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "nt",
-      "elapsed_s": 0.13335916603682563,
+      "elapsed_s": 0.12845033302437514,
       "relative_l2": 1.0025264433081353,
       "component_rmse": [
         27.598657767540793,
@@ -1892,14 +1892,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000458",
-        "DIAG|spectral|time|fit_assembly_s=    0.101637",
-        "DIAG|spectral|time|linear_solve_s=    0.015870",
-        "DIAG|spectral|time|field_eval_s=    0.000036",
+        "DIAG|spectral|time|source_mesh_s=    0.000437",
+        "DIAG|spectral|time|fit_assembly_s=    0.097559",
+        "DIAG|spectral|time|linear_solve_s=    0.015898",
+        "DIAG|spectral|time|field_eval_s=    0.000041",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000116",
+        "DIAG|spectral|time|output_write_s=    0.000102",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.118179"
+        "DIAG|spectral|time|body_total_s=    0.114108"
       ],
       "stderr": ""
     },
@@ -1908,7 +1908,7 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "nt",
-      "elapsed_s": 1.2875444169621915,
+      "elapsed_s": 1.2944222500082105,
       "relative_l2": 1.2286889406731836,
       "component_rmse": [
         33.04173860448475,
@@ -1947,14 +1947,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000487",
-        "DIAG|spectral|time|fit_assembly_s=    0.358691",
-        "DIAG|spectral|time|linear_solve_s=    0.912184",
-        "DIAG|spectral|time|field_eval_s=    0.000138",
+        "DIAG|spectral|time|source_mesh_s=    0.000425",
+        "DIAG|spectral|time|fit_assembly_s=    0.367419",
+        "DIAG|spectral|time|linear_solve_s=    0.911121",
+        "DIAG|spectral|time|field_eval_s=    0.000143",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000111",
+        "DIAG|spectral|time|output_write_s=    0.000120",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.271675"
+        "DIAG|spectral|time|body_total_s=    1.279285"
       ],
       "stderr": ""
     },
@@ -1963,7 +1963,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "mgal",
-      "elapsed_s": 0.014841583964880556,
+      "elapsed_s": 0.014536832983139902,
       "relative_l2": 0.00016176361247999054,
       "component_rmse": [
         0.001253617701740782,
@@ -1985,7 +1985,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=4",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  9.5275339241928223E+12",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000143"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000145"
       ],
       "stderr": ""
     },
@@ -1994,7 +1994,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "mgal",
-      "elapsed_s": 0.014503124984912574,
+      "elapsed_s": 0.014032874954864383,
       "relative_l2": 1.816062421089312e-08,
       "component_rmse": [
         9.50127620972487e-08,
@@ -2016,7 +2016,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  9.5275339241928379E+12",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000236"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000217"
       ],
       "stderr": ""
     },
@@ -2025,7 +2025,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "mgal",
-      "elapsed_s": 0.01484908297425136,
+      "elapsed_s": 0.014508540974929929,
       "relative_l2": 2.48606720721267e-15,
       "component_rmse": [
         1.1418423480962275e-14,
@@ -2056,7 +2056,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "mgal",
-      "elapsed_s": 0.02020524995168671,
+      "elapsed_s": 0.020475208992138505,
       "relative_l2": 1.8038872716010815e-15,
       "component_rmse": [
         1.0327705761627688e-14,
@@ -2078,7 +2078,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  9.5275339241927930E+12",
-        "DIAG|gauss_legendre|time|body_total_s=      0.006006"
+        "DIAG|gauss_legendre|time|body_total_s=      0.006071"
       ],
       "stderr": ""
     },
@@ -2087,7 +2087,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "mgal",
-      "elapsed_s": 0.06291720899753273,
+      "elapsed_s": 0.06233854201855138,
       "relative_l2": 1.0951052238610582e-15,
       "component_rmse": [
         5.8088711802084784e-15,
@@ -2109,7 +2109,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  9.5275339241927949E+12",
-        "DIAG|gauss_legendre|time|body_total_s=      0.048425"
+        "DIAG|gauss_legendre|time|body_total_s=      0.048502"
       ],
       "stderr": ""
     },
@@ -2118,7 +2118,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "mgal",
-      "elapsed_s": 0.0207312919665128,
+      "elapsed_s": 0.020123708993196487,
       "relative_l2": 2.8082571841862215e-15,
       "component_rmse": [
         1.4366948426543232e-14,
@@ -2141,16 +2141,16 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  9.5275339241928633E+12",
-        "DIAG|gauss_legendre|time|body_total_s=      0.005998"
+        "DIAG|gauss_legendre|time|body_total_s=      0.006098"
       ],
       "stderr": ""
     },
     {
       "case": "gravity_sloping_polygon_orbital",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "mgal",
-      "elapsed_s": 0.01474650000454858,
+      "elapsed_s": 0.013672208995558321,
       "relative_l2": 0.0032369241957069307,
       "component_rmse": [
         0.017482331725683264,
@@ -2166,25 +2166,25 @@
         "Body 1: polygon",
         "  Source mesh cells (nlat,nlon,nr): 16, 16, 4",
         "  Source elements (grav masses): 448",
-        "DIAG|point_source|meta|source_capacity=4096",
-        "DIAG|point_source|meta|source_elements=448",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.078125",
-        "DIAG|point_source|memory|total_est_mib=    0.079247",
-        "DIAG|point_source|time|obs_grid_s=    0.000002",
-        "DIAG|point_source|time|source_mesh_s=    0.000016",
-        "DIAG|point_source|time|field_accum_s=    0.000057",
-        "DIAG|point_source|time|output_write_s=    0.000088",
-        "DIAG|point_source|time|body_total_s=    0.000180"
+        "DIAG|direct_sum|meta|source_capacity=4096",
+        "DIAG|direct_sum|meta|source_elements=448",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.078125",
+        "DIAG|direct_sum|memory|total_est_mib=    0.079247",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000011",
+        "DIAG|direct_sum|time|field_accum_s=    0.000047",
+        "DIAG|direct_sum|time|output_write_s=    0.000081",
+        "DIAG|direct_sum|time|body_total_s=    0.000154"
       ],
       "stderr": ""
     },
     {
       "case": "gravity_sloping_polygon_orbital",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "mgal",
-      "elapsed_s": 0.014052332961000502,
+      "elapsed_s": 0.013682959019206464,
       "relative_l2": 0.0008206596949579053,
       "component_rmse": [
         0.004334345931374059,
@@ -2200,25 +2200,25 @@
         "Body 1: polygon",
         "  Source mesh cells (nlat,nlon,nr): 32, 32, 4",
         "  Source elements (grav masses): 1792",
-        "DIAG|point_source|meta|source_capacity=4352",
-        "DIAG|point_source|meta|source_elements=1792",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.083008",
-        "DIAG|point_source|memory|total_est_mib=    0.084129",
-        "DIAG|point_source|time|obs_grid_s=    0.000002",
-        "DIAG|point_source|time|source_mesh_s=    0.000024",
-        "DIAG|point_source|time|field_accum_s=    0.000165",
-        "DIAG|point_source|time|output_write_s=    0.000091",
-        "DIAG|point_source|time|body_total_s=    0.000296"
+        "DIAG|direct_sum|meta|source_capacity=4352",
+        "DIAG|direct_sum|meta|source_elements=1792",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.083008",
+        "DIAG|direct_sum|memory|total_est_mib=    0.084129",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000025",
+        "DIAG|direct_sum|time|field_accum_s=    0.000163",
+        "DIAG|direct_sum|time|output_write_s=    0.000089",
+        "DIAG|direct_sum|time|body_total_s=    0.000290"
       ],
       "stderr": ""
     },
     {
       "case": "gravity_sloping_polygon_orbital",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "mgal",
-      "elapsed_s": 0.015150875027757138,
+      "elapsed_s": 0.014840457995887846,
       "relative_l2": 0.0002628798782653999,
       "component_rmse": [
         0.0013028408594030602,
@@ -2234,16 +2234,16 @@
         "Body 1: polygon",
         "  Source mesh cells (nlat,nlon,nr): 64, 64, 4",
         "  Source elements (grav masses): 7168",
-        "DIAG|point_source|meta|source_capacity=16896",
-        "DIAG|point_source|meta|source_elements=7168",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.322266",
-        "DIAG|point_source|memory|total_est_mib=    0.323387",
-        "DIAG|point_source|time|obs_grid_s=    0.000002",
-        "DIAG|point_source|time|source_mesh_s=    0.000091",
-        "DIAG|point_source|time|field_accum_s=    0.000669",
-        "DIAG|point_source|time|output_write_s=    0.000080",
-        "DIAG|point_source|time|body_total_s=    0.000858"
+        "DIAG|direct_sum|meta|source_capacity=16896",
+        "DIAG|direct_sum|meta|source_elements=7168",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
+        "DIAG|direct_sum|memory|total_est_mib=    0.323387",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000003",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000092",
+        "DIAG|direct_sum|time|field_accum_s=    0.000694",
+        "DIAG|direct_sum|time|output_write_s=    0.000094",
+        "DIAG|direct_sum|time|body_total_s=    0.000900"
       ],
       "stderr": ""
     },
@@ -2252,7 +2252,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "mgal",
-      "elapsed_s": 0.048091250006109476,
+      "elapsed_s": 0.04885266697965562,
       "relative_l2": 0.9928587899760484,
       "component_rmse": [
         5.108636138609191,
@@ -2290,15 +2290,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
-        "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000265",
-        "DIAG|spectral|time|fit_assembly_s=    0.032746",
-        "DIAG|spectral|time|linear_solve_s=    0.000543",
-        "DIAG|spectral|time|field_eval_s=    0.000007",
+        "DIAG|spectral|time|obs_grid_s=    0.000001",
+        "DIAG|spectral|time|source_mesh_s=    0.000289",
+        "DIAG|spectral|time|fit_assembly_s=    0.033499",
+        "DIAG|spectral|time|linear_solve_s=    0.000599",
+        "DIAG|spectral|time|field_eval_s=    0.000008",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000100",
+        "DIAG|spectral|time|output_write_s=    0.000109",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.033711"
+        "DIAG|spectral|time|body_total_s=    0.034557"
       ],
       "stderr": ""
     },
@@ -2307,7 +2307,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "mgal",
-      "elapsed_s": 0.0509561249637045,
+      "elapsed_s": 0.050993625016417354,
       "relative_l2": 0.9799922170522785,
       "component_rmse": [
         5.049094640957685,
@@ -2346,14 +2346,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000304",
-        "DIAG|spectral|time|fit_assembly_s=    0.032496",
-        "DIAG|spectral|time|linear_solve_s=    0.003122",
-        "DIAG|spectral|time|field_eval_s=    0.000020",
+        "DIAG|spectral|time|source_mesh_s=    0.000263",
+        "DIAG|spectral|time|fit_assembly_s=    0.032826",
+        "DIAG|spectral|time|linear_solve_s=    0.003235",
+        "DIAG|spectral|time|field_eval_s=    0.000018",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000100",
+        "DIAG|spectral|time|output_write_s=    0.000096",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.036092"
+        "DIAG|spectral|time|body_total_s=    0.036489"
       ],
       "stderr": ""
     },
@@ -2362,7 +2362,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "mgal",
-      "elapsed_s": 0.06956908298889175,
+      "elapsed_s": 0.06995970802381635,
       "relative_l2": 0.9660890179704495,
       "component_rmse": [
         4.979218261068002,
@@ -2400,15 +2400,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
-        "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000267",
-        "DIAG|spectral|time|fit_assembly_s=    0.038368",
-        "DIAG|spectral|time|linear_solve_s=    0.015498",
-        "DIAG|spectral|time|field_eval_s=    0.000042",
+        "DIAG|spectral|time|obs_grid_s=    0.000001",
+        "DIAG|spectral|time|source_mesh_s=    0.000277",
+        "DIAG|spectral|time|fit_assembly_s=    0.038829",
+        "DIAG|spectral|time|linear_solve_s=    0.015625",
+        "DIAG|spectral|time|field_eval_s=    0.000039",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000100",
+        "DIAG|spectral|time|output_write_s=    0.000109",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.054331"
+        "DIAG|spectral|time|body_total_s=    0.054939"
       ],
       "stderr": ""
     },
@@ -2417,7 +2417,7 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "mgal",
-      "elapsed_s": 1.0785185000277124,
+      "elapsed_s": 1.0767371249967255,
       "relative_l2": 0.8892660690888942,
       "component_rmse": [
         3.5902471317380393,
@@ -2455,15 +2455,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
-        "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000252",
-        "DIAG|spectral|time|fit_assembly_s=    0.146415",
-        "DIAG|spectral|time|linear_solve_s=    0.916246",
-        "DIAG|spectral|time|field_eval_s=    0.000147",
+        "DIAG|spectral|time|obs_grid_s=    0.000001",
+        "DIAG|spectral|time|source_mesh_s=    0.000264",
+        "DIAG|spectral|time|fit_assembly_s=    0.145380",
+        "DIAG|spectral|time|linear_solve_s=    0.915664",
+        "DIAG|spectral|time|field_eval_s=    0.000133",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000121",
+        "DIAG|spectral|time|output_write_s=    0.000115",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.063246"
+        "DIAG|spectral|time|body_total_s=    1.061616"
       ],
       "stderr": ""
     },
@@ -2472,7 +2472,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "nt",
-      "elapsed_s": 0.014781542005948722,
+      "elapsed_s": 0.014915417006704956,
       "relative_l2": 2.0235428082043443e-15,
       "component_rmse": [
         1.026530790365282e-19,
@@ -2494,7 +2494,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=4",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291094E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000138"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000144"
       ],
       "stderr": ""
     },
@@ -2503,7 +2503,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "nt",
-      "elapsed_s": 0.014670292031951249,
+      "elapsed_s": 0.013898374978452921,
       "relative_l2": 2.4447708361848627e-15,
       "component_rmse": [
         1.2526272584620893e-19,
@@ -2525,7 +2525,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291102E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000192"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000206"
       ],
       "stderr": ""
     },
@@ -2534,7 +2534,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "nt",
-      "elapsed_s": 0.014771457994356751,
+      "elapsed_s": 0.014461415994446725,
       "relative_l2": 1.4077048279184547e-15,
       "component_rmse": [
         7.278330009883296e-20,
@@ -2556,7 +2556,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=16",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585290992E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000694"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000614"
       ],
       "stderr": ""
     },
@@ -2565,7 +2565,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "nt",
-      "elapsed_s": 0.017809583980124444,
+      "elapsed_s": 0.017881250008940697,
       "relative_l2": 4.566009331746382e-17,
       "component_rmse": [
         2.9041129620147442e-21,
@@ -2587,7 +2587,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291203E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003951"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003888"
       ],
       "stderr": ""
     },
@@ -2596,7 +2596,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "nt",
-      "elapsed_s": 0.04507287504384294,
+      "elapsed_s": 0.045091249980032444,
       "relative_l2": 6.902825352776836e-16,
       "component_rmse": [
         3.5686337532975413e-20,
@@ -2618,7 +2618,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291605E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.031279"
+        "DIAG|gauss_legendre|time|body_total_s=      0.031375"
       ],
       "stderr": ""
     },
@@ -2627,7 +2627,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "nt",
-      "elapsed_s": 0.01834508398314938,
+      "elapsed_s": 0.018217083998024464,
       "relative_l2": 2.515557363322148e-15,
       "component_rmse": [
         1.2871989077574935e-19,
@@ -2650,16 +2650,16 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291016E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003854"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003820"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_block_far",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "nt",
-      "elapsed_s": 0.013937000010628253,
+      "elapsed_s": 0.014099041000008583,
       "relative_l2": 0.001019067863334415,
       "component_rmse": [
         5.2588669161692315e-08,
@@ -2675,25 +2675,25 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 16, 16, 4",
         "  Source elements (mag surface charges): 1024",
-        "DIAG|point_source|meta|source_capacity=4096",
-        "DIAG|point_source|meta|source_elements=1024",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.078125",
-        "DIAG|point_source|memory|total_est_mib=    0.079247",
-        "DIAG|point_source|time|obs_grid_s=    0.000001",
-        "DIAG|point_source|time|source_mesh_s=    0.000016",
-        "DIAG|point_source|time|field_accum_s=    0.000091",
-        "DIAG|point_source|time|output_write_s=    0.000081",
-        "DIAG|point_source|time|body_total_s=    0.000204"
+        "DIAG|direct_sum|meta|source_capacity=4096",
+        "DIAG|direct_sum|meta|source_elements=1024",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.078125",
+        "DIAG|direct_sum|memory|total_est_mib=    0.079247",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000003",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000015",
+        "DIAG|direct_sum|time|field_accum_s=    0.000098",
+        "DIAG|direct_sum|time|output_write_s=    0.000090",
+        "DIAG|direct_sum|time|body_total_s=    0.000222"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_block_far",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "nt",
-      "elapsed_s": 0.014100665983278304,
+      "elapsed_s": 0.013766415999270976,
       "relative_l2": 0.0008847369079752646,
       "component_rmse": [
         4.600667691289698e-08,
@@ -2709,25 +2709,25 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 32, 32, 4",
         "  Source elements (mag surface charges): 3072",
-        "DIAG|point_source|meta|source_capacity=4352",
-        "DIAG|point_source|meta|source_elements=3072",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.083008",
-        "DIAG|point_source|memory|total_est_mib=    0.084129",
-        "DIAG|point_source|time|obs_grid_s=    0.000002",
-        "DIAG|point_source|time|source_mesh_s=    0.000030",
-        "DIAG|point_source|time|field_accum_s=    0.000277",
-        "DIAG|point_source|time|output_write_s=    0.000082",
-        "DIAG|point_source|time|body_total_s=    0.000403"
+        "DIAG|direct_sum|meta|source_capacity=4352",
+        "DIAG|direct_sum|meta|source_elements=3072",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.083008",
+        "DIAG|direct_sum|memory|total_est_mib=    0.084129",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000030",
+        "DIAG|direct_sum|time|field_accum_s=    0.000277",
+        "DIAG|direct_sum|time|output_write_s=    0.000102",
+        "DIAG|direct_sum|time|body_total_s=    0.000430"
       ],
       "stderr": ""
     },
     {
       "case": "magnetic_block_far",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "nt",
-      "elapsed_s": 0.01470029097981751,
+      "elapsed_s": 0.014359916967805475,
       "relative_l2": 0.0008230676247172196,
       "component_rmse": [
         4.235629863700082e-08,
@@ -2743,16 +2743,16 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 64, 64, 4",
         "  Source elements (mag surface charges): 10240",
-        "DIAG|point_source|meta|source_capacity=16896",
-        "DIAG|point_source|meta|source_elements=10240",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.322266",
-        "DIAG|point_source|memory|total_est_mib=    0.323387",
-        "DIAG|point_source|time|obs_grid_s=    0.000003",
-        "DIAG|point_source|time|source_mesh_s=    0.000100",
-        "DIAG|point_source|time|field_accum_s=    0.000990",
-        "DIAG|point_source|time|output_write_s=    0.000090",
-        "DIAG|point_source|time|body_total_s=    0.001201"
+        "DIAG|direct_sum|meta|source_capacity=16896",
+        "DIAG|direct_sum|meta|source_elements=10240",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
+        "DIAG|direct_sum|memory|total_est_mib=    0.323387",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000086",
+        "DIAG|direct_sum|time|field_accum_s=    0.001007",
+        "DIAG|direct_sum|time|output_write_s=    0.000091",
+        "DIAG|direct_sum|time|body_total_s=    0.001201"
       ],
       "stderr": ""
     },
@@ -2761,7 +2761,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "nt",
-      "elapsed_s": 0.12894025002606213,
+      "elapsed_s": 0.12741295795422047,
       "relative_l2": 0.04137313737685072,
       "component_rmse": [
         2.122790021947766e-06,
@@ -2799,15 +2799,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
-        "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000556",
-        "DIAG|spectral|time|fit_assembly_s=    0.113888",
-        "DIAG|spectral|time|linear_solve_s=    0.000549",
-        "DIAG|spectral|time|field_eval_s=    0.000006",
+        "DIAG|spectral|time|obs_grid_s=    0.000001",
+        "DIAG|spectral|time|source_mesh_s=    0.000554",
+        "DIAG|spectral|time|fit_assembly_s=    0.112023",
+        "DIAG|spectral|time|linear_solve_s=    0.000578",
+        "DIAG|spectral|time|field_eval_s=    0.000009",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000103",
+        "DIAG|spectral|time|output_write_s=    0.000115",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.115159"
+        "DIAG|spectral|time|body_total_s=    0.113335"
       ],
       "stderr": ""
     },
@@ -2816,7 +2816,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "nt",
-      "elapsed_s": 0.13055829203221947,
+      "elapsed_s": 0.12999358400702477,
       "relative_l2": 0.0005076415466161913,
       "component_rmse": [
         2.6068619361943794e-08,
@@ -2854,15 +2854,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
-        "DIAG|spectral|time|obs_grid_s=    0.000003",
-        "DIAG|spectral|time|source_mesh_s=    0.000559",
-        "DIAG|spectral|time|fit_assembly_s=    0.111480",
-        "DIAG|spectral|time|linear_solve_s=    0.003225",
-        "DIAG|spectral|time|field_eval_s=    0.000020",
+        "DIAG|spectral|time|obs_grid_s=    0.000001",
+        "DIAG|spectral|time|source_mesh_s=    0.000563",
+        "DIAG|spectral|time|fit_assembly_s=    0.112160",
+        "DIAG|spectral|time|linear_solve_s=    0.003034",
+        "DIAG|spectral|time|field_eval_s=    0.000022",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000122",
+        "DIAG|spectral|time|output_write_s=    0.000105",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.115465"
+        "DIAG|spectral|time|body_total_s=    0.115934"
       ],
       "stderr": ""
     },
@@ -2871,7 +2871,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "nt",
-      "elapsed_s": 0.1606749170459807,
+      "elapsed_s": 0.16283716697944328,
       "relative_l2": 4.312150266021033e-06,
       "component_rmse": [
         2.2168965161634796e-10,
@@ -2910,14 +2910,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000594",
-        "DIAG|spectral|time|fit_assembly_s=    0.129377",
-        "DIAG|spectral|time|linear_solve_s=    0.015953",
-        "DIAG|spectral|time|field_eval_s=    0.000038",
+        "DIAG|spectral|time|source_mesh_s=    0.000555",
+        "DIAG|spectral|time|fit_assembly_s=    0.130784",
+        "DIAG|spectral|time|linear_solve_s=    0.015968",
+        "DIAG|spectral|time|field_eval_s=    0.000044",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000112",
+        "DIAG|spectral|time|output_write_s=    0.000119",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.146129"
+        "DIAG|spectral|time|body_total_s=    0.147530"
       ],
       "stderr": ""
     },
@@ -2926,7 +2926,7 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "nt",
-      "elapsed_s": 1.4205565410084091,
+      "elapsed_s": 1.4226721670129336,
       "relative_l2": 9.844365445121653e-07,
       "component_rmse": [
         2.1072724302720707e-11,
@@ -2964,15 +2964,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
-        "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000584",
-        "DIAG|spectral|time|fit_assembly_s=    0.486994",
-        "DIAG|spectral|time|linear_solve_s=    0.917080",
-        "DIAG|spectral|time|field_eval_s=    0.000137",
+        "DIAG|spectral|time|obs_grid_s=    0.000002",
+        "DIAG|spectral|time|source_mesh_s=    0.000562",
+        "DIAG|spectral|time|fit_assembly_s=    0.489636",
+        "DIAG|spectral|time|linear_solve_s=    0.917026",
+        "DIAG|spectral|time|field_eval_s=    0.000132",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000111",
+        "DIAG|spectral|time|output_write_s=    0.000127",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.404987"
+        "DIAG|spectral|time|body_total_s=    1.407557"
       ],
       "stderr": ""
     },
@@ -2981,7 +2981,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "mgal",
-      "elapsed_s": 0.014690957963466644,
+      "elapsed_s": 0.014413457945920527,
       "relative_l2": 2.0788206364650847e-15,
       "component_rmse": [
         2.4209830175537578e-18,
@@ -3003,7 +3003,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=4",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291094E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000136"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000140"
       ],
       "stderr": ""
     },
@@ -3012,7 +3012,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "mgal",
-      "elapsed_s": 0.014611584017984569,
+      "elapsed_s": 0.01478441699873656,
       "relative_l2": 2.4589624596662534e-15,
       "component_rmse": [
         2.8986455015248353e-18,
@@ -3034,7 +3034,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291102E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000186"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000215"
       ],
       "stderr": ""
     },
@@ -3043,7 +3043,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "mgal",
-      "elapsed_s": 0.014403790992219001,
+      "elapsed_s": 0.014774791023228317,
       "relative_l2": 1.4071207769924466e-15,
       "component_rmse": [
         1.6896070533867119e-18,
@@ -3065,7 +3065,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=16",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585290992E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000512"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000511"
       ],
       "stderr": ""
     },
@@ -3074,7 +3074,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "mgal",
-      "elapsed_s": 0.017543625028338283,
+      "elapsed_s": 0.017827834002673626,
       "relative_l2": 8.291696181273794e-17,
       "component_rmse": [
         9.795852311876957e-20,
@@ -3096,7 +3096,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291203E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003049"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003134"
       ],
       "stderr": ""
     },
@@ -3105,7 +3105,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "mgal",
-      "elapsed_s": 0.03870145801920444,
+      "elapsed_s": 0.03863220801576972,
       "relative_l2": 6.953474706459455e-16,
       "component_rmse": [
         8.113426134873485e-19,
@@ -3127,7 +3127,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291605E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.024468"
+        "DIAG|gauss_legendre|time|body_total_s=      0.024086"
       ],
       "stderr": ""
     },
@@ -3136,7 +3136,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "mgal",
-      "elapsed_s": 0.01756708399625495,
+      "elapsed_s": 0.017387625004630536,
       "relative_l2": 2.517904654673357e-15,
       "component_rmse": [
         2.9919875039056306e-18,
@@ -3159,16 +3159,16 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291016E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.002965"
+        "DIAG|gauss_legendre|time|body_total_s=      0.002951"
       ],
       "stderr": ""
     },
     {
       "case": "gravity_block_far",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "mgal",
-      "elapsed_s": 0.014204083010554314,
+      "elapsed_s": 0.01434570801211521,
       "relative_l2": 7.437124464918315e-07,
       "component_rmse": [
         6.967980259018859e-10,
@@ -3184,25 +3184,25 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 16, 16, 4",
         "  Source elements (grav masses): 1024",
-        "DIAG|point_source|meta|source_capacity=4096",
-        "DIAG|point_source|meta|source_elements=1024",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.078125",
-        "DIAG|point_source|memory|total_est_mib=    0.079247",
-        "DIAG|point_source|time|obs_grid_s=    0.000001",
-        "DIAG|point_source|time|source_mesh_s=    0.000015",
-        "DIAG|point_source|time|field_accum_s=    0.000092",
-        "DIAG|point_source|time|output_write_s=    0.000080",
-        "DIAG|point_source|time|body_total_s=    0.000203"
+        "DIAG|direct_sum|meta|source_capacity=4096",
+        "DIAG|direct_sum|meta|source_elements=1024",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.078125",
+        "DIAG|direct_sum|memory|total_est_mib=    0.079247",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000016",
+        "DIAG|direct_sum|time|field_accum_s=    0.000093",
+        "DIAG|direct_sum|time|output_write_s=    0.000090",
+        "DIAG|direct_sum|time|body_total_s=    0.000215"
       ],
       "stderr": ""
     },
     {
       "case": "gravity_block_far",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "mgal",
-      "elapsed_s": 0.014302083000075072,
+      "elapsed_s": 0.014709957991726696,
       "relative_l2": 7.042334332845729e-07,
       "component_rmse": [
         7.651592937132134e-10,
@@ -3218,25 +3218,25 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 32, 32, 4",
         "  Source elements (grav masses): 4096",
-        "DIAG|point_source|meta|source_capacity=4352",
-        "DIAG|point_source|meta|source_elements=4096",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.083008",
-        "DIAG|point_source|memory|total_est_mib=    0.084129",
-        "DIAG|point_source|time|obs_grid_s=    0.000001",
-        "DIAG|point_source|time|source_mesh_s=    0.000041",
-        "DIAG|point_source|time|field_accum_s=    0.000370",
-        "DIAG|point_source|time|output_write_s=    0.000090",
-        "DIAG|point_source|time|body_total_s=    0.000519"
+        "DIAG|direct_sum|meta|source_capacity=4352",
+        "DIAG|direct_sum|meta|source_elements=4096",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.083008",
+        "DIAG|direct_sum|memory|total_est_mib=    0.084129",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000050",
+        "DIAG|direct_sum|time|field_accum_s=    0.000377",
+        "DIAG|direct_sum|time|output_write_s=    0.000091",
+        "DIAG|direct_sum|time|body_total_s=    0.000536"
       ],
       "stderr": ""
     },
     {
       "case": "gravity_block_far",
-      "solver": "point_source",
+      "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "mgal",
-      "elapsed_s": 0.015562582993879914,
+      "elapsed_s": 0.01561362500069663,
       "relative_l2": 7.656211117770627e-07,
       "component_rmse": [
         9.88156056758351e-10,
@@ -3252,16 +3252,16 @@
         "Body 1: block",
         "  Source mesh cells (nlat,nlon,nr): 64, 64, 4",
         "  Source elements (grav masses): 16384",
-        "DIAG|point_source|meta|source_capacity=16896",
-        "DIAG|point_source|meta|source_elements=16384",
-        "DIAG|point_source|memory|obs_arrays_mib=    0.001122",
-        "DIAG|point_source|memory|source_arrays_mib=    0.322266",
-        "DIAG|point_source|memory|total_est_mib=    0.323387",
-        "DIAG|point_source|time|obs_grid_s=    0.000002",
-        "DIAG|point_source|time|source_mesh_s=    0.000177",
-        "DIAG|point_source|time|field_accum_s=    0.001717",
-        "DIAG|point_source|time|output_write_s=    0.000085",
-        "DIAG|point_source|time|body_total_s=    0.001999"
+        "DIAG|direct_sum|meta|source_capacity=16896",
+        "DIAG|direct_sum|meta|source_elements=16384",
+        "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
+        "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
+        "DIAG|direct_sum|memory|total_est_mib=    0.323387",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000193",
+        "DIAG|direct_sum|time|field_accum_s=    0.001734",
+        "DIAG|direct_sum|time|output_write_s=    0.000090",
+        "DIAG|direct_sum|time|body_total_s=    0.002035"
       ],
       "stderr": ""
     },
@@ -3270,7 +3270,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "mgal",
-      "elapsed_s": 0.09156937501393259,
+      "elapsed_s": 0.09198799997102469,
       "relative_l2": 0.00527585406554098,
       "component_rmse": [
         6.267309760225196e-06,
@@ -3308,15 +3308,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
-        "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000614",
-        "DIAG|spectral|time|fit_assembly_s=    0.076331",
-        "DIAG|spectral|time|linear_solve_s=    0.000636",
+        "DIAG|spectral|time|obs_grid_s=    0.000002",
+        "DIAG|spectral|time|source_mesh_s=    0.000560",
+        "DIAG|spectral|time|fit_assembly_s=    0.076355",
+        "DIAG|spectral|time|linear_solve_s=    0.000582",
         "DIAG|spectral|time|field_eval_s=    0.000007",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000109",
+        "DIAG|spectral|time|output_write_s=    0.000122",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.077753"
+        "DIAG|spectral|time|body_total_s=    0.077685"
       ],
       "stderr": ""
     },
@@ -3325,7 +3325,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "mgal",
-      "elapsed_s": 0.09393654100131243,
+      "elapsed_s": 0.0944202080136165,
       "relative_l2": 3.7274902035683225e-05,
       "component_rmse": [
         4.438887341745767e-08,
@@ -3363,15 +3363,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
-        "DIAG|spectral|time|obs_grid_s=    0.000003",
-        "DIAG|spectral|time|source_mesh_s=    0.000620",
-        "DIAG|spectral|time|fit_assembly_s=    0.074985",
-        "DIAG|spectral|time|linear_solve_s=    0.003206",
-        "DIAG|spectral|time|field_eval_s=    0.000019",
+        "DIAG|spectral|time|obs_grid_s=    0.000001",
+        "DIAG|spectral|time|source_mesh_s=    0.000569",
+        "DIAG|spectral|time|fit_assembly_s=    0.076581",
+        "DIAG|spectral|time|linear_solve_s=    0.003052",
+        "DIAG|spectral|time|field_eval_s=    0.000021",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000114",
+        "DIAG|spectral|time|output_write_s=    0.000112",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.079013"
+        "DIAG|spectral|time|body_total_s=    0.080389"
       ],
       "stderr": ""
     },
@@ -3380,7 +3380,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "mgal",
-      "elapsed_s": 0.12094166601309553,
+      "elapsed_s": 0.12012170802336186,
       "relative_l2": 2.0326858934307723e-07,
       "component_rmse": [
         2.523654541886629e-10,
@@ -3418,15 +3418,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
-        "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000618",
-        "DIAG|spectral|time|fit_assembly_s=    0.089890",
-        "DIAG|spectral|time|linear_solve_s=    0.015624",
-        "DIAG|spectral|time|field_eval_s=    0.000041",
+        "DIAG|spectral|time|obs_grid_s=    0.000001",
+        "DIAG|spectral|time|source_mesh_s=    0.000569",
+        "DIAG|spectral|time|fit_assembly_s=    0.088852",
+        "DIAG|spectral|time|linear_solve_s=    0.015964",
+        "DIAG|spectral|time|field_eval_s=    0.000040",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000114",
+        "DIAG|spectral|time|output_write_s=    0.000122",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.106353"
+        "DIAG|spectral|time|body_total_s=    0.105603"
       ],
       "stderr": ""
     },
@@ -3435,7 +3435,7 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "mgal",
-      "elapsed_s": 1.2591545000323094,
+      "elapsed_s": 1.2871500829933211,
       "relative_l2": 7.127850096828721e-08,
       "component_rmse": [
         7.001563637940887e-11,
@@ -3474,14 +3474,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000544",
-        "DIAG|spectral|time|fit_assembly_s=    0.329937",
-        "DIAG|spectral|time|linear_solve_s=    0.913342",
-        "DIAG|spectral|time|field_eval_s=    0.000141",
+        "DIAG|spectral|time|source_mesh_s=    0.000549",
+        "DIAG|spectral|time|fit_assembly_s=    0.333397",
+        "DIAG|spectral|time|linear_solve_s=    0.937044",
+        "DIAG|spectral|time|field_eval_s=    0.000149",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000149",
+        "DIAG|spectral|time|output_write_s=    0.000122",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.244177"
+        "DIAG|spectral|time|body_total_s=    1.271322"
       ],
       "stderr": ""
     }

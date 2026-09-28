@@ -1,6 +1,6 @@
-# GravMag Sphere diagnostics
+# GravMagSphere diagnostics
 
-This folder contains compiler benchmarks, point_source/spectral comparisons, equivalent-source comparisons, formatted inputs, and reports/figures. These workflows assess numerical behavior and modeling assumptions; the external comparison adapters are separate from the package's inversion interfaces.
+This folder contains compiler benchmarks, direct_sum/spectral comparisons, equivalent-source comparisons, formatted inputs, and reports/figures. These workflows assess numerical behavior and modeling assumptions; the external comparison adapters are separate from the package's inversion interfaces.
 
 ## Contents
 
@@ -12,7 +12,7 @@ This folder contains compiler benchmarks, point_source/spectral comparisons, equ
 - `complexlarge_direct_vs_spectral_analysis.py`: boundary-visibility analysis
 - `plot_fixed_polygon_compare.py`: fixed-limit/polygon field comparison plot
 - `run_comparison_tests.sh`: comparison-suite runner
-- `gauss_legendre_compare.py`: node-order, panel, point_source-mesh and pure spectral degree sweeps
+- `gauss_legendre_compare.py`: node-order, panel, direct_sum-mesh and pure spectral degree sweeps
 - `gauss_legendre_comparison/`: executed three-solver report, figure, inputs, fields and machine-readable metrics
 - Markdown reports and residual/side-by-side plot directories: reference results for the recorded case settings
 
@@ -39,7 +39,7 @@ bash diagnostics/run_comparison_tests.sh --python /Users/danywaller/code/venvs/g
 
 The script accepts an optional output directory and a non-mutating `--help`; edit its `settings` dictionary for other sweep resolutions. It compiles through the package cache before timing runs. Default outputs are in [gauss_legendre_comparison](gauss_legendre_comparison/README.md): Markdown, CSV, JSON, compressed XYZ arrays, six card inputs and a convergence/cost figure. A failed reference-resolution check returns nonzero after saving the report.
 
-Tests independently compare the restored tensor quadrature with the orbital backend, exact polygon volume, decomposed concave bodies, a point-mass limit, longitude wrapping and multiple source summation. Point-source comparisons cover magnetic and gravity fields, including concave polygon winding and refinement. High-altitude magnetic and gravity cases check spectral-degree convergence; antipodal gravity sources isolate the degree-zero mass term and check its sign, distance scaling and preservation under regularization. The full sweep also reports near-surface resolution limits. Spectral auto selection, edge corrections and hybrid mode are explicitly disabled for this comparison.
+Tests independently compare the restored tensor quadrature with the orbital backend, exact polygon volume, decomposed concave bodies, a point-mass limit, longitude wrapping and multiple source summation. Direct summation comparisons cover magnetic and gravity fields, including concave polygon winding and refinement. High-altitude magnetic and gravity cases check spectral-degree convergence; antipodal gravity sources isolate the degree-zero mass term and check its sign, distance scaling and preservation under regularization. The full sweep also reports near-surface resolution limits. Spectral auto selection, edge corrections and hybrid mode are explicitly disabled for this comparison.
 
 ### 1) Compiler runtime benchmark + hotspot report
 
@@ -73,16 +73,16 @@ Outputs:
 - `diagnostics/lmax_sweep.csv`
 - `diagnostics/lmax_sweep.md`
 
-The sweep compares spectral results to a point_source-solver baseline and reports
+The sweep compares spectral results to a direct_sum-solver baseline and reports
 edge-focused ringing metrics (`edge_amp`, `edge_overshoot`) per `lmax`.
 
-### 3) Point-source per-run diagnostics from Fortran executables
+### 3) Per-run diagnostics from Fortran executables
 
 Set `GRAVMAG_DIAGNOSTICS=1` to print stage timings and memory estimates:
 
 ```bash
 GRAVMAG_DIAGNOSTICS=1 examples/gravmag_sphere_spectral 1737.4 examples/lunar_examples/gravmag_sphere_1body_mag_polygon_inc90_dec0_base.in diagnostics/diag_gauss_xyz.txt 24 2 72 144 0.2 4.0 0 0 0
-GRAVMAG_DIAGNOSTICS=1 examples/gravmag_sphere_point_source 1737.4 examples/lunar_examples/gravmag_sphere_1body_mag_polygon_inc90_dec0_base.in diagnostics/diag_direct_xyz.txt 2 0 0 0
+GRAVMAG_DIAGNOSTICS=1 examples/gravmag_sphere_direct_sum 1737.4 examples/lunar_examples/gravmag_sphere_1body_mag_polygon_inc90_dec0_base.in diagnostics/diag_direct_xyz.txt 2 0 0 0
 ```
 
 Diagnostics lines are emitted as `DIAG|<solver>|<category>|<key>=<value>`.
@@ -94,7 +94,7 @@ Diagnostics lines are emitted as `DIAG|<solver>|<category>|<key>=<value>`.
 - external solver comparison (Fortran spectral vs SciPy SH LSQ vs SHTOOLS LSQ)
 - GravMagSphere-vs-SHTOOLS residual suite
 - GravMagSphere-vs-Harmonica XYZ residual suite
-- complexlarge point_source-vs-spectral boundary analysis
+- complexlarge direct_sum-vs-spectral boundary analysis
 - hybrid-vs-spectral vertex sweep
 
 ```bash

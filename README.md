@@ -1,6 +1,6 @@
-# GravMagPy
+# GravMagSphere
 
-GravMagPy is a modernized Fortran magnetic and gravity solver and inversion toolkit with a Python frontend. Fortran provides the numerical field solvers and equivalent-dipole fitter; Python provides source geometry, observation ingestion, bounded inversion, model execution, diagnostics, and plotting.
+GravMagSphere is a modernized Fortran magnetic and gravity solver and inversion toolkit. Its Python frontend, GravMagPy (`gravmagpy`), provides source geometry, observation ingestion, bounded inversion, model execution, diagnostics, and plotting. Fortran provides the numerical field solvers and equivalent-dipole fitter.
 
 The toolkit models finite blocks, polygonal bodies, and source layers on a spherical reference body with a configurable radius. Magnetic and gravity forward models share the same geometry and grid interfaces. The implemented inversion workflows fit magnetic source geometry and magnetization or equivalent point-dipole moments to observations at their actual three-dimensional positions.
 
@@ -8,22 +8,24 @@ The toolkit models finite blocks, polygonal bodies, and source layers on a spher
 
 | Method | Fortran source / executable | Calculation |
 |---|---|---|
-| `point_source` | `gravmag_sphere_point_source` | Sums discretized magnetic surface charges or gravity point masses on a regular observation grid |
+| `direct_sum` | `gravmag_sphere_direct_sum` | Uses magnetic surface-charge quadrature or gravity midpoint-volume quadrature, summing contributions on a regular observation grid |
 | `spectral` | `gravmag_sphere_spectral` | Fits spherical harmonics to sampled source fields, including the gravity degree-zero mass term, with optional local and hybrid corrections |
 | `gauss_legendre` | `gravmag_sphere_gauss_legendre` | Integrates magnetic and gravity volume kernels with configurable Gauss–Legendre orders and composite panels |
 | `orbital` | `orbital.f90` shared library | Evaluates magnetic volume kernels at arbitrary observation positions for prediction and inversion |
 | `dipole_grid` | `gravmag_sphere_dipole_grid_fit` | Fits equivalent magnetic point-dipole moments on a fixed source grid |
 
-Choose a grid method with `run_sphere_model(..., solver="point_source")`, `solver="spectral"`, or `solver="gauss_legendre"`. Point-source field calculations use single precision; the spectral, Gauss–Legendre, and orbital kernels use double precision. Resolution controls differ by method, so compare refined solutions when assessing accuracy. The [modeling guide](docs/sphere.md) and [solver comparison](diagnostics/gauss_legendre_comparison/README.md) describe controls and limits.
+Choose a grid method with `run_sphere_model(..., solver="direct_sum")`, `solver="spectral"`, or `solver="gauss_legendre"`. Direct summation field calculations use single precision; the spectral, Gauss–Legendre, and orbital kernels use double precision. Resolution controls differ by method, so compare refined solutions when assessing accuracy. The [modeling guide](docs/sphere.md) and [solver comparison](diagnostics/gauss_legendre_comparison/README.md) describe controls and limits.
+
+`direct_sum` models extended blocks and polygonal bodies. Its magnetic surface patches and gravity volume cells are represented by weighted points for numerical integration; those points are determined by the body geometry and mesh resolution.
 
 `fit_sources` uses Python optimization and the orbital Fortran kernel to fit finite-volume geometry and magnetization. `fit_equivalent_sources` calls the Fortran dipole-grid fitter. Gravity forward modeling is supported; these inversion interfaces currently target magnetic observations.
 
-The canonical method names replace the former `direct` and `gauss` labels. Python calls and the generic shell/batch runners still accept `direct` as an alias for `point_source` and `gauss` as an alias for `spectral`. Source files, executable names, and individual solver launchers use the canonical names.
+Python calls and the generic shell/batch runners accept the former `direct` selector as an alias for `direct_sum`, and `gauss` as an alias for `spectral`. Source files, executable names, and individual solver launchers use the canonical names.
 
 ## Repository layout
 
 ```text
-src/gravmagpy/              importable Python package
+src/gravmagpy/              GravMagPy Python frontend
   data.py                  wake-sorted LPMAG CSV ingestion
   geometry.py              spherical block geometry and coordinate conversion
   forward.py               double-precision orbital Fortran interface
@@ -33,11 +35,11 @@ src/gravmagpy/              importable Python package
   equivalent.py            Python interface to the equivalent dipole-grid fitter
   plotting.py              Bx/By/Bz/Btot grid and orbital-fit plots
   maps.py                  georeferenced GeoTIFF panels and equivalent-source maps
-  utils/fortran.py          cached compilation and GravMag Sphere executable calls
+  utils/fortran.py          cached compilation and GravMagSphere executable calls
   utils/paths.py            input-relative output and figure destinations
 fortran/
   orbital.f90              shared-library kernel for arbitrary spacecraft positions
-  gravmag_sphere_*.f90      point-source, spectral, quadrature, and dipole-fit backends
+  gravmag_sphere_*.f90      direct summation, spectral, quadrature, and dipole-fit backends
   gravmag_xyz_to_brtp.f90   Cartesian-to-spherical field conversion
 examples/                  test cases, notebooks, shell workflows, and saved results
   lpmag/                   real wake-data and synthetic recovery workflows
@@ -71,7 +73,7 @@ sources = equivalent_source_grid(
 )
 model = sphere_model(sources, latitude_deg=np.linspace(5, 9, 21),
                      longitude_deg=np.linspace(-62, -58, 21), altitude_km=40)
-result = run_sphere_model(model, solver="point_source", solver_options={"refine_factor": 2})
+result = run_sphere_model(model, solver="direct_sum", solver_options={"refine_factor": 2})
 bx, by, bz, btot = (result[key] for key in ("bx_nt", "by_nt", "bz_nt", "btot_nt"))
 write_model_input(model, "output/equivalent_layer.in")
 ```
@@ -85,13 +87,13 @@ from gravmagpy import run_grid_model
 from gravmagpy.plotting import plot_fields
 
 input_path = 'examples/seafloor_spreading_cases/st_paul_symmetric_stripes.in'
-result = run_grid_model(input_path, radius_km=6371.2, solver='point_source', options=(1,))
+result = run_grid_model(input_path, radius_km=6371.2, solver='direct_sum', options=(1,))
 plot_fields(input_path, result['output_path'])
 ```
 
-`build_fortran` supports `orbital`, `point_source`, `spectral`, `gauss_legendre`, `xyz_to_brtp`, and `dipole_grid`. `run_fortran` exposes the positional interfaces. Shell runners work from `examples`; their builds resolve the canonical files directly under `fortran`. Fortran `.in` files are supported directly. See [architecture and development direction](docs/architecture.md) and the [solver guide](examples/README.md).
+`build_fortran` supports `orbital`, `direct_sum`, `spectral`, `gauss_legendre`, `xyz_to_brtp`, and `dipole_grid`. `run_fortran` exposes the positional interfaces. Shell runners work from `examples`; their builds resolve the canonical files directly under `fortran`. Fortran `.in` files are supported directly. See [architecture and development direction](docs/architecture.md) and the [solver guide](examples/README.md).
 
-Use `run_sphere_model(model, solver="gauss_legendre")` to evaluate blocks or polygons with the Gauss–Legendre volume method in double precision. Node orders and composite subdivisions are configurable; see the [Python modeling guide](docs/sphere.md). The [three-solver diagnostic report](diagnostics/gauss_legendre_comparison/README.md) compares quadrature convergence with point_source and pure spectral fields at surface, orbital and far-field altitudes.
+Use `run_sphere_model(model, solver="gauss_legendre")` to evaluate blocks or polygons with the Gauss–Legendre volume method in double precision. Node orders and composite subdivisions are configurable; see the [Python modeling guide](docs/sphere.md). The [three-solver diagnostic report](diagnostics/gauss_legendre_comparison/README.md) compares quadrature convergence with direct_sum and pure spectral fields at surface, orbital and far-field altitudes.
 
 ## Fit orbital measurements
 
@@ -139,7 +141,7 @@ For geologic context maps, use `gravmagpy.maps.plot_equivalent_maps` to place th
 
 Solver comparisons and compiler diagnostics are grouped in the top-level [diagnostics folder](diagnostics/README.md). Package regression tests are in `tests/`.
 
-Tests exercise the Fortran kernel against an independent point-dipole limit and the GravMag Sphere surface-charge solver, quadrature convergence, magnetic cancellation, CSV handling, inversion, Python model/card compatibility, gravity and spectral calls, and equivalent-dipole fitting.
+Tests exercise the Fortran kernel against an independent point-dipole limit and the GravMagSphere surface-charge solver, quadrature convergence, magnetic cancellation, CSV handling, inversion, Python model/card compatibility, gravity and spectral calls, and equivalent-dipole fitting.
 
 ## Authors and acknowledgment
 

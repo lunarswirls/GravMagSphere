@@ -1,4 +1,4 @@
-program gravmag_sphere_point_source
+program gravmag_sphere_direct_sum
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
   use gravmag_sphere_subs
   use gravmag_sphere_physics
@@ -6,7 +6,7 @@ program gravmag_sphere_point_source
   implicit none
 
   !***********************************************************************
-  ! gravmag_sphere_point_source
+  ! gravmag_sphere_direct_sum
   !
   ! this program computes either magnetic or gravity field components on a
   ! spherical observation grid due to a 3-d body below the surface and
@@ -19,8 +19,9 @@ program gravmag_sphere_point_source
   ! - numerical integration controls determine cost and accuracy
   !
   ! numerical method:
-  ! - magnetic fields sum point charges on discretized top, bottom and side surfaces
-  ! - gravity fields sum point masses from midpoint volume cells
+  ! - magnetic surface-charge quadrature sums charges at patch centers and triangle centroids
+  ! - gravity midpoint-volume quadrature sums each cell's mass at its midpoint
+  ! - these integration elements approximate extended blocks and polygonal bodies
   ! - nr controls radial sampling and refine_factor scales horizontal sampling
   !
   ! mode selection (card 5):
@@ -152,7 +153,7 @@ program gravmag_sphere_point_source
   ! ----------------------------
   narg = command_argument_count()
   if (narg < 2) then
-    write(*,*) "Usage: gravmag_sphere_point_source <R_sphere_km> <input.in> [output.txt] "// &
+    write(*,*) "Usage: gravmag_sphere_direct_sum <R_sphere_km> <input.in> [output.txt] "// &
                "[refine_factor] [source_nlat] [source_nlon] [source_nr]"
     stop 2
   end if
@@ -520,11 +521,11 @@ program gravmag_sphere_point_source
       mem_obs_bytes = 6_int64 * obs_cells64 * 4_int64
       mem_source_bytes = source_cap64 * 5_int64 * 4_int64
       mem_total_bytes = mem_obs_bytes + mem_source_bytes
-      write(*,'(A,I0)') 'DIAG|point_source|meta|source_capacity=', cap
-      write(*,'(A,I0)') 'DIAG|point_source|meta|source_elements=', ns
-      write(*,'(A,F12.6)') 'DIAG|point_source|memory|obs_arrays_mib=', bytes_to_mib(mem_obs_bytes)
-      write(*,'(A,F12.6)') 'DIAG|point_source|memory|source_arrays_mib=', bytes_to_mib(mem_source_bytes)
-      write(*,'(A,F12.6)') 'DIAG|point_source|memory|total_est_mib=', bytes_to_mib(mem_total_bytes)
+      write(*,'(A,I0)') 'DIAG|direct_sum|meta|source_capacity=', cap
+      write(*,'(A,I0)') 'DIAG|direct_sum|meta|source_elements=', ns
+      write(*,'(A,F12.6)') 'DIAG|direct_sum|memory|obs_arrays_mib=', bytes_to_mib(mem_obs_bytes)
+      write(*,'(A,F12.6)') 'DIAG|direct_sum|memory|source_arrays_mib=', bytes_to_mib(mem_source_bytes)
+      write(*,'(A,F12.6)') 'DIAG|direct_sum|memory|total_est_mib=', bytes_to_mib(mem_total_bytes)
     end if
 
     ! ------------------------------------------
@@ -621,11 +622,11 @@ program gravmag_sphere_point_source
 
     if (diag_enabled) then
       call cpu_time(t_body1)
-      write(*,'(A,F12.6)') 'DIAG|point_source|time|obs_grid_s=', real(t_obsgrid_s, real64)
-      write(*,'(A,F12.6)') 'DIAG|point_source|time|source_mesh_s=', real(t_source_s, real64)
-      write(*,'(A,F12.6)') 'DIAG|point_source|time|field_accum_s=', real(t_accum_s, real64)
-      write(*,'(A,F12.6)') 'DIAG|point_source|time|output_write_s=', real(t_output_s, real64)
-      write(*,'(A,F12.6)') 'DIAG|point_source|time|body_total_s=', real(t_body1 - t_body0, real64)
+      write(*,'(A,F12.6)') 'DIAG|direct_sum|time|obs_grid_s=', real(t_obsgrid_s, real64)
+      write(*,'(A,F12.6)') 'DIAG|direct_sum|time|source_mesh_s=', real(t_source_s, real64)
+      write(*,'(A,F12.6)') 'DIAG|direct_sum|time|field_accum_s=', real(t_accum_s, real64)
+      write(*,'(A,F12.6)') 'DIAG|direct_sum|time|output_write_s=', real(t_output_s, real64)
+      write(*,'(A,F12.6)') 'DIAG|direct_sum|time|body_total_s=', real(t_body1 - t_body0, real64)
     end if
 
   end do
@@ -789,4 +790,4 @@ contains
     cap = newcap
   end subroutine grow_sources
 
-end program gravmag_sphere_point_source
+end program gravmag_sphere_direct_sum

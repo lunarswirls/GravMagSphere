@@ -94,12 +94,12 @@ def write_source_input(sources, path, *, radius_km=1737.4, grid=None, mesh=(4, 1
     return path
 
 
-def run_grid_model(input_path, output_path=None, *, radius_km=1737.4, solver="point_source", options=(), **build_options):
-    """run an existing point_source, spectral, or gauss_legendre .in model"""
+def run_grid_model(input_path, output_path=None, *, radius_km=1737.4, solver="direct_sum", options=(), **build_options):
+    """run an existing direct_sum, spectral, or gauss_legendre .in model"""
     solver = _solver_name(solver)
-    suffixes = {"point_source": ".txt", "spectral": "_spectral.txt", "gauss_legendre": "_quadrature.txt"}
+    suffixes = {"direct_sum": ".txt", "spectral": "_spectral.txt", "gauss_legendre": "_quadrature.txt"}
     if solver not in suffixes:
-        raise ValueError("solver must be point_source, spectral, or gauss_legendre")
+        raise ValueError("solver must be direct_sum, spectral, or gauss_legendre")
     input_path = Path(input_path).expanduser().resolve()
     output_path = (artifact_path(input_path, suffix=suffixes[solver])
                    if output_path is None else Path(output_path).expanduser().resolve())

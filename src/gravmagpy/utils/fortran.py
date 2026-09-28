@@ -22,19 +22,19 @@ def fortran_source_dir():
 
 def _solver_name(solver):
     """resolve legacy selectors to the method names used by the backends"""
-    return {"direct": "point_source", "gauss": "spectral"}.get(solver, solver)
+    return {"direct": "direct_sum", "gauss": "spectral"}.get(solver, solver)
 
 
 def build_fortran(target="orbital", *, compiler=None, build_dir=None, force=False):
     """compile a target once per source/compiler/flag fingerprint and return its path
 
-    targets are orbital (shared library), point_source, spectral, gauss_legendre, xyz_to_brtp, and
+    targets are orbital (shared library), direct_sum, spectral, gauss_legendre, xyz_to_brtp, and
     dipole_grid (executables); an installed gfortran compiler is required
     """
     target = _solver_name(target)
     targets = {
         "orbital": ["orbital.f90"],
-        "point_source": [f"gravmag_sphere_{part}.f90" for part in ("state", "subs", "physics", "point_source")],
+        "direct_sum": [f"gravmag_sphere_{part}.f90" for part in ("state", "subs", "physics", "direct_sum")],
         "spectral": ["gravmag_sphere_spectral.f90"],
         "gauss_legendre": ["gravmag_sphere_gauss_legendre.f90"],
         "xyz_to_brtp": ["gravmag_xyz_to_brtp.f90"],

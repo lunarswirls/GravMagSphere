@@ -4,7 +4,7 @@ Run a synthetic-geometry sweep to determine when the hybrid GravMagSphere
 solver should be preferred over spectral-only evaluation.
 
 For each generated polygon case (increasing vertex count), the script runs:
-1) point_source solver (reference)
+1) direct_sum solver (reference)
 2) spectral solver with hybrid disabled
 3) spectral solver with hybrid in auto mode
 
@@ -320,7 +320,7 @@ def run_direct(
 ) -> SolverRun:
     cmd = [
         "./run_input_to_xyz.sh",
-        "point_source",
+        "direct_sum",
         f"{rsphere_km}",
         str(example_path),
         str(output_xyz),
@@ -645,7 +645,7 @@ def main() -> None:
             spec_xyz = case_workspace / "spectral_nohybrid_xyz.txt"
             hyb_xyz = case_workspace / "spectral_hybrid_auto_xyz.txt"
 
-            point_source = run_direct(
+            direct_sum = run_direct(
                 example_path=example_path,
                 output_xyz=direct_xyz,
                 rsphere_km=float(args.rsphere_km),
@@ -700,8 +700,8 @@ def main() -> None:
                 env=env,
             )
 
-            ref_spec, pred_spec = align_xyz_maps(point_source.data, spec.data)
-            ref_hyb, pred_hyb = align_xyz_maps(point_source.data, hybrid.data)
+            ref_spec, pred_spec = align_xyz_maps(direct_sum.data, spec.data)
+            ref_hyb, pred_hyb = align_xyz_maps(direct_sum.data, hybrid.data)
 
             m_spec = component_metrics(ref_spec, pred_spec, "spec")
             m_hyb = component_metrics(ref_hyb, pred_hyb, "hybrid")

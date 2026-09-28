@@ -1,6 +1,6 @@
-# Architecture
+# GravMagSphere architecture
 
-GravMagPy provides a Python interface to Fortran gravity and magnetic models, with source construction, spacecraft-data ingestion, inversion, and visualization in Python. Users work with dictionaries, arrays, and tables; adapters handle input cards and executable calls when needed.
+GravMagSphere is the complete Fortran magnetic and gravity solver and inversion toolkit. GravMagPy (`gravmagpy`) is its Python frontend for source construction, spacecraft-data ingestion, inversion, and visualization. Users work with dictionaries, arrays, and tables; adapters handle input cards and executable calls when needed.
 
 The numerical foundation uses a configurable spherical reference body. The orbital-data adapter targets wake-sorted Lunar Prospector magnetic measurements. The development direction is a body-independent equivalent-source framework with interchangeable forward backends and inversion methods. Those extensions are described separately from the implemented capabilities below.
 
@@ -65,13 +65,13 @@ Nonlinear fit results include predictions, residuals, source parameters, backgro
 | Build target | Interface | Role and supported evaluation |
 |---|---|---|
 | `orbital` | C-interoperable shared library | Double-precision magnetic spherical-block integration and point-dipole prediction at arbitrary external Cartesian positions |
-| `point_source` | `gravmag_sphere_point_source` executable | Input-card block/polygon magnetic or gravity fields on a regular grid; single-precision field calculations |
+| `direct_sum` | `gravmag_sphere_direct_sum` executable | Input-card block/polygon magnetic or gravity fields on a regular grid; single-precision field calculations |
 | `spectral` | `gravmag_sphere_spectral` executable | Grid fields using a spherical-harmonic representation, with configurable local and hybrid corrections |
 | `gauss_legendre` | `gravmag_sphere_gauss_legendre` executable | Double-precision magnetic/gravity volume quadrature for blocks and simple polygons, with configurable node orders and composite panels |
 | `xyz_to_brtp` | `gravmag_xyz_to_brtp` executable | Rotation of Cartesian field tables into spherical components; no source inversion |
 | `dipole_grid` | `gravmag_sphere_dipole_grid_fit` executable | Linear fitting of vector dipole moments on a fixed subsurface grid from orbital magnetic samples |
 
-The orbital volume kernel integrates magnetic dipole contributions with tensor Gauss–Legendre quadrature and the spherical volume Jacobian. The point_source magnetic grid solver uses surface-charge calculations. Their outputs are checked against independent references and against each other under suitable refinement; their discretizations and precision are not assumed identical.
+The orbital volume kernel integrates magnetic dipole contributions with tensor Gauss–Legendre quadrature and the spherical volume Jacobian. The direct_sum magnetic grid solver uses surface-charge calculations. Their outputs are checked against independent references and against each other under suitable refinement; their discretizations and precision are not assumed identical.
 
 `forward.py` loads the shared library with `ctypes`. Contiguous `float64` arrays cross the C interface, with Python `(n, 3)` storage corresponding to Fortran `(3, n)` arrays. Optimizer evaluations reuse the loaded library and evaluate spacecraft positions directly, without interpolating a fixed-altitude map or launching an executable for every residual calculation.
 

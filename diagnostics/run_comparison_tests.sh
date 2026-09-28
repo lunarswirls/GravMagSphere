@@ -7,7 +7,7 @@ set -euo pipefail
 #   - external:  Fortran spectral vs SciPy SH LSQ vs SHTOOLS LSQ (shared residual suite)
 #   - shtools:   dedicated GravMagSphere vs SHTOOLS residual/side-by-side outputs
 #   - harmonica: GravMagSphere spectral vs Harmonica EQS in XYZ
-#   - complexlarge: point_source vs spectral boundary-visibility analysis
+#   - complexlarge: direct_sum vs spectral boundary-visibility analysis
 #   - hybrid:    hybrid-vs-spectral vertex sweep
 #
 # Notes:
@@ -304,8 +304,8 @@ run_complexlarge_analysis() {
   local run_dir="$repo_root/$COMPLEXLARGE_DIR"
   mkdir -p "$run_dir"
 
-  log "Generating complexlarge point_source baseline"
-  SKIP_BUILD=1 "$example_root/run_input_to_xyz.sh" point_source "$RSPHERE_KM" \
+  log "Generating complexlarge direct_sum baseline"
+  SKIP_BUILD=1 "$example_root/run_input_to_xyz.sh" direct_sum "$RSPHERE_KM" \
     "$example_root/examples/gravmag_sphere_1body_mag_polygon_inc30_dec210_complexlarge.in" \
     "$run_dir/complexlarge_direct_xyz.txt" \
     --refine-factor "$REFINE_FACTOR"
@@ -410,7 +410,7 @@ fi
 
 if have_test quadrature; then
   if require_modules numpy scipy matplotlib; then
-    log "Running gauss-legendre, point_source and pure spectral comparison"
+    log "Running gauss-legendre, direct_sum and pure spectral comparison"
     "$PYTHON_BIN" diagnostics/gauss_legendre_compare.py
   fi
 fi

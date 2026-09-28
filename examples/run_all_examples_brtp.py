@@ -4,7 +4,7 @@ Run every example input through the Fortran pipeline and generate 2x2 plots :)
 
 This script is the Python-side "batch driver":
 1) compile required Fortran tools,
-2) run either spectral or point_source solver to XYZ output,
+2) run either spectral or direct_sum solver to XYZ output,
 3) convert XYZ -> Br/Btheta/Bphi/Btot,
 4) plot summed multi-body response for each case!
 """
@@ -221,7 +221,7 @@ def main():
     ap = argparse.ArgumentParser(
         description="Run all example inputs, convert XYZ->Br/Btheta/Bphi, and plot Br/Btheta/Bphi/Btot."
     )
-    ap.add_argument("--solver", choices=["spectral", "point_source", "gauss_legendre", "direct", "gauss"], default="spectral")
+    ap.add_argument("--solver", choices=["spectral", "direct_sum", "gauss_legendre", "direct", "gauss"], default="spectral")
     ap.add_argument("--rsphere-km", type=float, default=1737.4)
     ap.add_argument("--refine-factor", type=int, default=2)
     ap.add_argument("--lmax", type=int, default=24)
@@ -236,7 +236,7 @@ def main():
     ap.add_argument("--output-dir", default=None)
     ap.add_argument("--figs-dir", default=None)
     args = ap.parse_args()
-    args.solver = {"direct": "point_source", "gauss": "spectral"}.get(args.solver, args.solver)
+    args.solver = {"direct": "direct_sum", "gauss": "spectral"}.get(args.solver, args.solver)
 
     cwd = Path(__file__).resolve().parent
     examples_dir = cwd / args.examples_dir
@@ -293,7 +293,7 @@ def main():
         else:
             run_cmd(
                 [
-                    "./gravmag_sphere_point_source",
+                    "./gravmag_sphere_direct_sum",
                     f"{args.rsphere_km}",
                     str(ex),
                     str(out_xyz),
