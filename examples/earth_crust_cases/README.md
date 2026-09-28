@@ -8,7 +8,7 @@ The GravMag Sphere `.in` format describes finite magnetized bodies rather than z
 
 ### `bangui_equivalent_dipoles.in`
 
-Default numeric output for the direct executable is `output/bangui_equivalent_dipoles.txt` inside this case directory. Python figures default to `figs/` here. Explicit paths override these defaults; see [output path conventions](../../docs/output_paths.md).
+Default numeric output for the point_source executable is `output/bangui_equivalent_dipoles.txt` inside this case directory. Python figures default to `figs/` here. Explicit paths override these defaults; see [output path conventions](../../docs/output_paths.md).
 
 - 163 half-degree source cells within 400 km of `4.37 deg N, 18.56 deg E`
 - source layer from 3.0 to 7.5 km depth
@@ -51,9 +51,9 @@ Run the generator from the repository root using the selected virtual environmen
 From `examples`, one-dipole-per-cell Gauss configurations are:
 
 ```bash
-./gravmag_sphere_gauss 6371.2 earth_crust_cases/bangui_equivalent_dipoles.in "" 20 1 21 41 0.05 4 1 1 1 0
-./gravmag_sphere_gauss 6371.2 earth_crust_cases/mayhew_north_america_equivalent_layer.in "" 12 1 15 31 0.05 4 1 1 1 0
-./gravmag_sphere_gauss 6371.2 earth_crust_cases/meyer_global_32400_dipoles.in "" 5 1 7 13 0.05 4 1 1 1 0
+./gravmag_sphere_spectral 6371.2 earth_crust_cases/bangui_equivalent_dipoles.in "" 20 1 21 41 0.05 4 1 1 1 0
+./gravmag_sphere_spectral 6371.2 earth_crust_cases/mayhew_north_america_equivalent_layer.in "" 12 1 15 31 0.05 4 1 1 1 0
+./gravmag_sphere_spectral 6371.2 earth_crust_cases/meyer_global_32400_dipoles.in "" 5 1 7 13 0.05 4 1 1 1 0
 ```
 
 The global case is intentionally much larger. Start with low harmonic degree and coarse fit controls, then increase them while monitoring memory.

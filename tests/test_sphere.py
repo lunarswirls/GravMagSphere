@@ -4,12 +4,14 @@ from copy import deepcopy
 from pathlib import Path
 import tempfile
 import unittest
+import os
+from unittest.mock import patch
 
 import numpy as np
 
 from gravmagpy import (block, polygon, equivalent_source_grid, sphere_model, run_sphere_model,
                        write_model_input, read_model_input, read_input, run_grid_model,
-                       fit_equivalent_sources, spherical_to_cartesian)
+                       fit_equivalent_sources, spherical_to_cartesian, build_fortran)
 from gravmagpy.utils.fortran import fortran_source_dir
 
 
@@ -20,9 +22,24 @@ def small_model(sources):
 class sphere_tests(unittest.TestCase):
     def test_fortran_sources_are_peers(self):
         directory = fortran_source_dir()
-        self.assertTrue((directory / "gravmag_sphere_bxyz.f90").is_file())
+        for solver in ("point_source", "spectral", "gauss_legendre"):
+            self.assertTrue((directory / f"gravmag_sphere_{solver}.f90").is_file())
         self.assertTrue((directory / "gravmag_sphere_dipole_grid_fit.f90").is_file())
         self.assertFalse((directory / "legacy").exists())
+
+    def test_legacy_solver_selectors_preserve_collective_results(self):
+        source = block([6, 7], [-60, -59], [2, 8], magnetization_a_m=[1, 0, 0])
+        model = small_model([source, source])
+        for solver, alias, options in (
+                ("point_source", "direct", {"refine_factor": 1}),
+                ("spectral", "gauss", {"lmax": 3, "ntheta_fit": 8, "nphi_fit": 16,
+                                      "auto_mode": 0, "edge_correction": 0, "hybrid_mode": 0})):
+            with self.subTest(solver=solver), patch.dict(os.environ, {"GRAVMAG_DIAGNOSTICS": "1"}):
+                self.assertEqual(build_fortran(solver), build_fortran(alias))
+                expected = run_sphere_model(model, solver=solver, solver_options=options)
+                actual = run_sphere_model(model, solver=alias, solver_options=options)
+                np.testing.assert_array_equal(actual["field"], expected["field"])
+                self.assertIn(f"DIAG|{solver}|", actual["stdout"])
 
     def test_blocks_and_polygons_round_trip(self):
         sources = [block([6, 7], [-60, -59], [2, 8], magnetization_a_m=[1, -2, 3]),

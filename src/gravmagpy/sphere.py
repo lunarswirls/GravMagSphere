@@ -7,6 +7,7 @@ import tempfile
 import numpy as np
 
 from .cards import read_input, run_grid_model
+from .utils.fortran import _solver_name
 
 
 def _values(values, name, shape=None):
@@ -236,15 +237,15 @@ def read_model_input(path, *, radius_km=1737.4):
 
 
 def _solver_arguments(solver, options):
-    direct = {"refine_factor": 2, "source_nlat": 0, "source_nlon": 0, "source_nr": 0}
+    point_source = {"refine_factor": 2, "source_nlat": 0, "source_nlon": 0, "source_nr": 0}
     spectral = {"lmax": 24, "refine_factor": 2, "ntheta_fit": 72, "nphi_fit": 144,
                 "reg_lambda": 0.2, "reg_power": 4.0, "source_nlat": 0, "source_nlon": 0, "source_nr": 0,
                 "auto_mode": 1, "joint_strength": 1.0, "edge_correction": 1, "hybrid_mode": 1,
                 "hybrid_band_deg": 1.5, "complex_vertex_threshold": 12, "hybrid_transition_deg": 0.75}
     gauss_legendre = {"radial_order": 0, "latitude_order": 0, "longitude_order": 0, "subdivisions": 1}
-    solvers = {"direct": direct, "spectral": spectral, "gauss_legendre": gauss_legendre}
+    solvers = {"point_source": point_source, "spectral": spectral, "gauss_legendre": gauss_legendre}
     if solver not in solvers:
-        raise ValueError("solver must be direct, spectral, or gauss_legendre")
+        raise ValueError("solver must be point_source, spectral, or gauss_legendre")
     defaults = solvers[solver]
     if set(options) - set(defaults):
         raise ValueError(f"unknown {solver} options: {sorted(set(options)-set(defaults))}")
@@ -267,13 +268,14 @@ def _solver_arguments(solver, options):
     return tuple(values.values())
 
 
-def run_sphere_model(model, *, solver="direct", solver_options=None, output_dir=None, **build_options):
+def run_sphere_model(model, *, solver="point_source", solver_options=None, output_dir=None, **build_options):
     """evaluate a python model through gravmag sphere and return summed grid arrays
 
     output_dir optionally retains model.in and field.txt; otherwise cards and
     executable output are temporary implementation details
     field has shape (nlat, nlon, 3), total is the magnitude of the summed vector
     """
+    solver = _solver_name(solver)
     content, field_type = _model_cards(model)
     arguments = _solver_arguments(solver, solver_options or {})
     with tempfile.TemporaryDirectory(prefix="gravmagpy-sphere-") as temporary:

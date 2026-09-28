@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Build all Fortran executables used in this workspace:
-#   - gravmag_sphere_bxyz      (direct volume solver, XYZ output)
-#   - gravmag_sphere_gauss     (spectral/gauss alternative)
-#   - gravmag_xyz_to_brtp      (XYZ -> Br/Btheta/Bphi converter)
+# build all fortran executables used in this workspace:
+#   - gravmag_sphere_point_source (magnetic surface charges or gravity point masses)
+#   - gravmag_sphere_spectral (spherical-harmonic fit and evaluation)
+#   - gravmag_sphere_gauss_legendre (gauss-legendre volume integration)
+#   - gravmag_xyz_to_brtp (cartesian to spherical field conversion)
 #
 # Notes:
 #   - this script is intentionally explicit (no makefile dependency),
@@ -16,29 +17,29 @@ MODDIR="${ROOT_DIR}/mod"
 source_dir="${ROOT_DIR}/../fortran"
 mkdir -p "${MODDIR}"
 
-echo "+ building gravmag_sphere_bxyz"
-# direct solver depends on three helper modules
+echo "+ building gravmag_sphere_point_source"
+# point_source solver depends on three helper modules
 gfortran -std=f2008 -O2 -fopenmp -J"${MODDIR}" -I"${MODDIR}" \
   "${source_dir}/gravmag_paths.f90" \
   "${source_dir}/gravmag_sphere_state.f90" \
   "${source_dir}/gravmag_sphere_subs.f90" \
   "${source_dir}/gravmag_sphere_physics.f90" \
-  "${source_dir}/gravmag_sphere_bxyz.f90" \
-  -o "${ROOT_DIR}/gravmag_sphere_bxyz"
+  "${source_dir}/gravmag_sphere_point_source.f90" \
+  -o "${ROOT_DIR}/gravmag_sphere_point_source"
 
-echo "+ building gravmag_sphere_gauss"
+echo "+ building gravmag_sphere_spectral"
 # share only path handling; numerical solvers remain independent
 gfortran -std=f2008 -O2 -J"${MODDIR}" -I"${MODDIR}" \
   "${source_dir}/gravmag_paths.f90" \
-  "${source_dir}/gravmag_sphere_gauss.f90" \
-  -o "${ROOT_DIR}/gravmag_sphere_gauss"
+  "${source_dir}/gravmag_sphere_spectral.f90" \
+  -o "${ROOT_DIR}/gravmag_sphere_spectral"
 
-echo "+ building gravmag_sphere_quadrature"
+echo "+ building gravmag_sphere_gauss_legendre"
 # gauss-legendre volume integration shares only output path handling
 gfortran -std=f2008 -O2 -ffree-line-length-none -J"${MODDIR}" -I"${MODDIR}" \
   "${source_dir}/gravmag_paths.f90" \
-  "${source_dir}/gravmag_sphere_quadrature.f90" \
-  -o "${ROOT_DIR}/gravmag_sphere_quadrature"
+  "${source_dir}/gravmag_sphere_gauss_legendre.f90" \
+  -o "${ROOT_DIR}/gravmag_sphere_gauss_legendre"
 
 echo "+ building gravmag_xyz_to_brtp"
 # build the converter with the shared output path utility

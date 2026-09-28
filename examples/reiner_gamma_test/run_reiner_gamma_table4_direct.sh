@@ -12,8 +12,8 @@ mkdir -p -- "${SCRIPT_DIR}/output"
 
 "${GRAVMAG_DIR}/build_gravmag_tools.sh"
 
-echo "+ running direct solver on ${INPUT_IN}"
-"${GRAVMAG_DIR}/gravmag_sphere_bxyz" \
+echo "+ running point_source solver on ${INPUT_IN}"
+"${GRAVMAG_DIR}/gravmag_sphere_point_source" \
   "${RSPHERE_KM}" \
   "${INPUT_IN}" \
   "${OUTPUT_XYZ}" \

@@ -60,24 +60,24 @@ From `examples`:
 ```bash
 ./build_gravmag_tools.sh
 
-./gravmag_sphere_bxyz 6371.2 \
+./gravmag_sphere_point_source 6371.2 \
   seafloor_spreading_cases/st_paul_reference_body.in \
   seafloor_spreading_cases/output/st_paul_reference_body_xyz.txt 1
 
-./gravmag_sphere_bxyz 6371.2 \
+./gravmag_sphere_point_source 6371.2 \
   seafloor_spreading_cases/st_paul_symmetric_stripes.in \
   seafloor_spreading_cases/output/st_paul_symmetric_stripes_xyz.txt 1
 
-./gravmag_sphere_gauss 6371.2 \
+./gravmag_sphere_spectral 6371.2 \
   seafloor_spreading_cases/st_paul_segmented_transform_alteration.in \
   seafloor_spreading_cases/output/st_paul_segmented_transform_alteration_xyz.txt
 ```
 
-The direct solver is the clearest reference for the narrow bodies. The segmented case is intended to exercise collective multi-body accumulation, polygon-edge correction, and automatic hybrid evaluation.
+The point_source solver is the clearest reference for the narrow bodies. The segmented case is intended to exercise collective multi-body accumulation, polygon-edge correction, and automatic hybrid evaluation.
 
 ## Plotting
 
-`plot_bxyz.py` reads the source geometry from a `.in` file, sums `Bx`, `By`, and `Bz` over repeated body ids in a direct-solver output, recomputes `Btot` from the summed vector, and overlays the source outlines on four field panels. It also accepts collective spectral output, which already contains one row per observation point.
+`plot_bxyz.py` reads the source geometry from a `.in` file, sums `Bx`, `By`, and `Bz` over repeated body ids in a point_source-solver output, recomputes `Btot` from the summed vector, and overlays the source outlines on four field panels. It also accepts collective spectral output, which already contains one row per observation point.
 
 ```bash
 /Users/danywaller/code/venvs/gravmagpy/bin/python \

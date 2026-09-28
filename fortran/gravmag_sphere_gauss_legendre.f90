@@ -1,4 +1,4 @@
-program gravmag_sphere_quadrature
+program gravmag_sphere_gauss_legendre
   use, intrinsic :: iso_fortran_env, only: real64, int64
   use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
   use gravmag_paths, only: default_output_path
@@ -33,7 +33,7 @@ program gravmag_sphere_quadrature
 
   narg = command_argument_count()
   if (narg < 2 .or. narg > 7) then
-    write(*,'(a)') 'usage: gravmag_sphere_quadrature radius_km input.in [output.txt] '// &
+    write(*,'(a)') 'usage: gravmag_sphere_gauss_legendre radius_km input.in [output.txt] '// &
       '[radial_order] [latitude_order] [longitude_order] [subdivisions]'
     stop 2
   end if
@@ -319,4 +319,4 @@ contains
       weights(n+1-a) = weights(a)
     end do
   end subroutine gauss_legendre
-end program gravmag_sphere_quadrature
+end program gravmag_sphere_gauss_legendre

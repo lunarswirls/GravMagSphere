@@ -65,13 +65,13 @@ Nonlinear fit results include predictions, residuals, source parameters, backgro
 | Build target | Interface | Role and supported evaluation |
 |---|---|---|
 | `orbital` | C-interoperable shared library | Double-precision magnetic spherical-block integration and point-dipole prediction at arbitrary external Cartesian positions |
-| `direct` | `gravmag_sphere_bxyz` executable | Input-card block/polygon magnetic or gravity fields on a regular grid; single-precision field calculations |
-| `spectral` | `gravmag_sphere_gauss` executable | Grid fields using a spherical-harmonic representation, with configurable local and hybrid corrections |
-| `gauss_legendre` | `gravmag_sphere_quadrature` executable | Double-precision magnetic/gravity volume quadrature for blocks and simple polygons, with configurable node orders and composite panels |
+| `point_source` | `gravmag_sphere_point_source` executable | Input-card block/polygon magnetic or gravity fields on a regular grid; single-precision field calculations |
+| `spectral` | `gravmag_sphere_spectral` executable | Grid fields using a spherical-harmonic representation, with configurable local and hybrid corrections |
+| `gauss_legendre` | `gravmag_sphere_gauss_legendre` executable | Double-precision magnetic/gravity volume quadrature for blocks and simple polygons, with configurable node orders and composite panels |
 | `xyz_to_brtp` | `gravmag_xyz_to_brtp` executable | Rotation of Cartesian field tables into spherical components; no source inversion |
 | `dipole_grid` | `gravmag_sphere_dipole_grid_fit` executable | Linear fitting of vector dipole moments on a fixed subsurface grid from orbital magnetic samples |
 
-The orbital volume kernel integrates magnetic dipole contributions with tensor Gauss–Legendre quadrature and the spherical volume Jacobian. The direct magnetic grid solver uses surface-charge calculations. Their outputs are checked against independent references and against each other under suitable refinement; their discretizations and precision are not assumed identical.
+The orbital volume kernel integrates magnetic dipole contributions with tensor Gauss–Legendre quadrature and the spherical volume Jacobian. The point_source magnetic grid solver uses surface-charge calculations. Their outputs are checked against independent references and against each other under suitable refinement; their discretizations and precision are not assumed identical.
 
 `forward.py` loads the shared library with `ctypes`. Contiguous `float64` arrays cross the C interface, with Python `(n, 3)` storage corresponding to Fortran `(3, n)` arrays. Optimizer evaluations reuse the loaded library and evaluate spacecraft positions directly, without interpolating a fixed-altitude map or launching an executable for every residual calculation.
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Gauss/spectral solver runner
+# spectral solver runner
 # Usage:
-#   ./run_gravmag_sphere_gauss.sh <R_sphere_km> <input_in_file> [output_file] [lmax] [refine_factor] [ntheta_fit] [nphi_fit] [reg_lambda] [reg_power] [source_nlat] [source_nlon] [source_nr] [auto_mode] [joint_strength] [edge_correction] [hybrid_mode] [hybrid_band_deg] [complex_vertex_threshold] [hybrid_transition_deg]
+#   ./run_gravmag_sphere_spectral.sh <R_sphere_km> <input_in_file> [output_file] [lmax] [refine_factor] [ntheta_fit] [nphi_fit] [reg_lambda] [reg_power] [source_nlat] [source_nlon] [source_nr] [auto_mode] [joint_strength] [edge_correction] [hybrid_mode] [hybrid_band_deg] [complex_vertex_threshold] [hybrid_transition_deg]
 #   Optional named args:
 #     --refine-factor N --lmax N --ntheta-fit N --nphi-fit N
 #     --reg-lambda X --reg-power P
@@ -176,19 +176,19 @@ if [[ -z "${OUTFILE}" ]]; then
     parent_dir="$(dirname -- "${parent_dir}")"
   done
   output_dir="${output_dir%/}/output"
-  OUTFILE="${output_dir}/${base}_gauss.txt"
+  OUTFILE="${output_dir}/${base}_spectral.txt"
 fi
 mkdir -p -- "$(dirname -- "${OUTFILE}")"
 
 "${ROOT_DIR}/build_gravmag_tools.sh"
 
-echo "+ running gauss solver"
+echo "+ running spectral solver"
 if [[ "${FULL_ARGS}" == "0" ]]; then
-  echo "+ ./gravmag_sphere_gauss ${R_SPHERE_KM} ${INPUT_FILE} ${OUTFILE}"
-  "${ROOT_DIR}/gravmag_sphere_gauss" "${R_SPHERE_KM}" "${INPUT_FILE}" "${OUTFILE}"
+  echo "+ ./gravmag_sphere_spectral ${R_SPHERE_KM} ${INPUT_FILE} ${OUTFILE}"
+  "${ROOT_DIR}/gravmag_sphere_spectral" "${R_SPHERE_KM}" "${INPUT_FILE}" "${OUTFILE}"
 else
-  echo "+ ./gravmag_sphere_gauss ${R_SPHERE_KM} ${INPUT_FILE} ${OUTFILE} ${LMAX} ${REFINE} ${NTHETA_FIT} ${NPHI_FIT} ${REG_LAMBDA} ${REG_POWER} ${SOURCE_NLAT} ${SOURCE_NLON} ${SOURCE_NR} ${AUTO_MODE} ${JOINT_STRENGTH} ${EDGE_CORRECTION} ${HYBRID_MODE} ${HYBRID_BAND_DEG} ${COMPLEX_VERTEX_THRESHOLD} ${HYBRID_TRANSITION_DEG}"
-  "${ROOT_DIR}/gravmag_sphere_gauss" "${R_SPHERE_KM}" "${INPUT_FILE}" "${OUTFILE}" "${LMAX}" "${REFINE}" "${NTHETA_FIT}" "${NPHI_FIT}" "${REG_LAMBDA}" "${REG_POWER}" "${SOURCE_NLAT}" "${SOURCE_NLON}" "${SOURCE_NR}" "${AUTO_MODE}" "${JOINT_STRENGTH}" "${EDGE_CORRECTION}" "${HYBRID_MODE}" "${HYBRID_BAND_DEG}" "${COMPLEX_VERTEX_THRESHOLD}" "${HYBRID_TRANSITION_DEG}"
+  echo "+ ./gravmag_sphere_spectral ${R_SPHERE_KM} ${INPUT_FILE} ${OUTFILE} ${LMAX} ${REFINE} ${NTHETA_FIT} ${NPHI_FIT} ${REG_LAMBDA} ${REG_POWER} ${SOURCE_NLAT} ${SOURCE_NLON} ${SOURCE_NR} ${AUTO_MODE} ${JOINT_STRENGTH} ${EDGE_CORRECTION} ${HYBRID_MODE} ${HYBRID_BAND_DEG} ${COMPLEX_VERTEX_THRESHOLD} ${HYBRID_TRANSITION_DEG}"
+  "${ROOT_DIR}/gravmag_sphere_spectral" "${R_SPHERE_KM}" "${INPUT_FILE}" "${OUTFILE}" "${LMAX}" "${REFINE}" "${NTHETA_FIT}" "${NPHI_FIT}" "${REG_LAMBDA}" "${REG_POWER}" "${SOURCE_NLAT}" "${SOURCE_NLON}" "${SOURCE_NR}" "${AUTO_MODE}" "${JOINT_STRENGTH}" "${EDGE_CORRECTION}" "${HYBRID_MODE}" "${HYBRID_BAND_DEG}" "${COMPLEX_VERTEX_THRESHOLD}" "${HYBRID_TRANSITION_DEG}"
 fi
 
 echo "Done: ${OUTFILE}"

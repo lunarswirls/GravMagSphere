@@ -17,7 +17,7 @@ sources = equivalent_source_grid(
 )
 model = sphere_model(sources, latitude_deg=np.linspace(5, 9, 31),
                      longitude_deg=np.linspace(-63, -58, 41), altitude_km=40)
-result = run_sphere_model(model, solver="direct", solver_options={"refine_factor": 2}, output_dir=output_dir)
+result = run_sphere_model(model, solver="point_source", solver_options={"refine_factor": 2}, output_dir=output_dir)
 plot_fields(result["input_path"], result["output_path"], figs_dir / "field.png")
 print(f"generated {len(sources)} source cells; peak total field {result['btot_nt'].max():.4f} nt")
 print(f"wrote {output_dir}")

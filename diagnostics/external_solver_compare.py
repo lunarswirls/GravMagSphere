@@ -4,7 +4,7 @@ Format GravMag Sphere lunar_examples for external solvers and compare prediction
 
 Subcommands:
   - repos:    write a markdown list of candidate external solver repositories
-  - format:   run direct baseline and export solver-friendly CSV/JSON files
+  - format:   run point_source baseline and export solver-friendly CSV/JSON files
   - compare:  compare baseline against available solver backends
 """
 
@@ -329,7 +329,7 @@ def format_examples(
         run_cmd(
             [
                 "./run_input_to_xyz.sh",
-                "direct",
+                "point_source",
                 f"{rsphere_km}",
                 str(example),
                 str(xyz_out),
@@ -1291,7 +1291,7 @@ def compare_cases(
                 )
             )
     lines.append("")
-    lines.append("Residuals are `prediction - direct-baseline` on the shared lon/lat grid.")
+    lines.append("Residuals are `prediction - point_source-baseline` on the shared lon/lat grid.")
     lines.append("SciPy and SHTOOLS rows use per-case optimized settings from the configured search grids.")
     report_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -1368,7 +1368,7 @@ def compare_cases_harmonica_xyz(
         fortran_used: Dict[str, float] | None = None
         harmonica_used: Dict[str, float] | None = None
 
-        # 1) GravMagSphere spectral vs direct baseline (XYZ)
+        # 1) GravMagSphere spectral vs point_source baseline (XYZ)
         try:
             pred_fortran, used_fortran = run_fortran_spectral_prediction_xyz(
                 example_path=example_path,
@@ -1434,7 +1434,7 @@ def compare_cases_harmonica_xyz(
                 }
             )
 
-        # 2) Harmonica equivalent sources vs direct baseline (XYZ)
+        # 2) Harmonica equivalent sources vs point_source baseline (XYZ)
         try:
             lon, lat, ref_aligned, pred_aligned, m, used_h = choose_best_harmonica_prediction(
                 obs_xyz,
@@ -1653,7 +1653,7 @@ or equivalent-source workflows compatible with GravMag Sphere outputs.
 ## 3) SimPEG (potential fields)
 - GitHub: https://github.com/simpeg/simpeg
 - Docs: https://docs.simpeg.xyz/latest/content/api/simpeg.potential_fields.html
-- Note: SimPEG is a broader forward/inversion framework rather than a direct
+- Note: SimPEG is a broader forward/inversion framework rather than a point_source
   drop-in equivalent-source interpolator.
 """
     path.write_text(text, encoding="utf-8")

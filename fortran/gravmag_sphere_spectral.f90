@@ -1,21 +1,20 @@
-program gravmag_sphere_gauss
+program gravmag_sphere_spectral
   use, intrinsic :: iso_fortran_env, only: int32, int64, real64
   use gravmag_paths, only: default_output_path
   implicit none
 
   !***********************************************************************
-  ! gravmag_sphere_gauss
+  ! gravmag_sphere_spectral
   !
-  ! spectral alternative to the direct volume solver:
+  ! spherical-harmonic field solver:
   ! - build elemental dipoles (magnetic) or point masses (gravity)
-  ! - fit spherical-harmonic coefficients from radial component on a fitting sphere
+  ! - fit shared spherical-harmonic coefficients to vector samples on a fitting sphere
   ! - reconstruct field components on the observation grid
   !
-  ! old-vs-new note:
-  ! - this is not the original legacy gauss-legendre integration path!
-  ! - this file implements a modern least-squares spherical-harmonic fit
+  ! resolution note:
+  ! - this file implements a regularized least-squares spherical-harmonic fit
   ! - for compact/sharp sources, low lmax can smooth and spread anomalies
-  !     in those cases prefer gravmag_sphere_bxyz (direct volume sum)
+  ! - gravmag_sphere_point_source and gravmag_sphere_gauss_legendre avoid harmonic truncation
   !***********************************************************************
 
   integer, parameter :: wp = real64
@@ -118,6 +117,7 @@ program gravmag_sphere_gauss
   real(wp) :: xb, yb, zb
   real(wp) :: dBx, dBy, dBz
   real(wp) :: br_fit, bt_fit, bp_fit, w
+  real(wp) :: br_monopole
   integer(int32) :: itheta, iphi
 
   real(wp), allocatable :: P(:,:), gh_g(:,:), gh_h(:,:)
@@ -143,7 +143,7 @@ program gravmag_sphere_gauss
   ! ----------------------------
   argc = command_argument_count()
   if (argc < 2) then
-    write(*,*) 'Usage: gravmag_sphere_gauss <R_sphere_km> <input.in> [output.txt] '// &
+    write(*,*) 'Usage: gravmag_sphere_spectral <R_sphere_km> <input.in> [output.txt] '// &
                '[lmax] [refine_factor] [ntheta_fit] [nphi_fit] [reg_lambda] [reg_power] '// &
                '[source_nlat] [source_nlon] [source_nr] [auto_mode] [joint_strength] [edge_correction] '// &
                '[hybrid_mode] [hybrid_band_deg] [complex_vertex_threshold] [hybrid_transition_deg]'
@@ -272,7 +272,7 @@ program gravmag_sphere_gauss
   open(4, file=trim(infile), status='old', iostat=ios)
   if (ios /= 0) stop 'ERROR: cannot open input file'
 
-  call default_output_path(trim(infile), outfile, '_gauss.txt')
+  call default_output_path(trim(infile), outfile, '_spectral.txt')
   open(2, file=trim(outfile), status='replace', iostat=ios)
   if (ios /= 0) stop 'ERROR: cannot open output file'
 
@@ -583,6 +583,11 @@ program gravmag_sphere_gauss
   allocate(samp_lon(nsamp), samp_lat(nsamp))
   allocate(samp_br(nsamp), samp_bt(nsamp), samp_bp(nsamp))
 
+  ! fix the gravity degree-zero coefficient from the collective source mass
+  ! fitting only the remainder keeps regularization from changing the total mass
+  br_monopole = 0.0_wp
+  if (ifield == 1) br_monopole = -grav_g * sum(mass_list(1:ns)) / ro_m**2
+
   samp_idx = 0
   do itheta=1, ntheta_fit
     theta = (real(itheta,wp)-0.5_wp) * pi / real(ntheta_fit,wp)
@@ -624,7 +629,7 @@ program gravmag_sphere_gauss
       samp_lon(samp_idx) = phi / deg2rad
       call wrap180_scalar(samp_lon(samp_idx))
       samp_lat(samp_idx) = 90.0_wp - theta/deg2rad
-      samp_br(samp_idx) = br_fit
+      samp_br(samp_idx) = br_fit - br_monopole
       samp_bt(samp_idx) = bt_fit
       samp_bp(samp_idx) = bp_fit
     end do
@@ -664,6 +669,7 @@ program gravmag_sphere_gauss
   allocate(gh_g(0:lmax_use,0:lmax_use), gh_h(0:lmax_use,0:lmax_use))
   gh_g(:,:) = 0.0_wp
   gh_h(:,:) = 0.0_wp
+  gh_g(0,0) = br_monopole
   do i=1, lmax_use
     do j=0, i
       if (idx_g(i,j) > 0) gh_g(i,j) = coef(idx_g(i,j))
@@ -680,17 +686,17 @@ program gravmag_sphere_gauss
     mem_solver_bytes = (ncoef64*ncoef64 + 3_int64*ncoef64 + 3_int64*lside64*lside64) * 8_int64 + &
                        (2_int64*lside64*lside64) * 4_int64
     mem_total_bytes = mem_obs_bytes + mem_source_bytes + mem_solver_bytes
-    write(*,'(A,I0)') 'DIAG|gauss|meta|source_capacity=', cap
-    write(*,'(A,I0)') 'DIAG|gauss|meta|source_elements=', ns
-    write(*,'(A,I0)') 'DIAG|gauss|meta|collective_bodies=', nbody_total
-    write(*,'(A,I0)') 'DIAG|gauss|meta|lmax_used=', lmax_use
-    write(*,'(A,ES12.4)') 'DIAG|gauss|meta|reg_lambda_used=', reg_lambda_use
-    write(*,'(A,F8.3)') 'DIAG|gauss|meta|reg_power_used=', reg_power_use
-    write(*,'(A,F8.3)') 'DIAG|gauss|meta|joint_strength=', joint_strength
-    write(*,'(A,F12.6)') 'DIAG|gauss|memory|obs_arrays_mib=', bytes_to_mib(mem_obs_bytes)
-    write(*,'(A,F12.6)') 'DIAG|gauss|memory|source_arrays_mib=', bytes_to_mib(mem_source_bytes)
-    write(*,'(A,F12.6)') 'DIAG|gauss|memory|solver_arrays_mib=', bytes_to_mib(mem_solver_bytes)
-    write(*,'(A,F12.6)') 'DIAG|gauss|memory|total_est_mib=', bytes_to_mib(mem_total_bytes)
+    write(*,'(A,I0)') 'DIAG|spectral|meta|source_capacity=', cap
+    write(*,'(A,I0)') 'DIAG|spectral|meta|source_elements=', ns
+    write(*,'(A,I0)') 'DIAG|spectral|meta|collective_bodies=', nbody_total
+    write(*,'(A,I0)') 'DIAG|spectral|meta|lmax_used=', lmax_use
+    write(*,'(A,ES12.4)') 'DIAG|spectral|meta|reg_lambda_used=', reg_lambda_use
+    write(*,'(A,F8.3)') 'DIAG|spectral|meta|reg_power_used=', reg_power_use
+    write(*,'(A,F8.3)') 'DIAG|spectral|meta|joint_strength=', joint_strength
+    write(*,'(A,F12.6)') 'DIAG|spectral|memory|obs_arrays_mib=', bytes_to_mib(mem_obs_bytes)
+    write(*,'(A,F12.6)') 'DIAG|spectral|memory|source_arrays_mib=', bytes_to_mib(mem_source_bytes)
+    write(*,'(A,F12.6)') 'DIAG|spectral|memory|solver_arrays_mib=', bytes_to_mib(mem_solver_bytes)
+    write(*,'(A,F12.6)') 'DIAG|spectral|memory|total_est_mib=', bytes_to_mib(mem_total_bytes)
   end if
 
   ! ------------------------------------------
@@ -701,6 +707,8 @@ program gravmag_sphere_gauss
     call cpu_time(t_phase0)
     if (allocated(fit_res_br)) deallocate(fit_res_br, fit_res_bt, fit_res_bp)
     allocate(fit_res_br(nsamp), fit_res_bt(nsamp), fit_res_bp(nsamp))
+    ! samples and fitted coefficients both exclude the fixed monopole
+    ! their difference is also the residual of the complete field
     do samp_idx=1, nsamp
       call evaluate_from_coeffs_point(samp_theta(samp_idx), samp_phi(samp_idx), lmax_use, idx_g, idx_h, coef, br, bt, bp)
       fit_res_br(samp_idx) = samp_br(samp_idx) - br
@@ -774,7 +782,7 @@ program gravmag_sphere_gauss
       sp = sin(phi)
 
       call legendre_point(lmax_use, ct, P)
-      br = 0.0_wp
+      br = gh_g(0,0)
       bt = 0.0_wp
       bp = 0.0_wp
       s_safe = max(abs(st), 1.0e-10_wp)
@@ -950,15 +958,15 @@ program gravmag_sphere_gauss
 
   if (diag_enabled) then
     call cpu_time(t_body1)
-    write(*,'(A,F12.6)') 'DIAG|gauss|time|obs_grid_s=', real(t_obsgrid_s, wp)
-    write(*,'(A,F12.6)') 'DIAG|gauss|time|source_mesh_s=', real(t_source_s, wp)
-    write(*,'(A,F12.6)') 'DIAG|gauss|time|fit_assembly_s=', real(t_fit_s, wp)
-    write(*,'(A,F12.6)') 'DIAG|gauss|time|linear_solve_s=', real(t_solve_s, wp)
-    write(*,'(A,F12.6)') 'DIAG|gauss|time|field_eval_s=', real(t_eval_s, wp)
-    write(*,'(A,F12.6)') 'DIAG|gauss|time|hybrid_direct_eval_s=', real(t_hybrid_s, wp)
-    write(*,'(A,F12.6)') 'DIAG|gauss|time|output_write_s=', real(t_output_s, wp)
-    write(*,'(A,I0)') 'DIAG|gauss|meta|hybrid_cells=', hybrid_cells
-    write(*,'(A,F12.6)') 'DIAG|gauss|time|body_total_s=', real(t_body1 - t_body0, wp)
+    write(*,'(A,F12.6)') 'DIAG|spectral|time|obs_grid_s=', real(t_obsgrid_s, wp)
+    write(*,'(A,F12.6)') 'DIAG|spectral|time|source_mesh_s=', real(t_source_s, wp)
+    write(*,'(A,F12.6)') 'DIAG|spectral|time|fit_assembly_s=', real(t_fit_s, wp)
+    write(*,'(A,F12.6)') 'DIAG|spectral|time|linear_solve_s=', real(t_solve_s, wp)
+    write(*,'(A,F12.6)') 'DIAG|spectral|time|field_eval_s=', real(t_eval_s, wp)
+    write(*,'(A,F12.6)') 'DIAG|spectral|time|hybrid_direct_eval_s=', real(t_hybrid_s, wp)
+    write(*,'(A,F12.6)') 'DIAG|spectral|time|output_write_s=', real(t_output_s, wp)
+    write(*,'(A,I0)') 'DIAG|spectral|meta|hybrid_cells=', hybrid_cells
+    write(*,'(A,F12.6)') 'DIAG|spectral|time|body_total_s=', real(t_body1 - t_body0, wp)
   end if
 
   close(4)
@@ -1957,4 +1965,4 @@ contains
     deallocate(rowtmp)
   end subroutine solve_linear_system
 
-end program gravmag_sphere_gauss
+end program gravmag_sphere_spectral

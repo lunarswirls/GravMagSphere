@@ -17,9 +17,9 @@ set -euo pipefail
 #     --hybrid-mode 0|1|2 --hybrid-band-deg X --complex-vertex-threshold N --hybrid-transition-deg X
 #
 # solver:
-#   - spectral : gravmag_sphere_gauss
-#   - direct   : gravmag_sphere_bxyz
-#   - gauss_legendre: gravmag_sphere_quadrature
+#   - spectral : gravmag_sphere_spectral
+#   - point_source   : gravmag_sphere_point_source
+#   - gauss_legendre: gravmag_sphere_gauss_legendre
 #     source_nr/source_nlat/source_nlon set node orders; refine_factor sets subdivisions
 #
 # output:
@@ -29,6 +29,12 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 SOLVER="${1:-spectral}"
+
+# accept legacy selectors while dispatching canonical method names
+case "${SOLVER}" in
+  direct) SOLVER="point_source" ;;
+  gauss) SOLVER="spectral" ;;
+esac
 R_SPHERE_KM="${2:-}"
 INPUT_FILE="${3:-}"
 shift $(( $# >= 3 ? 3 : $# ))
@@ -51,7 +57,7 @@ HYBRID_BAND_DEG="1.5"
 COMPLEX_VERTEX_THRESHOLD="12"
 HYBRID_TRANSITION_DEG="0.75"
 SPECTRAL_FORCE_FULL="0"
-DIRECT_FORCE_FULL="0"
+point_source_force_full="0"
 
 positional=()
 while [[ $# -gt 0 ]]; do
@@ -64,7 +70,7 @@ while [[ $# -gt 0 ]]; do
     --refine-factor)
       REFINE_FACTOR="${2:-}"
       SPECTRAL_FORCE_FULL="1"
-      DIRECT_FORCE_FULL="1"
+      point_source_force_full="1"
       shift 2
       ;;
     --lmax)
@@ -95,19 +101,19 @@ while [[ $# -gt 0 ]]; do
     --source-nlat)
       SOURCE_NLAT="${2:-}"
       SPECTRAL_FORCE_FULL="1"
-      DIRECT_FORCE_FULL="1"
+      point_source_force_full="1"
       shift 2
       ;;
     --source-nlon)
       SOURCE_NLON="${2:-}"
       SPECTRAL_FORCE_FULL="1"
-      DIRECT_FORCE_FULL="1"
+      point_source_force_full="1"
       shift 2
       ;;
     --source-nr)
       SOURCE_NR="${2:-}"
       SPECTRAL_FORCE_FULL="1"
-      DIRECT_FORCE_FULL="1"
+      point_source_force_full="1"
       shift 2
       ;;
     --auto-mode)
@@ -156,16 +162,16 @@ if [[ ${#positional[@]} -ge 1 ]]; then XYZ_OUT="${positional[0]}"; fi
 if [[ ${#positional[@]} -ge 2 ]]; then
   REFINE_FACTOR="${positional[1]}"
   SPECTRAL_FORCE_FULL="1"
-  DIRECT_FORCE_FULL="1"
+  point_source_force_full="1"
 fi
 if [[ ${#positional[@]} -ge 3 ]]; then LMAX="${positional[2]}"; SPECTRAL_FORCE_FULL="1"; fi
 if [[ ${#positional[@]} -ge 4 ]]; then NTHETA_FIT="${positional[3]}"; SPECTRAL_FORCE_FULL="1"; fi
 if [[ ${#positional[@]} -ge 5 ]]; then NPHI_FIT="${positional[4]}"; SPECTRAL_FORCE_FULL="1"; fi
 if [[ ${#positional[@]} -ge 6 ]]; then REG_LAMBDA="${positional[5]}"; SPECTRAL_FORCE_FULL="1"; fi
 if [[ ${#positional[@]} -ge 7 ]]; then REG_POWER="${positional[6]}"; SPECTRAL_FORCE_FULL="1"; fi
-if [[ ${#positional[@]} -ge 8 ]]; then SOURCE_NLAT="${positional[7]}"; SPECTRAL_FORCE_FULL="1"; DIRECT_FORCE_FULL="1"; fi
-if [[ ${#positional[@]} -ge 9 ]]; then SOURCE_NLON="${positional[8]}"; SPECTRAL_FORCE_FULL="1"; DIRECT_FORCE_FULL="1"; fi
-if [[ ${#positional[@]} -ge 10 ]]; then SOURCE_NR="${positional[9]}"; SPECTRAL_FORCE_FULL="1"; DIRECT_FORCE_FULL="1"; fi
+if [[ ${#positional[@]} -ge 8 ]]; then SOURCE_NLAT="${positional[7]}"; SPECTRAL_FORCE_FULL="1"; point_source_force_full="1"; fi
+if [[ ${#positional[@]} -ge 9 ]]; then SOURCE_NLON="${positional[8]}"; SPECTRAL_FORCE_FULL="1"; point_source_force_full="1"; fi
+if [[ ${#positional[@]} -ge 10 ]]; then SOURCE_NR="${positional[9]}"; SPECTRAL_FORCE_FULL="1"; point_source_force_full="1"; fi
 if [[ ${#positional[@]} -ge 11 ]]; then AUTO_MODE="${positional[10]}"; SPECTRAL_FORCE_FULL="1"; fi
 if [[ ${#positional[@]} -ge 12 ]]; then JOINT_STRENGTH="${positional[11]}"; SPECTRAL_FORCE_FULL="1"; fi
 if [[ ${#positional[@]} -ge 13 ]]; then EDGE_CORRECTION="${positional[12]}"; SPECTRAL_FORCE_FULL="1"; fi
@@ -211,12 +217,12 @@ case "${SOLVER}" in
   spectral)
     # spectral pipeline: source mesh -> harmonic fit -> XYZ field table.
     if [[ "${SPECTRAL_FORCE_FULL}" == "0" ]]; then
-      echo "+ step1 spectral(auto): ./gravmag_sphere_gauss ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT}"
-      "${ROOT_DIR}/gravmag_sphere_gauss" \
+      echo "+ step1 spectral(auto): ./gravmag_sphere_spectral ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT}"
+      "${ROOT_DIR}/gravmag_sphere_spectral" \
         "${R_SPHERE_KM}" "${INPUT_FILE}" "${XYZ_OUT}"
     else
-      echo "+ step1 spectral: ./gravmag_sphere_gauss ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT} ${LMAX} ${REFINE_FACTOR} ${NTHETA_FIT} ${NPHI_FIT} ${REG_LAMBDA} ${REG_POWER} ${SOURCE_NLAT} ${SOURCE_NLON} ${SOURCE_NR} ${AUTO_MODE} ${JOINT_STRENGTH} ${EDGE_CORRECTION} ${HYBRID_MODE} ${HYBRID_BAND_DEG} ${COMPLEX_VERTEX_THRESHOLD} ${HYBRID_TRANSITION_DEG}"
-      "${ROOT_DIR}/gravmag_sphere_gauss" \
+      echo "+ step1 spectral: ./gravmag_sphere_spectral ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT} ${LMAX} ${REFINE_FACTOR} ${NTHETA_FIT} ${NPHI_FIT} ${REG_LAMBDA} ${REG_POWER} ${SOURCE_NLAT} ${SOURCE_NLON} ${SOURCE_NR} ${AUTO_MODE} ${JOINT_STRENGTH} ${EDGE_CORRECTION} ${HYBRID_MODE} ${HYBRID_BAND_DEG} ${COMPLEX_VERTEX_THRESHOLD} ${HYBRID_TRANSITION_DEG}"
+      "${ROOT_DIR}/gravmag_sphere_spectral" \
         "${R_SPHERE_KM}" "${INPUT_FILE}" "${XYZ_OUT}" \
         "${LMAX}" "${REFINE_FACTOR}" "${NTHETA_FIT}" "${NPHI_FIT}" \
         "${REG_LAMBDA}" "${REG_POWER}" "${SOURCE_NLAT}" "${SOURCE_NLON}" "${SOURCE_NR}" \
@@ -224,26 +230,26 @@ case "${SOLVER}" in
         "${HYBRID_MODE}" "${HYBRID_BAND_DEG}" "${COMPLEX_VERTEX_THRESHOLD}" "${HYBRID_TRANSITION_DEG}"
     fi
     ;;
-  direct)
-    # direct pipeline: source mesh -> direct Green's function summation.
-    if [[ "${DIRECT_FORCE_FULL}" == "0" ]]; then
-      echo "+ step1 direct(auto): ./gravmag_sphere_bxyz ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT}"
-      "${ROOT_DIR}/gravmag_sphere_bxyz" \
+  point_source)
+    # point_source pipeline: source mesh -> point_source Green's function summation.
+    if [[ "${point_source_force_full}" == "0" ]]; then
+      echo "+ step1 point_source(auto): ./gravmag_sphere_point_source ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT}"
+      "${ROOT_DIR}/gravmag_sphere_point_source" \
         "${R_SPHERE_KM}" "${INPUT_FILE}" "${XYZ_OUT}"
     else
-      echo "+ step1 direct: ./gravmag_sphere_bxyz ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT} ${REFINE_FACTOR} ${SOURCE_NLAT} ${SOURCE_NLON} ${SOURCE_NR}"
-      "${ROOT_DIR}/gravmag_sphere_bxyz" \
+      echo "+ step1 point_source: ./gravmag_sphere_point_source ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT} ${REFINE_FACTOR} ${SOURCE_NLAT} ${SOURCE_NLON} ${SOURCE_NR}"
+      "${ROOT_DIR}/gravmag_sphere_point_source" \
         "${R_SPHERE_KM}" "${INPUT_FILE}" "${XYZ_OUT}" \
         "${REFINE_FACTOR}" "${SOURCE_NLAT}" "${SOURCE_NLON}" "${SOURCE_NR}"
     fi
     ;;
   gauss_legendre)
-    "${ROOT_DIR}/gravmag_sphere_quadrature" \
+    "${ROOT_DIR}/gravmag_sphere_gauss_legendre" \
       "${R_SPHERE_KM}" "${INPUT_FILE}" "${XYZ_OUT}" \
       "${SOURCE_NR}" "${SOURCE_NLAT}" "${SOURCE_NLON}" "${REFINE_FACTOR}"
     ;;
   *)
-    echo "ERROR: solver must be 'spectral', 'direct', or 'gauss_legendre' (got: ${SOLVER})"
+    echo "ERROR: solver must be 'spectral', 'point_source', or 'gauss_legendre' (got: ${SOLVER})"
     exit 2
     ;;
 esac

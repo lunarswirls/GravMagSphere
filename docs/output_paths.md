@@ -23,13 +23,13 @@ The Reiner Gamma case uses `reiner_gamma_test/output/` for tables and caches and
 
 | Program | Omitted output argument |
 |---|---|
-| `gravmag_sphere_bxyz R input.in` | `input-directory/output/input.txt` |
-| `gravmag_sphere_gauss R input.in` | `input-directory/output/input_gauss.txt` |
-| `gravmag_sphere_quadrature R input.in` | `input-directory/output/input_quadrature.txt` |
+| `gravmag_sphere_point_source R input.in` | `input-directory/output/input.txt` |
+| `gravmag_sphere_spectral R input.in` | `input-directory/output/input_spectral.txt` |
+| `gravmag_sphere_gauss_legendre R input.in` | `input-directory/output/input_quadrature.txt` |
 | `gravmag_xyz_to_brtp input_xyz.txt` | `case-directory/output/input_brtp.txt` |
 | `gravmag_sphere_dipole_grid_fit R observations.csv` | `input-directory/output/observations_dipole_fit_predictions.csv` and `observations_dipole_fit_dipoles.csv` |
 
-Pass an empty string (`""`) in an output argument's positional slot to request its default while supplying later solver options. Output paths are command-line arguments, not input-card fields. Shell wrappers use `_xyz`, `_gauss`, and `_brtp` filename suffixes according to the selected workflow.
+Pass an empty string (`""`) in an output argument's positional slot to request its default while supplying later solver options. Output paths are command-line arguments, not input-card fields. Shell wrappers use `_xyz`, `_spectral`, and `_brtp` filename suffixes according to the selected workflow.
 
 `fortran/gravmag_paths.f90` handles defaults and directory creation for the five executables. Builders include it automatically. Custom compile commands must compile it before the program using it, with the same module include/output directory. Directory creation uses POSIX `mkdir`, with paths shell-quoted to preserve spaces and special characters. The orbital shared-library kernel returns arrays and does not create output directories.
 

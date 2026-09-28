@@ -10,4 +10,4 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [[ "${SKIP_BUILD:-0}" != "1" ]]; then
   bash "${script_dir}/build_gravmag_tools.sh"
 fi
-"${script_dir}/gravmag_sphere_quadrature" "$@"
+"${script_dir}/gravmag_sphere_gauss_legendre" "$@"

@@ -1,6 +1,6 @@
 # Orientation + Multi-body Example Inputs
 
-Gravity and magnetic input files for the GravMag Sphere direct and spectral solvers, using a lunar reference radius of 1737.4 km. Numeric products use this directory's `output/` and figures use `figs/`.
+Gravity and magnetic input files for the GravMag Sphere point_source and spectral solvers, using a lunar reference radius of 1737.4 km. Numeric products use this directory's `output/` and figures use `figs/`.
 
 All files follow the naming convention: 
 `gravmag_sphere_{numbod}body_{ifield}_{nblim}_inc{incdeg}_dec{decdeg}_{opt:desc}`  
@@ -75,7 +75,7 @@ These examples use:
 
 ## Run examples
 
-From `examples/`, run one case through the direct solver and spherical-component converter:
+From `examples/`, run one case through the point_source solver and spherical-component converter:
 
 ```bash
 ./run_gravmag_end_to_end.sh 1737.4 \
@@ -86,7 +86,7 @@ Run every case and generate component plots:
 
 ```bash
 /Users/danywaller/code/venvs/gravmagpy/bin/python run_all_examples_brtp.py \
-  --solver direct --examples-dir lunar_examples
+  --solver point_source --examples-dir lunar_examples
 ```
 
 The batch runner builds the tools, writes `*_xyz.txt` and `*_brtp.txt` under `lunar_examples/output/`, and saves `*_brtp_2x2.png` under `lunar_examples/figs/`. Choose `--solver spectral` for spectral evaluation. See the [solver guide](../GravMagSphere_README.md) for refinement and spectral controls.

@@ -2,12 +2,12 @@
 set -euo pipefail
 
 # End-to-end pipeline:
-#   input .in -> direct solver XYZ components -> spherical Br/Btheta/Bphi output
+#   input .in -> point_source solver XYZ components -> spherical Br/Btheta/Bphi output
 #
 # Usage:
 #   ./run_gravmag_end_to_end.sh <R_sphere_km> <input_in_file> [xyz_output_file] [spherical_output_file] [refine_factor] [source_nlat] [source_nlon] [source_nr]
 #
-# This is the new clean "single-case direct solver" wrapper
+# This is the new clean "single-case point_source solver" wrapper
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 R_SPHERE_KM="${1:-}"
@@ -54,9 +54,9 @@ mkdir -p -- "$(dirname -- "${XYZ_OUT}")" "$(dirname -- "${SPH_OUT}")"
 
 "${ROOT_DIR}/build_gravmag_tools.sh"
 
-echo "+ step 1/2: direct solver (xyz)"
-echo "+ ./gravmag_sphere_bxyz ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT} ${REFINE_FACTOR} ${SOURCE_NLAT} ${SOURCE_NLON} ${SOURCE_NR}"
-"${ROOT_DIR}/gravmag_sphere_bxyz" "${R_SPHERE_KM}" "${INPUT_FILE}" "${XYZ_OUT}" "${REFINE_FACTOR}" "${SOURCE_NLAT}" "${SOURCE_NLON}" "${SOURCE_NR}"
+echo "+ step 1/2: point_source solver (xyz)"
+echo "+ ./gravmag_sphere_point_source ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT} ${REFINE_FACTOR} ${SOURCE_NLAT} ${SOURCE_NLON} ${SOURCE_NR}"
+"${ROOT_DIR}/gravmag_sphere_point_source" "${R_SPHERE_KM}" "${INPUT_FILE}" "${XYZ_OUT}" "${REFINE_FACTOR}" "${SOURCE_NLAT}" "${SOURCE_NLON}" "${SOURCE_NR}"
 
 echo "+ step 2/2: xyz -> spherical conversion"
 echo "+ ./gravmag_xyz_to_brtp ${XYZ_OUT} ${SPH_OUT}"

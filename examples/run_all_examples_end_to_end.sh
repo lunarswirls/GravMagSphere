@@ -11,7 +11,7 @@ set -euo pipefail
 #
 # solver options:
 #   - spectral (default)
-#   - direct
+#   - point_source
 #
 # method:
 #   - compiles tools once
@@ -21,6 +21,12 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 SOLVER="${1:-spectral}"
+
+# accept legacy selectors while dispatching canonical method names
+case "${SOLVER}" in
+  direct) SOLVER="point_source" ;;
+  gauss) SOLVER="spectral" ;;
+esac
 R_SPHERE_KM="${2:-1737.4}"
 EXAMPLES_DIR="${3:-${ROOT_DIR}/lunar_examples}"
 OUTPUT_DIR="${4:-}"
@@ -34,8 +40,8 @@ SOURCE_NLAT="${11:-0}"
 SOURCE_NLON="${12:-0}"
 SOURCE_NR="${13:-0}"
 
-if [[ "${SOLVER}" != "spectral" && "${SOLVER}" != "direct" && "${SOLVER}" != "gauss_legendre" ]]; then
-  echo "ERROR: solver must be 'spectral', 'direct', or 'gauss_legendre' (got: ${SOLVER})"
+if [[ "${SOLVER}" != "spectral" && "${SOLVER}" != "point_source" && "${SOLVER}" != "gauss_legendre" ]]; then
+  echo "ERROR: solver must be 'spectral', 'point_source', or 'gauss_legendre' (got: ${SOLVER})"
   exit 2
 fi
 

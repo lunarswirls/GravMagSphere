@@ -2,7 +2,7 @@
 
 This table records pairwise prediction differences for the specified cases. Magnetic errors use nT and gravity errors use mGal. These are model-to-model discrepancies, not errors against an exact physical solution; see [residual methodology](external_solver_residuals_method.md).
 
-- Residual definition: `gravmag_sphere_gauss - shtools_lsq`
+- Residual definition: `gravmag_sphere_spectral - shtools_lsq`
 - lmax: `24`
 
 | Case | RMSE(Br) | RMSE(Btheta) | RMSE(Bphi) | RMSE(Btot) | Plot |
@@ -26,7 +26,7 @@ This table records pairwise prediction differences for the specified cases. Magn
 
 ## Methodology Differences and Residual Drivers
 
-- `gravmag_sphere_gauss` in this comparison uses GravMagSphere's physical-source-to-SH pipeline with its own regularization controls
+- `gravmag_sphere_spectral` in this comparison uses GravMagSphere's physical-source-to-SH pipeline with its own regularization controls
 - `shtools_lsq` uses direct SH least-squares expansion from sampled field values
 
 Residuals increase when:

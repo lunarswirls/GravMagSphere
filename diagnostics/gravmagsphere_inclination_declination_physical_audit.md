@@ -26,7 +26,7 @@ mz = amplitude sin(inclination)
 
 Inclination is elevation above the global xy plane toward +z. Declination is azimuth from +x toward +y. These are not local geophysical angles. A local north/east/down direction must be rotated into the body-fixed frame before constructing Card 5 or a Python magnetization vector.
 
-The implementations are in [the direct solver](../fortran/gravmag_sphere_bxyz.f90) and [the spectral solver](../fortran/gravmag_sphere_gauss.f90). The [LPMAG reference workflow](../docs/architecture.md#lpmag-reference-workflow) describes the matching observation-frame requirements.
+The implementations are in [the direct solver](../fortran/gravmag_sphere_point_source.f90) and [the spectral solver](../fortran/gravmag_sphere_spectral.f90). The [LPMAG reference workflow](../docs/architecture.md#lpmag-reference-workflow) describes the matching observation-frame requirements.
 
 ## Source kernels
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Direct solver runner (XYZ output)
+# Point-source solver runner (XYZ output)
 # Usage:
-#   ./run_gravmag_sphere_f90.sh <R_sphere_km> <input_in_file> [xyz_output_file] [refine_factor] [source_nlat] [source_nlon] [source_nr]
+#   ./run_gravmag_sphere_point_source.sh <R_sphere_km> <input_in_file> [xyz_output_file] [refine_factor] [source_nlat] [source_nlon] [source_nr]
 #
 # Equivalent executable call:
-#   ./gravmag_sphere_bxyz R input.in output_xyz.txt refine source_nlat source_nlon source_nr
+#   ./gravmag_sphere_point_source R input.in output_xyz.txt refine source_nlat source_nlon source_nr
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 R_SPHERE_KM="${1:-}"
@@ -47,8 +47,8 @@ mkdir -p -- "$(dirname -- "${XYZ_OUT}")"
 
 "${ROOT_DIR}/build_gravmag_tools.sh"
 
-echo "+ running direct solver"
-echo "+ ./gravmag_sphere_bxyz ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT} ${REFINE_FACTOR} ${SOURCE_NLAT} ${SOURCE_NLON} ${SOURCE_NR}"
-"${ROOT_DIR}/gravmag_sphere_bxyz" "${R_SPHERE_KM}" "${INPUT_FILE}" "${XYZ_OUT}" "${REFINE_FACTOR}" "${SOURCE_NLAT}" "${SOURCE_NLON}" "${SOURCE_NR}"
+echo "+ running point_source solver"
+echo "+ ./gravmag_sphere_point_source ${R_SPHERE_KM} ${INPUT_FILE} ${XYZ_OUT} ${REFINE_FACTOR} ${SOURCE_NLAT} ${SOURCE_NLON} ${SOURCE_NR}"
+"${ROOT_DIR}/gravmag_sphere_point_source" "${R_SPHERE_KM}" "${INPUT_FILE}" "${XYZ_OUT}" "${REFINE_FACTOR}" "${SOURCE_NLAT}" "${SOURCE_NLON}" "${SOURCE_NR}"
 
 echo "Done: ${XYZ_OUT}"

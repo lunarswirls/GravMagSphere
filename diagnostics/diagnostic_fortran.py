@@ -48,7 +48,7 @@ class BenchmarkCase:
 
 
 def solver_diag_key(solver: str) -> str:
-    return {"spectral": "gauss", "direct": "direct"}.get(solver, solver)
+    return solver
 
 
 def run_cmd(
@@ -122,8 +122,8 @@ def build_binaries(
     state = source_dir / "gravmag_sphere_state.f90"
     subs = source_dir / "gravmag_sphere_subs.f90"
     physics = source_dir / "gravmag_sphere_physics.f90"
-    bxyz = source_dir / "gravmag_sphere_bxyz.f90"
-    gauss = source_dir / "gravmag_sphere_gauss.f90"
+    point_source = source_dir / "gravmag_sphere_point_source.f90"
+    spectral = source_dir / "gravmag_sphere_spectral.f90"
     conv = source_dir / "gravmag_xyz_to_brtp.f90"
     paths = source_dir / "gravmag_paths.f90"
 
@@ -132,7 +132,7 @@ def build_binaries(
 
     compile_times: Dict[str, float] = {}
 
-    cmd_bxyz = [
+    cmd_point_source = [
         *common,
         *omp_flags,
         f"-J{mod_dir}",
@@ -141,20 +141,20 @@ def build_binaries(
         str(state),
         str(subs),
         str(physics),
-        str(bxyz),
+        str(point_source),
         "-o",
-        str(bin_dir / "gravmag_sphere_bxyz"),
+        str(bin_dir / "gravmag_sphere_point_source"),
     ]
-    compile_times["gravmag_sphere_bxyz"], _ = run_cmd(cmd_bxyz, cwd=root)
+    compile_times["gravmag_sphere_point_source"], _ = run_cmd(cmd_point_source, cwd=root)
 
-    cmd_gauss = [
+    cmd_spectral = [
         *common,
         f"-J{mod_dir}", f"-I{mod_dir}", str(paths),
-        str(gauss),
+        str(spectral),
         "-o",
-        str(bin_dir / "gravmag_sphere_gauss"),
+        str(bin_dir / "gravmag_sphere_spectral"),
     ]
-    compile_times["gravmag_sphere_gauss"], _ = run_cmd(cmd_gauss, cwd=root)
+    compile_times["gravmag_sphere_spectral"], _ = run_cmd(cmd_spectral, cwd=root)
 
     cmd_conv = [
         *common,
@@ -168,8 +168,8 @@ def build_binaries(
     return {
         "build_root": str(build_root),
         "binaries": {
-            "direct": str(bin_dir / "gravmag_sphere_bxyz"),
-            "spectral": str(bin_dir / "gravmag_sphere_gauss"),
+            "point_source": str(bin_dir / "gravmag_sphere_point_source"),
+            "spectral": str(bin_dir / "gravmag_sphere_spectral"),
             "convert": str(bin_dir / "gravmag_xyz_to_brtp"),
         },
         "compile_times_s": compile_times,
@@ -323,7 +323,7 @@ def benchmark_subcommand(args: argparse.Namespace) -> Dict[str, object]:
     extra_flags = shlex.split(args.extra_flags) if args.extra_flags else []
 
     benchmark_cases = [
-        BenchmarkCase(name="direct_polygon", solver="direct"),
+        BenchmarkCase(name="direct_polygon", solver="point_source"),
         BenchmarkCase(name="spectral_polygon", solver="spectral"),
     ]
 
@@ -364,9 +364,9 @@ def benchmark_subcommand(args: argparse.Namespace) -> Dict[str, object]:
                 run_dir.mkdir(parents=True, exist_ok=True)
                 xyz_out = run_dir / f"{case.name}.xyz.txt"
 
-                if case.solver == "direct":
+                if case.solver == "point_source":
                     cmd = [
-                        binaries["direct"],  # type: ignore[index]
+                        binaries["point_source"],  # type: ignore[index]
                         rsphere,
                         str(example),
                         str(xyz_out),
@@ -536,7 +536,7 @@ def lmax_sweep_subcommand(args: argparse.Namespace) -> Dict[str, object]:
 
     rsphere = str(args.rsphere_km)
     direct_cmd = [
-        binaries["direct"],  # type: ignore[index]
+        binaries["point_source"],  # type: ignore[index]
         rsphere,
         str(example),
         str(direct_xyz),

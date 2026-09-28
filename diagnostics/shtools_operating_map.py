@@ -206,7 +206,7 @@ def run_baseline_direct(
     run_cmd(
         [
             "./run_input_to_xyz.sh",
-            "direct",
+            "point_source",
             f"{rsphere_km}",
             str(example),
             str(xyz),
@@ -415,7 +415,7 @@ def sweep(args: argparse.Namespace) -> None:
                     )
                     _lon, _lat, ref_d, pred_d = align_components(baseline, pred)
                     _lon2, _lat2, ref_s, pred_s = align_components(shtools_cache[lm], pred)
-                    row.update(component_metrics(ref_d, pred_d, "direct"))
+                    row.update(component_metrics(ref_d, pred_d, "point_source"))
                     row.update(component_metrics(ref_s, pred_s, "shtools"))
                     row["wall_s"] = wall_s
                     for k, v in diag.items():

@@ -124,12 +124,12 @@ class gauss_legendre_tests(unittest.TestCase):
             self.assertIn("Br_mGal", converted.read_text())
             self.assertIn("# solver=gauss_legendre", converted.read_text())
 
-    def test_direct_and_pure_spectral_far_field_convergence(self):
+    def test_point_source_and_pure_spectral_far_field_convergence(self):
         source = block([6, 8], [-60, -58], [2, 8], magnetization_a_m=[1, -2, 3])
         model = make_model([source], altitude=5000)
         reference = quadrature(model)["field"]
-        direct = run_sphere_model(model, solver="direct", solver_options={"refine_factor": 2})["field"]
-        self.assertLess(relative_difference(direct, reference), 0.005)
+        point_source = run_sphere_model(model, solver="point_source", solver_options={"refine_factor": 2})["field"]
+        self.assertLess(relative_difference(point_source, reference), 0.005)
         residuals = []
         for degree in (4, 8, 12):
             result = run_sphere_model(model, solver="spectral", solver_options={
@@ -140,14 +140,68 @@ class gauss_legendre_tests(unittest.TestCase):
         self.assertLess(residuals[2], residuals[1]/10)
         self.assertLess(residuals[2], 1e-4)
 
-    def test_direct_gravity_and_polygon_orbital_agreement(self):
+    def test_point_source_gravity_and_polygon_orbital_agreement(self):
         for material in ({"magnetization_a_m": [1, -2, 3]}, {"density_kg_m3": 400}):
             source = polygon([[6, -60], [8, -59.5], [7, -58]], [2, 8], **material)
             model = make_model([source])
             reference = quadrature(model, 24)["field"]
-            direct = run_sphere_model(model, solver="direct", solver_options={
+            point_source = run_sphere_model(model, solver="point_source", solver_options={
                 "source_nlat": 96, "source_nlon": 96, "source_nr": 12})["field"]
-            self.assertLess(relative_difference(direct, reference), 0.01)
+            self.assertLess(relative_difference(point_source, reference), 0.01)
+
+    def test_point_source_concave_polygon_winding_closure_and_convergence(self):
+        vertices = [[6, -60], [6, -58], [6.5, -58], [6.5, -59],
+                    [7.5, -59], [7.5, -58], [8, -58], [8, -60]]
+        material = {"magnetization_a_m": [1, -2, 3]}
+        pieces = [block([6, 8], [-60, -59], [2, 8], **material),
+                  block([6, 6.5], [-59, -58], [2, 8], **material),
+                  block([7.5, 8], [-59, -58], [2, 8], **material)]
+        reference = quadrature(make_model(pieces), 24)["field"]
+        for outline in (vertices, vertices[::-1], vertices + vertices[:1], vertices[3:] + vertices[:3]):
+            with self.subTest(outline=outline):
+                model = make_model([polygon(outline, [2, 8], **material)])
+                residuals = []
+                for refine in (1, 4):
+                    result = run_sphere_model(model, solver="point_source", solver_options={
+                        "refine_factor": refine, "source_nr": 12})
+                    residuals.append(relative_difference(result["field"], reference))
+                self.assertLess(residuals[1], 0.002)
+                self.assertLess(residuals[1], residuals[0]/2)
+
+    def test_spectral_gravity_far_field_convergence(self):
+        source = block([6, 8], [-60, -58], [2, 8], density_kg_m3=400)
+        model = make_model([source], altitude=5000)
+        reference = quadrature(model, 16)["field"]
+        residuals = []
+        for degree in (4, 8, 12):
+            result = run_sphere_model(model, solver="spectral", solver_options={
+                "lmax": degree, "ntheta_fit": max(24, 2*degree+2), "nphi_fit": max(48, 4*degree+4),
+                "auto_mode": 0, "edge_correction": 0, "hybrid_mode": 0, "reg_lambda": 0,
+                "refine_factor": 4, "source_nr": 12})
+            self.assertEqual(result["unit"], "mgal")
+            residuals.append(relative_difference(result["field"], reference))
+        self.assertLess(residuals[1], residuals[0]/10)
+        self.assertLess(residuals[2], residuals[1]/10)
+        self.assertLess(residuals[2], 1e-5)
+
+    def test_spectral_gravity_monopole_sign_mass_radius_and_regularization(self):
+        # antipodal sources have no degree-one field, leaving only the mass term at lmax=1
+        volume = (np.deg2rad(2)*(np.sin(np.deg2rad(8))-np.sin(np.deg2rad(6))) *
+                  ((1737.4-2)**3-(1737.4-8)**3)*1e9/3)
+        lat, lon = np.meshgrid([6, 7, 8], [-60, -59, -58], indexing="ij")
+        radial = spherical_to_cartesian(lat, lon, 1)
+        for density in (400, -400):
+            sources = [block([6, 8], [-60, -58], [2, 8], density_kg_m3=density),
+                       block([-8, -6], [120, 122], [2, 8], density_kg_m3=density)]
+            for altitude in (5000, 10000):
+                expected = -6.67430e-6*(2*density*volume)/((1737.4+altitude)*1000)**2*radial
+                for regularization in (0, 1000):
+                    with self.subTest(density=density, altitude=altitude, regularization=regularization):
+                        result = run_sphere_model(make_model(sources, altitude=altitude), solver="spectral",
+                                                  solver_options={"lmax": 1, "ntheta_fit": 24, "nphi_fit": 48,
+                                                  "auto_mode": 0, "edge_correction": 0, "hybrid_mode": 0,
+                                                  "reg_lambda": regularization, "source_nr": 12})
+                        np.testing.assert_allclose(result["field"], expected, rtol=2e-6, atol=1e-12)
 
     def test_cards_defaults_overrides_paths_and_invalid_controls(self):
         source = block([6, 8], [-60, -58], [2, 8], magnetization_a_m=[1, -2, 3],

@@ -4,7 +4,7 @@ Run every example input through the Fortran pipeline and generate 2x2 plots :)
 
 This script is the Python-side "batch driver":
 1) compile required Fortran tools,
-2) run either spectral or direct solver to XYZ output,
+2) run either spectral or point_source solver to XYZ output,
 3) convert XYZ -> Br/Btheta/Bphi/Btot,
 4) plot summed multi-body response for each case!
 """
@@ -221,7 +221,7 @@ def main():
     ap = argparse.ArgumentParser(
         description="Run all example inputs, convert XYZ->Br/Btheta/Bphi, and plot Br/Btheta/Bphi/Btot."
     )
-    ap.add_argument("--solver", choices=["spectral", "direct", "gauss_legendre"], default="spectral")
+    ap.add_argument("--solver", choices=["spectral", "point_source", "gauss_legendre", "direct", "gauss"], default="spectral")
     ap.add_argument("--rsphere-km", type=float, default=1737.4)
     ap.add_argument("--refine-factor", type=int, default=2)
     ap.add_argument("--lmax", type=int, default=24)
@@ -236,6 +236,7 @@ def main():
     ap.add_argument("--output-dir", default=None)
     ap.add_argument("--figs-dir", default=None)
     args = ap.parse_args()
+    args.solver = {"direct": "point_source", "gauss": "spectral"}.get(args.solver, args.solver)
 
     cwd = Path(__file__).resolve().parent
     examples_dir = cwd / args.examples_dir
@@ -269,7 +270,7 @@ def main():
         if use_spectral:
             run_cmd(
                 [
-                    "./gravmag_sphere_gauss",
+                    "./gravmag_sphere_spectral",
                     f"{args.rsphere_km}",
                     str(ex),
                     str(out_xyz),
@@ -287,12 +288,12 @@ def main():
             )
         elif args.solver == "gauss_legendre":
             # preserve the shared launcher controls: source counts are orders, refinement is panels
-            run_cmd(["./gravmag_sphere_quadrature", str(args.rsphere_km), str(ex), str(out_xyz),
+            run_cmd(["./gravmag_sphere_gauss_legendre", str(args.rsphere_km), str(ex), str(out_xyz),
                      str(args.source_nr), str(args.source_nlat), str(args.source_nlon), str(args.refine_factor)], cwd)
         else:
             run_cmd(
                 [
-                    "./gravmag_sphere_bxyz",
+                    "./gravmag_sphere_point_source",
                     f"{args.rsphere_km}",
                     str(ex),
                     str(out_xyz),

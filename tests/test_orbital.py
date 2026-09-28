@@ -117,7 +117,7 @@ class orbital_tests(unittest.TestCase):
         body = source()
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "source.in"
-            output = Path(directory) / "direct.txt"
+            output = Path(directory) / "point_source.txt"
             write_source_input([body], path, grid=(6.5, -60, 0.5, 0.5, 30, 5, 5), mesh=(8, 80, 80))
             parsed = read_input(path)
             self.assertEqual(len(parsed), 1)

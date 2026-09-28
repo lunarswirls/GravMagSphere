@@ -91,7 +91,7 @@ def make_field_plot(path: Path, fields: dict[str, np.ndarray], subtitle: str) ->
         ax.set_ylabel("Latitude [deg]")
         fig.colorbar(im, ax=ax, shrink=0.9, label="nT")
 
-    fig.suptitle(f"Reiner Gamma Table 4 direct-solver approximation\n{subtitle}")
+    fig.suptitle(f"Reiner Gamma Table 4 point_source-solver approximation\n{subtitle}")
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=220)
     plt.close(fig)

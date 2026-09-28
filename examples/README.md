@@ -25,24 +25,25 @@ cd /Users/danywaller/code/GravMagPy/examples
 
 Build outputs:
 
-- `./gravmag_sphere_bxyz`
-- `./gravmag_sphere_gauss`
+- `./gravmag_sphere_point_source`
+- `./gravmag_sphere_spectral`
+- `./gravmag_sphere_gauss_legendre`
 - `./gravmag_xyz_to_brtp`
 
 ## Compiled executables
 
-### 1) Direct volume solver (Fortran)
+### 1) Point-source solver (Fortran)
 
-`gravmag_sphere_bxyz` computes XYZ fields directly from discretized source volume/surfaces
+`gravmag_sphere_point_source` computes XYZ fields by summing magnetic surface charges or gravity point masses
 
 ```bash
-./gravmag_sphere_bxyz <radius_km> <input.in> [output_xyz.txt] [refine_factor] [source_nlat] [source_nlon] [source_nr]
+./gravmag_sphere_point_source <radius_km> <input.in> [output_xyz.txt] [refine_factor] [source_nlat] [source_nlon] [source_nr]
 ```
 
 Example:
 
 ```bash
-./gravmag_sphere_bxyz 1737.4 \
+./gravmag_sphere_point_source 1737.4 \
   lunar_examples/gravmag_sphere_1body_mag_fixedlim_inc90_dec0_base.in \
   lunar_examples/output/gravmag_sphere_1body_mag_fixedlim_inc90_dec0_base_xyz.txt \
   2 0 0 0
@@ -50,10 +51,10 @@ Example:
 
 ### 2) Spectral solver (Fortran)
 
-`gravmag_sphere_gauss` fits spherical harmonic coefficients and evaluates XYZ fields
+`gravmag_sphere_spectral` fits spherical harmonic coefficients and evaluates XYZ fields
 
 ```bash
-./gravmag_sphere_gauss <radius_km> <input.in> [output_xyz.txt] \
+./gravmag_sphere_spectral <radius_km> <input.in> [output_xyz.txt] \
   [lmax] [refine_factor] [ntheta_fit] [nphi_fit] [reg_lambda] [reg_power] \
   [source_nlat] [source_nlon] [source_nr] [auto_mode] [joint_strength] [edge_correction] \
   [hybrid_mode] [hybrid_band_deg] [complex_vertex_threshold] [hybrid_transition_deg]
@@ -72,15 +73,15 @@ Defaults:
 Example:
 
 ```bash
-./gravmag_sphere_gauss 1737.4 \
+./gravmag_sphere_spectral 1737.4 \
   lunar_examples/gravmag_sphere_1body_mag_fixedlim_inc90_dec0_base.in \
-  lunar_examples/output/gravmag_sphere_1body_mag_fixedlim_inc90_dec0_base_gauss_xyz.txt \
+  lunar_examples/output/gravmag_sphere_1body_mag_fixedlim_inc90_dec0_base_spectral_xyz.txt \
   24 2 72 144 0.2 4.0 0 0 0 1 1.0 1 1 1.5 12 0.75
 ```
 
 ### Spectral Flags and Use Cases
 
-`gravmag_sphere_gauss`, `run_input_to_xyz.sh`, and `run_gravmag_sphere_gauss.sh` expose:
+`gravmag_sphere_spectral`, `run_input_to_xyz.sh`, and `run_gravmag_sphere_spectral.sh` expose:
 
 - `auto_mode` (`0|1`):
   - `1` auto-selects `(lmax, reg_lambda, reg_power)` from a pilot sweep.
@@ -95,9 +96,9 @@ Example:
   - `1`: auto hybrid (enabled when input is complex or multi-body).
   - `2`: force hybrid for all inputs.
 - `hybrid_band_deg`:
-  - distance from polygon edge where direct kernel result dominates.
+  - distance from polygon edge where point_source kernel result dominates.
 - `hybrid_transition_deg`:
-  - blend width between direct and spectral predictions.
+  - blend width between point_source and spectral predictions.
 - `complex_vertex_threshold`:
   - polygon vertex threshold used by complexity classifier in hybrid auto mode.
 
@@ -114,7 +115,7 @@ Typical use cases:
 ./run_input_to_xyz.sh spectral 1737.4 lunar_examples/gravmag_sphere_1body_mag_polygon_inc30_dec210_complexlarge.in \
   lunar_examples/output/complex_auto_hybrid_xyz.txt
 
-# force hybrid and widen the direct edge band
+# force hybrid and widen the point_source edge band
 ./run_input_to_xyz.sh spectral 1737.4 lunar_examples/gravmag_sphere_1body_mag_polygon_inc30_dec210_complexlarge.in \
   lunar_examples/output/complex_force_hybrid_xyz.txt \
   --hybrid-mode 2 --hybrid-band-deg 2.0 --hybrid-transition-deg 1.0
@@ -160,7 +161,7 @@ Omitting an output argument uses the input-relative default. To supply later pos
 Examples:
 
 ```bash
-./run_input_to_xyz.sh direct 1737.4 \
+./run_input_to_xyz.sh point_source 1737.4 \
   lunar_examples/gravmag_sphere_1body_grav_fixedlim_incna_decna.in
 
 ./run_input_to_xyz.sh spectral 1737.4 \
@@ -179,7 +180,7 @@ Examples:
 
 ### End-to-end wrappers
 
-1. `run_gravmag_end_to_end.sh` (single case, direct solver)
+1. `run_gravmag_end_to_end.sh` (single case, point_source solver)
 
 ```bash
 ./run_gravmag_end_to_end.sh <R_sphere_km> <input.in> [xyz_out] [brtp_out] \
@@ -203,8 +204,8 @@ Example:
 ### Solver-specific wrappers
 
 ```bash
-./run_gravmag_sphere_f90.sh <R_sphere_km> <input.in> [xyz_output] [refine] [source_nlat] [source_nlon] [source_nr]
-./run_gravmag_sphere_gauss.sh <R_sphere_km> <input.in> [xyz_output] [lmax] [refine] [ntheta_fit] [nphi_fit] [reg_lambda] [reg_power] [source_nlat] [source_nlon] [source_nr] [auto_mode] [joint_strength] [edge_correction] [hybrid_mode] [hybrid_band_deg] [complex_vertex_threshold] [hybrid_transition_deg] [--lmax N] [--reg-lambda X] [--reg-power P] [--auto-mode 0|1] [--joint-strength X] [--edge-correction 0|1] [--hybrid-mode 0|1|2] [--hybrid-band-deg X] [--complex-vertex-threshold N] [--hybrid-transition-deg X] [--no-local-correction]
+./run_gravmag_sphere_point_source.sh <R_sphere_km> <input.in> [xyz_output] [refine] [source_nlat] [source_nlon] [source_nr]
+./run_gravmag_sphere_spectral.sh <R_sphere_km> <input.in> [xyz_output] [lmax] [refine] [ntheta_fit] [nphi_fit] [reg_lambda] [reg_power] [source_nlat] [source_nlon] [source_nr] [auto_mode] [joint_strength] [edge_correction] [hybrid_mode] [hybrid_band_deg] [complex_vertex_threshold] [hybrid_transition_deg] [--lmax N] [--reg-lambda X] [--reg-power P] [--auto-mode 0|1] [--joint-strength X] [--edge-correction 0|1] [--hybrid-mode 0|1|2] [--hybrid-band-deg X] [--complex-vertex-threshold N] [--hybrid-transition-deg X] [--no-local-correction]
 ```
 
 ## Visualization scripts

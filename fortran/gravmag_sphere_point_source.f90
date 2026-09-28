@@ -1,4 +1,4 @@
-program gravmag_sphere_brtp
+program gravmag_sphere_point_source
   use, intrinsic :: iso_fortran_env, only: int32, int64, real32, real64
   use gravmag_sphere_subs
   use gravmag_sphere_physics
@@ -6,11 +6,11 @@ program gravmag_sphere_brtp
   implicit none
 
   !***********************************************************************
-  ! gravmag_sphere_bxyz
+  ! gravmag_sphere_point_source
   !
   ! this program computes either magnetic or gravity field components on a
   ! spherical observation grid due to a 3-d body below the surface and
-  ! output field is saved in cartesian XYZ basis.
+  ! output field is saved in the cartesian xyz basis
   !
   ! adapted from the legacy "sphere" family comments/instructions:
   ! - repeated body blocks are supported to build total multi-body response
@@ -18,12 +18,10 @@ program gravmag_sphere_brtp
   !     summing bodies in one output file
   ! - numerical integration controls determine cost and accuracy
   !
-  ! important implementation note:
-  ! - unlike the old gauss-legendre node workflow (nr, ntheta, nphi fixed
-  !     node sets), this modern version uses midpoint volume integration
-  !     on a refined lon-lat-r raster inside each body.
-  ! - nr still controls radial sampling; horizontal sampling is controlled
-  !     by refine_factor (default 2, CLI arg #4).
+  ! numerical method:
+  ! - magnetic fields sum point charges on discretized top, bottom and side surfaces
+  ! - gravity fields sum point masses from midpoint volume cells
+  ! - nr controls radial sampling and refine_factor scales horizontal sampling
   !
   ! mode selection (card 5):
   ! - ifield=2: magnetic mode
@@ -131,11 +129,10 @@ program gravmag_sphere_brtp
   integer(int32) :: ie, ie2, nedge, nseg, ks
   real(real32) :: lat_deg, lon_deg, lat_rad, lon_rad
   real(real32) :: xs, ys, zs, dV, r_mid, w_r
-  real(real32) :: lat_in_deg, lon_in_deg, edge_deg, denom_deg
+  real(real32) :: edge_deg, denom_deg, winding
+  real(real64) :: signed_area
   real(real32) :: t0, t1, lat_a, lon_a, lat_b, lon_b, r0, r1
   real(real32) :: erx, ery, erz, sigma
-  real(real32) :: xin, yin, zin
-  logical :: have_inside
   real(real32) :: dBx, dBy, dBz
   real(real32) :: btot_nt
   real(real32) :: gtot_mgal
@@ -155,7 +152,7 @@ program gravmag_sphere_brtp
   ! ----------------------------
   narg = command_argument_count()
   if (narg < 2) then
-    write(*,*) "Usage: gravmag_sphere_bxyz <R_sphere_km> <input.in> [output.txt] "// &
+    write(*,*) "Usage: gravmag_sphere_point_source <R_sphere_km> <input.in> [output.txt] "// &
                "[refine_factor] [source_nlat] [source_nlon] [source_nr]"
     stop 2
   end if
@@ -397,8 +394,6 @@ program gravmag_sphere_brtp
       ! 2) bottom spherical cap (r = r_bot, outward normal inward)
       ! 3) polygon side wall (triangulated edge x radial strips)
       ! ------------------------------------------------------------------
-      have_inside = .false.
-
       ! Top/bottom charge patches over polygon interior
       do it=1, nlat_s
         lat_deg = lat_lo + (real(it,real32)-0.5_real32)*dlat_s_deg
@@ -407,12 +402,6 @@ program gravmag_sphere_brtp
         do is=1, nlon_s
           lon_deg = lon_lo + (real(is,real32)-0.5_real32)*dlon_s_deg
           if (.not. point_in_poly_lonlat(lon_deg, lat_deg, poly_lon, poly_lat)) cycle
-
-          if (.not. have_inside) then
-            lat_in_deg = lat_deg
-            lon_in_deg = lon_deg
-            have_inside = .true.
-          end if
 
           lat_rad = lat_deg*deg2rad
           lon_rad = lon_deg*deg2rad
@@ -439,9 +428,7 @@ program gravmag_sphere_brtp
         end do
       end do
 
-      if (.not. have_inside) stop "ERROR: no polygon interior cells found; increase refine_factor or check polygon"
-
-      call sph_to_xyz(0.5_real32*(r_top_m+r_bot_m), lat_in_deg, lon_in_deg, xin, yin, zin)
+      if (ns == 0) stop "ERROR: no polygon interior cells found; increase refine_factor or check polygon"
 
       ! Side wall: triangulate edge x radial strips
       nedge = size(poly_lat)
@@ -449,6 +436,18 @@ program gravmag_sphere_brtp
         if (abs(poly_lat(1)-poly_lat(nedge)) < 1.0e-6_real32 .and. &
             abs(poly_lon(1)-poly_lon(nedge)) < 1.0e-6_real32) nedge = nedge - 1
       end if
+
+      ! winding in unwrapped lon-lat coordinates fixes outward normals even at concave edges
+      ! translate the shoelace sum to the first vertex to avoid cancellation for small footprints
+      signed_area = 0.0_real64
+      do ie=1, nedge
+        ie2 = mod(ie, nedge) + 1
+        signed_area = signed_area + &
+          real(poly_lon(ie)-poly_lon(1),real64)*real(poly_lat(ie2)-poly_lat(1),real64) - &
+          real(poly_lon(ie2)-poly_lon(1),real64)*real(poly_lat(ie)-poly_lat(1),real64)
+      end do
+      if (signed_area == 0.0_real64) stop "ERROR: polygon has zero signed area"
+      winding = real(sign(1.0_real64, signed_area), real32)
 
       denom_deg = max(1.0e-4_real32, min(abs(dlat_s_deg), abs(dlon_s_deg)))
 
@@ -472,8 +471,8 @@ program gravmag_sphere_brtp
             r0 = r_bot_m + (real(ir-1,real32)/real(nr_s,real32))*dr_m
             r1 = r_bot_m + (real(ir,real32)/real(nr_s,real32))*dr_m
 
-            call add_side_quad_sources(r0, r1, lat_a, lon_a, lat_b, lon_b, xin, yin, zin, &
-                                       Mx, My, Mz, cap, ns, xs_list, ys_list, zs_list, qmag_list, mass_list)
+            call add_side_quad_sources(r0, r1, lat_a, lon_a, lat_b, lon_b, winding, &
+                                       mx, my, mz, cap, ns, xs_list, ys_list, zs_list, qmag_list, mass_list)
           end do
         end do
       end do
@@ -521,11 +520,11 @@ program gravmag_sphere_brtp
       mem_obs_bytes = 6_int64 * obs_cells64 * 4_int64
       mem_source_bytes = source_cap64 * 5_int64 * 4_int64
       mem_total_bytes = mem_obs_bytes + mem_source_bytes
-      write(*,'(A,I0)') 'DIAG|direct|meta|source_capacity=', cap
-      write(*,'(A,I0)') 'DIAG|direct|meta|source_elements=', ns
-      write(*,'(A,F12.6)') 'DIAG|direct|memory|obs_arrays_mib=', bytes_to_mib(mem_obs_bytes)
-      write(*,'(A,F12.6)') 'DIAG|direct|memory|source_arrays_mib=', bytes_to_mib(mem_source_bytes)
-      write(*,'(A,F12.6)') 'DIAG|direct|memory|total_est_mib=', bytes_to_mib(mem_total_bytes)
+      write(*,'(A,I0)') 'DIAG|point_source|meta|source_capacity=', cap
+      write(*,'(A,I0)') 'DIAG|point_source|meta|source_elements=', ns
+      write(*,'(A,F12.6)') 'DIAG|point_source|memory|obs_arrays_mib=', bytes_to_mib(mem_obs_bytes)
+      write(*,'(A,F12.6)') 'DIAG|point_source|memory|source_arrays_mib=', bytes_to_mib(mem_source_bytes)
+      write(*,'(A,F12.6)') 'DIAG|point_source|memory|total_est_mib=', bytes_to_mib(mem_total_bytes)
     end if
 
     ! ------------------------------------------
@@ -622,11 +621,11 @@ program gravmag_sphere_brtp
 
     if (diag_enabled) then
       call cpu_time(t_body1)
-      write(*,'(A,F12.6)') 'DIAG|direct|time|obs_grid_s=', real(t_obsgrid_s, real64)
-      write(*,'(A,F12.6)') 'DIAG|direct|time|source_mesh_s=', real(t_source_s, real64)
-      write(*,'(A,F12.6)') 'DIAG|direct|time|field_accum_s=', real(t_accum_s, real64)
-      write(*,'(A,F12.6)') 'DIAG|direct|time|output_write_s=', real(t_output_s, real64)
-      write(*,'(A,F12.6)') 'DIAG|direct|time|body_total_s=', real(t_body1 - t_body0, real64)
+      write(*,'(A,F12.6)') 'DIAG|point_source|time|obs_grid_s=', real(t_obsgrid_s, real64)
+      write(*,'(A,F12.6)') 'DIAG|point_source|time|source_mesh_s=', real(t_source_s, real64)
+      write(*,'(A,F12.6)') 'DIAG|point_source|time|field_accum_s=', real(t_accum_s, real64)
+      write(*,'(A,F12.6)') 'DIAG|point_source|time|output_write_s=', real(t_output_s, real64)
+      write(*,'(A,F12.6)') 'DIAG|point_source|time|body_total_s=', real(t_body1 - t_body0, real64)
     end if
 
   end do
@@ -688,12 +687,11 @@ contains
   ! triangle to add_triangle_charge_source. this is where side-wall
   ! equivalent magnetic charge is built in magnetic mode
   !---------------------------------------------------------------------
-  subroutine add_side_quad_sources(r0, r1, lat_a, lon_a, lat_b, lon_b, xin, yin, zin, &
-                                   Mx, My, Mz, cap, ns, xs, ys, zs, qmag, mass)
+  subroutine add_side_quad_sources(r0, r1, lat_a, lon_a, lat_b, lon_b, winding, &
+                                   mx, my, mz, cap, ns, xs, ys, zs, qmag, mass)
     real(real32), intent(in) :: r0, r1
     real(real32), intent(in) :: lat_a, lon_a, lat_b, lon_b
-    real(real32), intent(in) :: xin, yin, zin
-    real(real32), intent(in) :: Mx, My, Mz
+    real(real32), intent(in) :: winding, mx, my, mz
     integer(int32), intent(inout) :: cap, ns
     real(real32), allocatable, intent(inout) :: xs(:), ys(:), zs(:)
     real(real32), allocatable, intent(inout) :: qmag(:), mass(:)
@@ -707,9 +705,9 @@ contains
 
     ! split the quad into two triangles: (a,b,c) and (a,c,d)
     call add_triangle_charge_source(ax, ay, az, bx, by, bz, cx, cy, cz, &
-                                    xin, yin, zin, Mx, My, Mz, cap, ns, xs, ys, zs, qmag, mass)
+                                    winding, mx, my, mz, cap, ns, xs, ys, zs, qmag, mass)
     call add_triangle_charge_source(ax, ay, az, cx, cy, cz, dx, dy, dz, &
-                                    xin, yin, zin, Mx, My, Mz, cap, ns, xs, ys, zs, qmag, mass)
+                                    winding, mx, my, mz, cap, ns, xs, ys, zs, qmag, mass)
   end subroutine add_side_quad_sources
 
   !---------------------------------------------------------------------
@@ -720,15 +718,15 @@ contains
   ! the element is stored at the triangle centroid
   !---------------------------------------------------------------------
   subroutine add_triangle_charge_source(ax, ay, az, bx, by, bz, cx, cy, cz, &
-                                        xin, yin, zin, Mx, My, Mz, cap, ns, xs, ys, zs, qmag, mass)
+                                        winding, mx, my, mz, cap, ns, xs, ys, zs, qmag, mass)
     real(real32), intent(in) :: ax, ay, az, bx, by, bz, cx, cy, cz
-    real(real32), intent(in) :: xin, yin, zin, Mx, My, Mz
+    real(real32), intent(in) :: winding, mx, my, mz
     integer(int32), intent(inout) :: cap, ns
     real(real32), allocatable, intent(inout) :: xs(:), ys(:), zs(:)
     real(real32), allocatable, intent(inout) :: qmag(:), mass(:)
 
     real(real32) :: ux, uy, uz, vx, vy, vz, nx, ny, nz
-    real(real32) :: nmag, area, gx, gy, gz, dot_in, qel
+    real(real32) :: nmag, area, gx, gy, gz, qel
 
     ux = bx - ax
     uy = by - ay
@@ -753,16 +751,9 @@ contains
     gy = (ay + by + cy) / 3.0_real32
     gz = (az + bz + cz) / 3.0_real32
 
-    ! orient normal outward by checking direction from interior point to panel centroid
-    dot_in = nx*(gx - xin) + ny*(gy - yin) + nz*(gz - zin)
-    if (dot_in < 0.0_real32) then
-      nx = -nx
-      ny = -ny
-      nz = -nz
-    end if
-
-    ! magnetic charge assigned to triangle centroid
-    qel = (Mx*nx + My*ny + Mz*nz) * area
+    ! edge x radial cross products point outward for counterclockwise boundaries
+    ! reverse their sign for clockwise boundaries when assigning magnetic charge
+    qel = winding * (mx*nx + my*ny + mz*nz) * area
     call append_source(cap, ns, xs, ys, zs, qmag, mass, gx, gy, gz, qel, 0.0_real32)
   end subroutine add_triangle_charge_source
 
@@ -798,4 +789,4 @@ contains
     cap = newcap
   end subroutine grow_sources
 
-end program gravmag_sphere_brtp
+end program gravmag_sphere_point_source

@@ -51,14 +51,14 @@ class output_path_tests(unittest.TestCase):
         directory = self.root / "launchers"
         directory.mkdir()
         scripts = self.repo / "examples"
-        for name in ("run_gravmag_sphere_f90.sh", "run_gravmag_sphere_gauss.sh", "run_gravmag_sphere_quadrature.sh",
+        for name in ("run_gravmag_sphere_point_source.sh", "run_gravmag_sphere_spectral.sh", "run_gravmag_sphere_gauss_legendre.sh",
                      "run_input_to_xyz.sh", "run_xyz_to_brtp.sh", "run_gravmag_end_to_end.sh",
                      "run_all_examples_end_to_end.sh", "run_all_examples_brtp.py"):
             shutil.copy2(scripts / name, directory / name)
         shutil.copy2(self.repo / "tests/fixtures/skip_build.sh", directory / "build_gravmag_tools.sh")
         (directory / "build_gravmag_tools.sh").chmod(0o755)
-        for name, target in (("gravmag_sphere_bxyz", "direct"), ("gravmag_sphere_gauss", "spectral"),
-                             ("gravmag_sphere_quadrature", "gauss_legendre"),
+        for name, target in (("gravmag_sphere_point_source", "point_source"), ("gravmag_sphere_spectral", "spectral"),
+                             ("gravmag_sphere_gauss_legendre", "gauss_legendre"),
                              ("gravmag_xyz_to_brtp", "xyz_to_brtp")):
             (directory / name).symlink_to(build_fortran(target))
         dipole_dir = directory / "dipole_fit_test"
@@ -76,19 +76,19 @@ class output_path_tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             artifact_path(self.input_path, name="../escape.txt")
 
-    def test_fortran_direct_spectral_conversion_and_explicit_paths(self):
-        direct = build_fortran("direct")
-        self.run_command([direct, 1737.4, self.input_path])
+    def test_fortran_point_source_spectral_conversion_and_explicit_paths(self):
+        point_source = build_fortran("point_source")
+        self.run_command([point_source, 1737.4, self.input_path])
         output = self.case_dir / "output/small.txt"
         self.assertTrue(output.is_file())
         explicit = self.root / "custom numeric" / "chosen.txt"
-        self.run_command([direct, 1737.4, self.input_path, explicit])
+        self.run_command([point_source, 1737.4, self.input_path, explicit])
         np.testing.assert_allclose(np.loadtxt(output), np.loadtxt(explicit))
         self.run_command([build_fortran("xyz_to_brtp"), output])
         self.assertTrue((self.case_dir / "output/small_brtp.txt").is_file())
         spectral = build_fortran("spectral")
         self.run_command([spectral, 1737.4, self.input_path, "", 3, 1, 8, 16, 0.2, 4, 0, 0, 0, 0, 0, 0, 0])
-        self.assertTrue((self.case_dir / "output/small_gauss.txt").is_file())
+        self.assertTrue((self.case_dir / "output/small_spectral.txt").is_file())
         self.assertFalse((self.case_dir / "output/output").exists())
         self.assertFalse((self.cwd / "output").exists())
 
@@ -107,7 +107,7 @@ class output_path_tests(unittest.TestCase):
         self.run_command([build_fortran("gauss_legendre"), 1737.4, self.input_path])
         expected = np.loadtxt(self.case_dir / "output/small_quadrature.txt")
         explicit = self.root / "quadrature output" / "chosen.txt"
-        self.run_command(["bash", scripts / "run_gravmag_sphere_quadrature.sh", 1737.4, self.input_path, explicit])
+        self.run_command(["bash", scripts / "run_gravmag_sphere_gauss_legendre.sh", 1737.4, self.input_path, explicit])
         np.testing.assert_allclose(np.loadtxt(explicit), expected)
         self.run_command(["bash", scripts / "run_input_to_xyz.sh", "gauss_legendre", 1737.4, self.input_path,
                           explicit, "--refine-factor", 1])
@@ -118,16 +118,16 @@ class output_path_tests(unittest.TestCase):
     def test_shell_single_case_launchers_and_overrides(self):
         scripts = self.make_launchers()
         output = self.case_dir / "output"
-        for name in ("run_gravmag_sphere_f90.sh", "run_gravmag_end_to_end.sh"):
+        for name in ("run_gravmag_sphere_point_source.sh", "run_gravmag_end_to_end.sh"):
             self.run_command(["bash", scripts / name, 1737.4, self.input_path])
-        self.run_command(["bash", scripts / "run_input_to_xyz.sh", "direct", 1737.4, self.input_path])
-        self.run_command(["bash", scripts / "run_gravmag_sphere_gauss.sh", 1737.4, self.input_path,
+        self.run_command(["bash", scripts / "run_input_to_xyz.sh", "point_source", 1737.4, self.input_path])
+        self.run_command(["bash", scripts / "run_gravmag_sphere_spectral.sh", 1737.4, self.input_path,
                           "", 3, 1, 8, 16, 0.2, 4, 0, 0, 0, 0, 0, 0, 0])
         self.run_command(["bash", scripts / "run_xyz_to_brtp.sh", output / "small_xyz.txt"])
-        for name in ("small_xyz.txt", "small_brtp.txt", "small_gauss.txt"):
+        for name in ("small_xyz.txt", "small_brtp.txt", "small_spectral.txt"):
             self.assertTrue((output / name).is_file())
         explicit = self.root / "explicit" / "chosen.txt"
-        self.run_command(["bash", scripts / "run_input_to_xyz.sh", "direct", 1737.4, self.input_path, explicit])
+        self.run_command(["bash", scripts / "run_input_to_xyz.sh", "point_source", 1737.4, self.input_path, explicit])
         self.assertTrue(explicit.is_file())
         path = self.make_csv()
         self.run_command(["bash", scripts / "dipole_fit_test/run_dipole_grid_fit.sh", 1737.4, path])
@@ -158,14 +158,14 @@ class output_path_tests(unittest.TestCase):
     @unittest.skipUnless(importlib.util.find_spec("matplotlib"), "matplotlib is optional")
     def test_batch_launchers_use_input_directory(self):
         scripts = self.make_launchers()
-        self.run_command(["bash", scripts / "run_all_examples_end_to_end.sh", "direct", 1737.4, self.case_dir])
-        self.run_command([sys.executable, scripts / "run_all_examples_brtp.py", "--solver", "direct",
+        self.run_command(["bash", scripts / "run_all_examples_end_to_end.sh", "point_source", 1737.4, self.case_dir])
+        self.run_command([sys.executable, scripts / "run_all_examples_brtp.py", "--solver", "point_source",
                           "--examples-dir", self.case_dir, "--refine-factor", 1])
         self.assertTrue((self.case_dir / "output/small_xyz.txt").is_file())
         self.assertTrue((self.case_dir / "figs/small_brtp_2x2.png").is_file())
         self.assertFalse((scripts / "output").exists())
         self.assertFalse((scripts / "figs").exists())
-        self.run_command([sys.executable, scripts / "run_all_examples_brtp.py", "--solver", "direct",
+        self.run_command([sys.executable, scripts / "run_all_examples_brtp.py", "--solver", "point_source",
                           "--examples-dir", self.case_dir, "--output-dir", "custom_output", "--figs-dir", "custom_figs"])
         self.assertTrue((scripts / "custom_output/small_xyz.txt").is_file())
         self.assertTrue((scripts / "custom_figs/small_brtp_2x2.png").is_file())

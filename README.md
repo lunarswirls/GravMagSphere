@@ -1,6 +1,24 @@
-# GravMagSphere
+# GravMagPy
 
-Python interface to Fortran gravity/magnetic models and subsurface magnetic-source inversion from spacecraft measurements. Python handles CSV ingestion, geometry, bounded minimization, diagnostics, and plots; Fortran evaluates the magnetic forward model.
+GravMagPy is a modernized Fortran magnetic and gravity solver and inversion toolkit with a Python frontend. Fortran provides the numerical field solvers and equivalent-dipole fitter; Python provides source geometry, observation ingestion, bounded inversion, model execution, diagnostics, and plotting.
+
+The toolkit models finite blocks, polygonal bodies, and source layers on a spherical reference body with a configurable radius. Magnetic and gravity forward models share the same geometry and grid interfaces. The implemented inversion workflows fit magnetic source geometry and magnetization or equivalent point-dipole moments to observations at their actual three-dimensional positions.
+
+## Forward methods and inversion
+
+| Method | Fortran source / executable | Calculation |
+|---|---|---|
+| `point_source` | `gravmag_sphere_point_source` | Sums discretized magnetic surface charges or gravity point masses on a regular observation grid |
+| `spectral` | `gravmag_sphere_spectral` | Fits spherical harmonics to sampled source fields, including the gravity degree-zero mass term, with optional local and hybrid corrections |
+| `gauss_legendre` | `gravmag_sphere_gauss_legendre` | Integrates magnetic and gravity volume kernels with configurable Gauss–Legendre orders and composite panels |
+| `orbital` | `orbital.f90` shared library | Evaluates magnetic volume kernels at arbitrary observation positions for prediction and inversion |
+| `dipole_grid` | `gravmag_sphere_dipole_grid_fit` | Fits equivalent magnetic point-dipole moments on a fixed source grid |
+
+Choose a grid method with `run_sphere_model(..., solver="point_source")`, `solver="spectral"`, or `solver="gauss_legendre"`. Point-source field calculations use single precision; the spectral, Gauss–Legendre, and orbital kernels use double precision. Resolution controls differ by method, so compare refined solutions when assessing accuracy. The [modeling guide](docs/sphere.md) and [solver comparison](diagnostics/gauss_legendre_comparison/README.md) describe controls and limits.
+
+`fit_sources` uses Python optimization and the orbital Fortran kernel to fit finite-volume geometry and magnetization. `fit_equivalent_sources` calls the Fortran dipole-grid fitter. Gravity forward modeling is supported; these inversion interfaces currently target magnetic observations.
+
+The canonical method names replace the former `direct` and `gauss` labels. Python calls and the generic shell/batch runners still accept `direct` as an alias for `point_source` and `gauss` as an alias for `spectral`. Source files, executable names, and individual solver launchers use the canonical names.
 
 ## Repository layout
 
@@ -19,7 +37,8 @@ src/gravmagpy/              importable Python package
   utils/paths.py            input-relative output and figure destinations
 fortran/
   orbital.f90              shared-library kernel for arbitrary spacecraft positions
-  gravmag_*.f90             grid, spectral, conversion, and dipole-fit programs
+  gravmag_sphere_*.f90      point-source, spectral, quadrature, and dipole-fit backends
+  gravmag_xyz_to_brtp.f90   Cartesian-to-spherical field conversion
 examples/                  test cases, notebooks, shell workflows, and saved results
   lpmag/                   real wake-data and synthetic recovery workflows
 diagnostics/               benchmark/comparison scripts, external-solver inputs, reports, plots
@@ -37,6 +56,42 @@ Use a virtual environment and an installed `gfortran` compiler:
 ```
 
 Imports do not compile or run models. `build_fortran()` or the first forward call compiles into a temporary-directory cache keyed by source contents, compiler version, flags, and platform. Pass `compiler=` and `build_dir=` to `build_fortran` for other locations. Wheels include the Fortran source and compile locally when used; they do not include machine-specific binaries. See [the architecture notes](docs/architecture.md).
+
+## Model magnetic and gravity fields
+
+Define sources and observation grids in Python; the frontend generates input cards and runs the selected Fortran method:
+
+```python
+import numpy as np
+from gravmagpy import equivalent_source_grid, sphere_model, run_sphere_model, write_model_input
+
+sources = equivalent_source_grid(
+    latitude_edges_deg=[6, 7, 8], longitude_edges_deg=[-61, -60, -59],
+    depth_edges_km=[5, 10], magnetization_a_m=[1, 0, 0],
+)
+model = sphere_model(sources, latitude_deg=np.linspace(5, 9, 21),
+                     longitude_deg=np.linspace(-62, -58, 21), altitude_km=40)
+result = run_sphere_model(model, solver="point_source", solver_options={"refine_factor": 2})
+bx, by, bz, btot = (result[key] for key in ("bx_nt", "by_nt", "bz_nt", "btot_nt"))
+write_model_input(model, "output/equivalent_layer.in")
+```
+
+Use `block` or `polygon` for individual magnetic or gravity volumes. `fit_equivalent_sources(observations, depth_km=10, spacing_deg=(1, 1))` calls the Fortran dipole-grid fitter, using the same observation dictionary as `load_lpmag_csv`. It estimates point-dipole moments on a fixed grid; `fit_sources` instead optimizes finite-volume geometry. See the [Python modeling guide](docs/sphere.md) for runnable examples, units, regularization, and import/export.
+
+## Fortran input-card models
+
+```python
+from gravmagpy import run_grid_model
+from gravmagpy.plotting import plot_fields
+
+input_path = 'examples/seafloor_spreading_cases/st_paul_symmetric_stripes.in'
+result = run_grid_model(input_path, radius_km=6371.2, solver='point_source', options=(1,))
+plot_fields(input_path, result['output_path'])
+```
+
+`build_fortran` supports `orbital`, `point_source`, `spectral`, `gauss_legendre`, `xyz_to_brtp`, and `dipole_grid`. `run_fortran` exposes the positional interfaces. Shell runners work from `examples`; their builds resolve the canonical files directly under `fortran`. Fortran `.in` files are supported directly. See [architecture and development direction](docs/architecture.md) and the [solver guide](examples/README.md).
+
+Use `run_sphere_model(model, solver="gauss_legendre")` to evaluate blocks or polygons with the Gauss–Legendre volume method in double precision. Node orders and composite subdivisions are configurable; see the [Python modeling guide](docs/sphere.md). The [three-solver diagnostic report](diagnostics/gauss_legendre_comparison/README.md) compares quadrature convergence with point_source and pure spectral fields at surface, orbital and far-field altitudes.
 
 ## Fit orbital measurements
 
@@ -79,42 +134,6 @@ PYTHONPATH=src /Users/danywaller/code/venvs/gravmagpy/bin/python examples/lpmag/
 See the architecture's [LPMAG reference workflow](docs/architecture.md#lpmag-reference-workflow) for coordinate conventions, quality selection, uncertainties, priors, and practical limits, followed by the path to body-independent, multi-solver equivalent sources.
 
 For geologic context maps, use `gravmagpy.maps.plot_equivalent_maps` to place the fitted equivalent field and source moments alongside GeoTIFF products. The [runnable map example](examples/lpmag/plot_equivalent_geotiffs.py) uses a local WAC mosaic and a 30 km magnetic-model map; [the mapping guide](docs/maps.md) explains CRS handling, spectral-map settings, and prediction at new altitudes. Install `.[maps]` for the optional Rasterio/Matplotlib dependencies.
-
-## Python models for GravMag Sphere
-
-The GravMag Sphere tools are maintained as backends with Python frontends. You can define sources and grids in Python, input cards are generated internally:
-
-```python
-import numpy as np
-from gravmagpy import equivalent_source_grid, sphere_model, run_sphere_model, write_model_input
-
-sources = equivalent_source_grid(
-    latitude_edges_deg=[6, 7, 8], longitude_edges_deg=[-61, -60, -59],
-    depth_edges_km=[5, 10], magnetization_a_m=[1, 0, 0],
-)
-model = sphere_model(sources, latitude_deg=np.linspace(5, 9, 21),
-                     longitude_deg=np.linspace(-62, -58, 21), altitude_km=40)
-result = run_sphere_model(model, solver="direct", solver_options={"refine_factor": 2})
-bx, by, bz, btot = (result[key] for key in ("bx_nt", "by_nt", "bz_nt", "btot_nt"))
-write_model_input(model, "output/equivalent_layer.in")
-```
-
-Use `block` or `polygon` for individual magnetic or gravity volumes. `fit_equivalent_sources(observations, depth_km=10, spacing_deg=(1, 1))` calls the Fortran dipole-grid fitter, using the same observation dictionary as `load_lpmag_csv`. It estimates point-dipole moments on a fixed grid; `fit_sources` instead optimizes finite-volume geometry. See the [Python modeling guide](docs/sphere.md) for runnable examples, units, regularization, and import/export.
-
-## Fortran input-card models
-
-```python
-from gravmagpy import run_grid_model
-from gravmagpy.plotting import plot_fields
-
-input_path = 'examples/seafloor_spreading_cases/st_paul_symmetric_stripes.in'
-result = run_grid_model(input_path, radius_km=6371.2, solver='direct', options=(1,))
-plot_fields(input_path, result['output_path'])
-```
-
-`build_fortran` supports `orbital`, `direct`, `spectral`, `gauss_legendre`, `xyz_to_brtp`, and `dipole_grid`. `run_fortran` exposes the positional interfaces. Shell runners work from `examples`; their builds resolve the canonical files directly under `fortran`. Fortran `.in` files are supported directly. See [architecture and development direction](docs/architecture.md) and the [solver guide](examples/GravMagSphere_README.md).
-
-Use `run_sphere_model(model, solver="gauss_legendre")` to evaluate blocks or polygons with the Gauss–Legendre volume method in double precision. Node orders and composite subdivisions are configurable; see the [Python modeling guide](docs/sphere.md). The [three-solver diagnostic report](diagnostics/gauss_legendre_comparison/README.md) compares quadrature convergence with direct and pure spectral fields at surface, orbital and far-field altitudes.
 
 ## Tests and diagnostics
 

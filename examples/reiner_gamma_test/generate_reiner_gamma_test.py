@@ -82,7 +82,7 @@ TABLE4_ROWS = [
 TABLE_HEADER = ["Latitude", "Longitude", "Depth", "Magnetic Moment", "Inclination", "Declination"]
 TABLE_UNITS = ["deg N", "deg E", "km", "Am2", "deg", "deg"]
 
-# Hardcoded run configuration for the Reiner Gamma Table 4 direct-solver case.
+# Hardcoded run configuration for the Reiner Gamma Table 4 point_source-solver case.
 RSPHERE_KM = 1737.4
 ELVO_KM = 18.0
 SURFACE_ELVO_KM = 0.0
@@ -499,7 +499,7 @@ def make_field_plot(path: Path, fields: dict[str, np.ndarray], subtitle: str) ->
         ax.set_ylabel("Latitude [deg]")
         fig.colorbar(im, ax=ax, shrink=0.9, label="nT")
 
-    fig.suptitle(f"Reiner Gamma Table 4 direct-solver approximation\n{subtitle}")
+    fig.suptitle(f"Reiner Gamma Table 4 point_source-solver approximation\n{subtitle}")
     fig.savefig(path, dpi=220)
     plt.close(fig)
 
@@ -514,7 +514,7 @@ def make_source_plot(path: Path, rows: list[DipoleRow], box_width_deg: float, in
     sc = ax.scatter(lon, lat, c=mag, cmap="magma", s=70, edgecolor="black", linewidth=0.3)
     ax.set_title(
         "Reiner Gamma Table 4 source centers\n"
-        f"finite-box direct approximation ({box_width_deg:.4f} deg x {box_width_deg:.4f} deg x 1.0 km)"
+        f"finite-box point_source approximation ({box_width_deg:.4f} deg x {box_width_deg:.4f} deg x 1.0 km)"
     )
     ax.set_xlabel("Longitude [deg]")
     ax.set_ylabel("Latitude [deg]")
@@ -662,7 +662,7 @@ env = os.environ.copy()
 run([str(ROOT / "build_gravmag_tools.sh")], cwd=ROOT, env=env)
 run(
     [
-        str(ROOT / "gravmag_sphere_bxyz"),
+        str(ROOT / "gravmag_sphere_point_source"),
         f"{RSPHERE_KM}",
         str(input_path),
         str(xyz_path),

@@ -25,3 +25,5 @@ __pycache__/
 /examples/seafloor_spreading_cases/output/
 /examples/earth_crust_cases/figs/
 /examples/earth_crust_cases/output/
+/diagnostics/qiu_chen_2020_magnetic
+tests/test_variable_order_magnetic.py

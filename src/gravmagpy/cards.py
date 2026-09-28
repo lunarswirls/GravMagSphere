@@ -6,6 +6,7 @@ import numpy as np
 
 from .geometry import source_array
 from .utils import artifact_path, run_fortran
+from .utils.fortran import _solver_name
 
 
 def read_input(path):
@@ -93,11 +94,12 @@ def write_source_input(sources, path, *, radius_km=1737.4, grid=None, mesh=(4, 1
     return path
 
 
-def run_grid_model(input_path, output_path=None, *, radius_km=1737.4, solver="direct", options=(), **build_options):
-    """run an existing direct, spectral, or gauss_legendre .in model"""
-    suffixes = {"direct": ".txt", "spectral": "_gauss.txt", "gauss_legendre": "_quadrature.txt"}
+def run_grid_model(input_path, output_path=None, *, radius_km=1737.4, solver="point_source", options=(), **build_options):
+    """run an existing point_source, spectral, or gauss_legendre .in model"""
+    solver = _solver_name(solver)
+    suffixes = {"point_source": ".txt", "spectral": "_spectral.txt", "gauss_legendre": "_quadrature.txt"}
     if solver not in suffixes:
-        raise ValueError("solver must be direct, spectral, or gauss_legendre")
+        raise ValueError("solver must be point_source, spectral, or gauss_legendre")
     input_path = Path(input_path).expanduser().resolve()
     output_path = (artifact_path(input_path, suffix=suffixes[solver])
                    if output_path is None else Path(output_path).expanduser().resolve())
