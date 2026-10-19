@@ -31,6 +31,7 @@ echo "+ building gravmag_sphere_spectral"
 # share only path handling; numerical solvers remain independent
 gfortran -std=f2008 -O2 -J"${MODDIR}" -I"${MODDIR}" \
   "${source_dir}/gravmag_paths.f90" \
+  "${source_dir}/gravmag_sphere_harmonics.f90" \
   "${source_dir}/gravmag_sphere_spectral.f90" \
   -o "${ROOT_DIR}/gravmag_sphere_spectral"
 

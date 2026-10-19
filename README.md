@@ -9,7 +9,7 @@ The toolkit models finite blocks, polygonal bodies, and source layers on a spher
 | Method | Fortran source / executable | Calculation |
 |---|---|---|
 | `direct_sum` | `gravmag_sphere_direct_sum` | Uses magnetic surface-charge quadrature or gravity midpoint-volume quadrature, summing contributions on a regular observation grid |
-| `spectral` | `gravmag_sphere_spectral` | Fits spherical harmonics to sampled source fields, including the gravity degree-zero mass term, with optional local and hybrid corrections |
+| `spectral` | `gravmag_sphere_spectral` | Fits Schmidt semi-normalized harmonics without the Condon-Shortley phase, including the gravity degree-zero mass term, with optional local and hybrid corrections |
 | `gauss_legendre` | `gravmag_sphere_gauss_legendre` | Integrates magnetic and gravity volume kernels with configurable Gauss–Legendre orders and composite panels |
 | `orbital` | `orbital.f90` shared library | Evaluates magnetic volume kernels at arbitrary observation positions for prediction and inversion |
 | `dipole_grid` | `gravmag_sphere_dipole_grid_fit` | Fits equivalent magnetic point-dipole moments on a fixed source grid |

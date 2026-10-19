@@ -115,7 +115,7 @@ for case in cases:
 
 np.savez_compressed(destination/"fields.npz", **arrays)
 report = {"settings": settings, "platform": platform.platform(), "python": platform.python_version(),
-          "numpy": np.__version__, "compiler": compiler,
+          "numpy": np.__version__, "compiler": compiler, "harmonic_normalization": "schmidt", "condon_shortley_phase": False,
           "binaries": {key: str(value) for key, value in binaries.items()},
           "cases": cases, "references": references, "runs": rows}
 (destination/"results.json").write_text(json.dumps(report, indent=2)+"\n")
@@ -130,7 +130,7 @@ lines = ["# Gauss–Legendre, direct_sum and pure spectral comparison", "",
          "The reference is higher-order composite Gauss–Legendre integration, checked against a second resolution; "
          "it is a numerical reference, not an exact solution. Independent kernel, geometry and unit checks live in "
          "`tests/test_gauss_legendre.py`.", "",
-         "Pure spectral runs set `auto_mode=0`, `edge_correction=0`, `hybrid_mode=0` and `reg_lambda=0`. "
+         "Pure spectral runs use Schmidt semi-normalization without the Condon-Shortley phase and set `auto_mode=0`, `edge_correction=0`, `hybrid_mode=0` and `reg_lambda=0`. "
          "Their source mesh uses horizontal refine factor 4 and 12 radial samples. Direct summation runs retain card radial count 4. "
          "Each timing is one warmed-build Python call including subprocess startup and file I/O; it is not a repeated benchmark.", "",
          "The cases span magnetic surface/orbital/far fields, a concave magnetic polygon and gravity. "

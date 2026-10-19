@@ -35,7 +35,7 @@ def build_fortran(target="orbital", *, compiler=None, build_dir=None, force=Fals
     targets = {
         "orbital": ["orbital.f90"],
         "direct_sum": [f"gravmag_sphere_{part}.f90" for part in ("state", "subs", "physics", "direct_sum")],
-        "spectral": ["gravmag_sphere_spectral.f90"],
+        "spectral": ["gravmag_sphere_harmonics.f90", "gravmag_sphere_spectral.f90"],
         "gauss_legendre": ["gravmag_sphere_gauss_legendre.f90"],
         "xyz_to_brtp": ["gravmag_xyz_to_brtp.f90"],
         "dipole_grid": ["gravmag_sphere_dipole_grid_fit.f90"],

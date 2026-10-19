@@ -1,6 +1,7 @@
 program gravmag_sphere_spectral
   use, intrinsic :: iso_fortran_env, only: int32, int64, real64
   use gravmag_paths, only: default_output_path
+  use gravmag_sphere_harmonics, only: schmidt_basis
   implicit none
 
   !***********************************************************************
@@ -120,8 +121,6 @@ program gravmag_sphere_spectral
   real(wp) :: br_monopole
   integer(int32) :: itheta, iphi
 
-  real(wp), allocatable :: P(:,:), gh_g(:,:), gh_h(:,:)
-  real(wp) :: fac, common, dP, plm1, s_safe
   real(wp) :: br, bt, bp, bxv, byv, bzv, btot_nt, gtot_mgal
   real(wp) :: reg_w, lnorm
   real(wp) :: corr_br, corr_bt, corr_bp
@@ -665,18 +664,6 @@ program gravmag_sphere_spectral
   call cpu_time(t_phase1)
   t_solve_s = t_solve_s + (t_phase1 - t_phase0)
 
-  if (allocated(gh_g)) deallocate(gh_g, gh_h)
-  allocate(gh_g(0:lmax_use,0:lmax_use), gh_h(0:lmax_use,0:lmax_use))
-  gh_g(:,:) = 0.0_wp
-  gh_h(:,:) = 0.0_wp
-  gh_g(0,0) = br_monopole
-  do i=1, lmax_use
-    do j=0, i
-      if (idx_g(i,j) > 0) gh_g(i,j) = coef(idx_g(i,j))
-      if (idx_h(i,j) > 0) gh_h(i,j) = coef(idx_h(i,j))
-    end do
-  end do
-
   if (diag_enabled) then
     obs_cells64 = int(nlat, int64) * int(nlon, int64)
     ncoef64 = int(ncoef, int64)
@@ -686,6 +673,8 @@ program gravmag_sphere_spectral
     mem_solver_bytes = (ncoef64*ncoef64 + 3_int64*ncoef64 + 3_int64*lside64*lside64) * 8_int64 + &
                        (2_int64*lside64*lside64) * 4_int64
     mem_total_bytes = mem_obs_bytes + mem_source_bytes + mem_solver_bytes
+    write(*,'(A)') 'DIAG|spectral|meta|normalization=schmidt_semi_normalized'
+    write(*,'(A)') 'DIAG|spectral|meta|condon_shortley_phase=excluded'
     write(*,'(A,I0)') 'DIAG|spectral|meta|source_capacity=', cap
     write(*,'(A,I0)') 'DIAG|spectral|meta|source_elements=', ns
     write(*,'(A,I0)') 'DIAG|spectral|meta|collective_bodies=', nbody_total
@@ -766,8 +755,6 @@ program gravmag_sphere_spectral
   ! Evaluate field from coefficients on obs grid
   ! ------------------------------------------
   call cpu_time(t_phase0)
-  if (allocated(P)) deallocate(P)
-  allocate(P(0:lmax_use,0:lmax_use))
   do i=1, nlat
     do j=1, nlon
       lat_deg = lat0_deg + real(i-1,wp)*dlat_deg
@@ -781,40 +768,8 @@ program gravmag_sphere_spectral
       cp = cos(phi)
       sp = sin(phi)
 
-      call legendre_point(lmax_use, ct, P)
-      br = gh_g(0,0)
-      bt = 0.0_wp
-      bp = 0.0_wp
-      s_safe = max(abs(st), 1.0e-10_wp)
-
-      do it=1, lmax_use
-        fac = (ro_m / ro_m)**(it+2)  ! =1 when evaluated at fitting radius
-        do ir=0, it
-          common = gh_g(it,ir)
-          if (ir == 0) then
-            br = br + real(it+1,wp) * fac * common * P(it,ir)
-            if (it-1 >= ir) then
-              plm1 = P(it-1,ir)
-            else
-              plm1 = 0.0_wp
-            end if
-            dP = (real(it,wp)*ct*P(it,ir) - real(it+ir,wp)*plm1) / s_safe
-            bt = bt - fac * common * dP
-          else
-            common = gh_g(it,ir)*cos(real(ir,wp)*phi) + gh_h(it,ir)*sin(real(ir,wp)*phi)
-            br = br + real(it+1,wp) * fac * common * P(it,ir)
-            if (it-1 >= ir) then
-              plm1 = P(it-1,ir)
-            else
-              plm1 = 0.0_wp
-            end if
-            dP = (real(it,wp)*ct*P(it,ir) - real(it+ir,wp)*plm1) / s_safe
-            bt = bt - fac * common * dP
-            bp = bp + fac * (real(ir,wp)/s_safe) * &
-                 (gh_g(it,ir)*sin(real(ir,wp)*phi) - gh_h(it,ir)*cos(real(ir,wp)*phi)) * P(it,ir)
-          end if
-        end do
-      end do
+      call evaluate_from_coeffs_point(theta, phi, lmax_use, idx_g, idx_h, coef, br, bt, bp)
+      br = br + br_monopole
 
       if (edge_corr_enabled .and. ncorr > 0) then
         corr_br = 0.0_wp
@@ -920,6 +875,8 @@ program gravmag_sphere_spectral
     if (nbody_total > 1) then
       write(2,'(A,I0)') '# collective_multi_body=1 n_bodies=', nbody_total
     end if
+    write(2,'(A)') '# normalization=schmidt_semi_normalized condon_shortley_phase=excluded'
+    write(2,'(A)') '# numerical_floor=epsilon_times_mean_data_diagonal'
     write(2,'(A,I0,A,ES13.5,A,F8.3)') '# lmax=', lmax_use, ' reg_lambda=', reg_lambda_use, ' reg_power=', reg_power_use
     write(2,'(A,I0,A,F8.3,A,I0,A,I0)') '# auto_mode=', merge(1,0,auto_mode), &
                                         ' joint_strength=', joint_strength, &
@@ -1258,66 +1215,6 @@ contains
     ncoef_out = idx
   end subroutine build_index_maps
 
-  ! compute associated Legendre functions P_lm(x) for one x=cos(theta)
-  subroutine legendre_point(lm, x, Pout)
-    integer(int32), intent(in) :: lm
-    real(wp), intent(in) :: x
-    real(wp), intent(out) :: Pout(0:lm,0:lm)
-
-    integer(int32) :: l, m
-    real(wp) :: sq
-
-    Pout(:,:) = 0.0_wp
-    Pout(0,0) = 1.0_wp
-
-    sq = sqrt(max(0.0_wp, 1.0_wp - x*x))
-
-    do m=1, lm
-      Pout(m,m) = -(2.0_wp*real(m,wp)-1.0_wp) * sq * Pout(m-1,m-1)
-    end do
-
-    do m=0, lm-1
-      Pout(m+1,m) = (2.0_wp*real(m,wp)+1.0_wp) * x * Pout(m,m)
-    end do
-
-    do m=0, lm
-      do l=m+2, lm
-        Pout(l,m) = ((2.0_wp*real(l,wp)-1.0_wp)*x*Pout(l-1,m) - (real(l+m-1,wp))*Pout(l-2,m)) / real(l-m,wp)
-      end do
-    end do
-  end subroutine legendre_point
-
-  ! fill design-vector basis for Br at one (theta,phi) sample
-  ! basis matches the packed coefficient ordering from build_index_maps
-  subroutine fill_basis_br(theta, phi, lm, ig, ih, basis)
-    real(wp), intent(in) :: theta, phi
-    integer(int32), intent(in) :: lm
-    integer(int32), intent(in) :: ig(0:lm,0:lm), ih(0:lm,0:lm)
-    real(wp), intent(out) :: basis(:)
-
-    real(wp) :: x
-    real(wp), allocatable :: Pl(:,:)
-    integer(int32) :: l, m, idx
-
-    allocate(Pl(0:lm,0:lm))
-    x = cos(theta)
-    call legendre_point(lm, x, Pl)
-
-    basis(:) = 0.0_wp
-    do l=1, lm
-      do m=0, l
-        idx = ig(l,m)
-        basis(idx) = real(l+1,wp) * Pl(l,m) * cos(real(m,wp)*phi)
-        if (m > 0) then
-          idx = ih(l,m)
-          basis(idx) = real(l+1,wp) * Pl(l,m) * sin(real(m,wp)*phi)
-        end if
-      end do
-    end do
-
-    deallocate(Pl)
-  end subroutine fill_basis_br
-
   pure real(wp) function unwrap_lon_to_ref(lon_deg, lon_ref_deg)
     real(wp), intent(in) :: lon_deg, lon_ref_deg
     unwrap_lon_to_ref = modulo(lon_deg + 180.0_wp, 360.0_wp) - 180.0_wp
@@ -1501,51 +1398,6 @@ contains
     if (compactness > 2.25_wp .and. nv >= max(6_int32, vertex_threshold - 4_int32)) classify_source_complexity = .true.
   end function classify_source_complexity
 
-  subroutine fill_basis_components(theta, phi, lm, ig, ih, basis_br, basis_bt, basis_bp)
-    real(wp), intent(in) :: theta, phi
-    integer(int32), intent(in) :: lm
-    integer(int32), intent(in) :: ig(0:lm,0:lm), ih(0:lm,0:lm)
-    real(wp), intent(out) :: basis_br(:), basis_bt(:), basis_bp(:)
-    real(wp) :: Pleg(0:lm,0:lm)
-    integer(int32) :: l, m, idx
-    real(wp) :: st, ct, s_safe, plv, plm1, dP, cm, sm
-
-    call legendre_point(lm, cos(theta), Pleg)
-    basis_br(:) = 0.0_wp
-    basis_bt(:) = 0.0_wp
-    basis_bp(:) = 0.0_wp
-
-    st = sin(theta)
-    ct = cos(theta)
-    s_safe = max(abs(st), 1.0e-10_wp)
-
-    do l=1, lm
-      do m=0, l
-        plv = Pleg(l,m)
-        if (l-1 >= m) then
-          plm1 = Pleg(l-1,m)
-        else
-          plm1 = 0.0_wp
-        end if
-        dP = (real(l,wp)*ct*plv - real(l+m,wp)*plm1) / s_safe
-        cm = cos(real(m,wp)*phi)
-        sm = sin(real(m,wp)*phi)
-
-        idx = ig(l,m)
-        basis_br(idx) = real(l+1,wp) * plv * cm
-        basis_bt(idx) = -dP * cm
-        if (m > 0) basis_bp(idx) = (real(m,wp)/s_safe) * plv * sm
-
-        if (m > 0) then
-          idx = ih(l,m)
-          basis_br(idx) = real(l+1,wp) * plv * sm
-          basis_bt(idx) = -dP * sm
-          basis_bp(idx) = -(real(m,wp)/s_safe) * plv * cm
-        end if
-      end do
-    end do
-  end subroutine fill_basis_components
-
   subroutine evaluate_from_coeffs_point(theta, phi, lm, ig, ih, coef_in, br_out, bt_out, bp_out)
     real(wp), intent(in) :: theta, phi
     integer(int32), intent(in) :: lm
@@ -1557,7 +1409,7 @@ contains
 
     ncoef_local = size(coef_in)
     allocate(row_br(ncoef_local), row_bt(ncoef_local), row_bp(ncoef_local))
-    call fill_basis_components(theta, phi, lm, ig, ih, row_br, row_bt, row_bp)
+    call schmidt_basis(theta, phi, lm, ig, ih, row_br, row_bt, row_bp)
     br_out = sum(row_br * coef_in)
     bt_out = sum(row_bt * coef_in)
     bp_out = sum(row_bp * coef_in)
@@ -1577,7 +1429,8 @@ contains
 
     integer(int32) :: nobs, i, j, s, l, m
     real(wp), allocatable :: ATA(:,:), ATb(:), row_br(:), row_bt(:), row_bp(:)
-    real(wp) :: w, pred_br, pred_bt, pred_bp, rr, lnorm, reg_w
+    real(wp) :: w, pred_br, pred_bt, pred_bp, rr, lnorm, reg_w, numerical_floor
+    real(wp), allocatable :: normal_diagonal(:)
 
     nobs = size(theta_s)
     info = 0
@@ -1593,7 +1446,7 @@ contains
     ATb(:) = 0.0_wp
 
     do s=1, nobs
-      call fill_basis_components(theta_s(s), phi_s(s), lm, ig, ih, row_br, row_bt, row_bp)
+      call schmidt_basis(theta_s(s), phi_s(s), lm, ig, ih, row_br, row_bt, row_bp)
       w = max(w_s(s), 1.0e-12_wp)
 
       if (joint_w > 0.0_wp) then
@@ -1613,6 +1466,11 @@ contains
       end if
     end do
 
+    allocate(normal_diagonal(ncoef_out))
+    do i=1, ncoef_out
+      normal_diagonal(i) = ata(i,i)
+    end do
+    numerical_floor = epsilon(1.0_wp)*max(sum(normal_diagonal)/real(ncoef_out,wp), tiny(1.0_wp))
     if (reg_lam > 0.0_wp) then
       do l=1, lm
         lnorm = real(l,wp) / real(max(1_int32,lm),wp)
@@ -1624,18 +1482,18 @@ contains
       end do
     end if
     do i=1, ncoef_out
-      ATA(i,i) = ATA(i,i) + 1.0e-22_wp
+      ata(i,i) = ata(i,i) + numerical_floor
     end do
 
     call solve_linear_system(ATA, ATb, coef_out, ncoef_out, info)
     if (info /= 0) then
-      deallocate(ATA, ATb, row_br, row_bt, row_bp)
+      deallocate(ata, atb, row_br, row_bt, row_bp, normal_diagonal)
       return
     end if
 
     rss_out = 0.0_wp
     do s=1, nobs
-      call fill_basis_components(theta_s(s), phi_s(s), lm, ig, ih, row_br, row_bt, row_bp)
+      call schmidt_basis(theta_s(s), phi_s(s), lm, ig, ih, row_br, row_bt, row_bp)
       pred_br = sum(row_br * coef_out)
       pred_bt = sum(row_bt * coef_out)
       pred_bp = sum(row_bp * coef_out)
@@ -1649,17 +1507,18 @@ contains
       end if
     end do
 
+    ! use the same data-diagonal weighted norm as the fitted damping penalty
     regnorm_out = 0.0_wp
     do l=1, lm
       lnorm = real(l,wp) / real(max(1_int32,lm),wp)
       reg_w = max(lnorm, 1.0e-6_wp)**reg_pow
       do m=0, l
-        if (ig(l,m) > 0) regnorm_out = regnorm_out + reg_w * coef_out(ig(l,m)) * coef_out(ig(l,m))
-        if (ih(l,m) > 0) regnorm_out = regnorm_out + reg_w * coef_out(ih(l,m)) * coef_out(ih(l,m))
+        if (ig(l,m) > 0) regnorm_out = regnorm_out + reg_w * normal_diagonal(ig(l,m)) * coef_out(ig(l,m))**2
+        if (ih(l,m) > 0) regnorm_out = regnorm_out + reg_w * normal_diagonal(ih(l,m)) * coef_out(ih(l,m))**2
       end do
     end do
 
-    deallocate(ATA, ATb, row_br, row_bt, row_bp)
+    deallocate(ata, atb, row_br, row_bt, row_bp, normal_diagonal)
   end subroutine solve_coeffs_from_samples
 
   subroutine auto_select_params(lmax_seed, reg_lam_seed, reg_pow_seed, joint_w, &

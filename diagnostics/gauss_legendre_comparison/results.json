@@ -52,13 +52,15 @@
     "reference_tolerance": 0.0001
   },
   "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
-  "python": "3.14.4",
+  "python": "3.14.8",
   "numpy": "2.4.2",
-  "compiler": "GNU Fortran (Homebrew GCC 15.2.0_1) 15.2.0",
+  "compiler": "GNU Fortran (Homebrew GCC 16.2.0) 16.2.0",
+  "harmonic_normalization": "schmidt",
+  "condon_shortley_phase": false,
   "binaries": {
-    "gauss_legendre": "/var/folders/bl/rkl9bvxs1yj6cfb239dm1vb40000gn/T/gravmagpy-build/a760cbe5aab269db2405/gauss_legendre",
-    "direct_sum": "/var/folders/bl/rkl9bvxs1yj6cfb239dm1vb40000gn/T/gravmagpy-build/ec972c83e65331e53653/direct_sum",
-    "spectral": "/var/folders/bl/rkl9bvxs1yj6cfb239dm1vb40000gn/T/gravmagpy-build/da4a8ceb28ff8d5d99fd/spectral"
+    "gauss_legendre": "/var/folders/bl/rkl9bvxs1yj6cfb239dm1vb40000gn/T/gravmagpy-build/9126744c954e8d233ad6/gauss_legendre",
+    "direct_sum": "/var/folders/bl/rkl9bvxs1yj6cfb239dm1vb40000gn/T/gravmagpy-build/3f2e2f23f02cf60ea542/direct_sum",
+    "spectral": "/var/folders/bl/rkl9bvxs1yj6cfb239dm1vb40000gn/T/gravmagpy-build/f678fd86687902d2f809/spectral"
   },
   "cases": [
     {
@@ -436,7 +438,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "nt",
-      "elapsed_s": 0.014943334041163325,
+      "elapsed_s": 0.014522499986924231,
       "relative_l2": 1.5435017976894962,
       "component_rmse": [
         481.26697524431887,
@@ -458,7 +460,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=4",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291094E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000134"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000150"
       ],
       "stderr": ""
     },
@@ -467,7 +469,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "nt",
-      "elapsed_s": 0.014285750046838075,
+      "elapsed_s": 0.01345783399301581,
       "relative_l2": 2.4257734240756195,
       "component_rmse": [
         655.9119637413627,
@@ -489,7 +491,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291102E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000186"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000220"
       ],
       "stderr": ""
     },
@@ -498,7 +500,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "nt",
-      "elapsed_s": 0.0143571249791421,
+      "elapsed_s": 0.01410349999787286,
       "relative_l2": 0.4106262486322839,
       "component_rmse": [
         110.73126324210347,
@@ -520,7 +522,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=16",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585290992E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000585"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000607"
       ],
       "stderr": ""
     },
@@ -529,7 +531,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "nt",
-      "elapsed_s": 0.017168041958939284,
+      "elapsed_s": 0.01950604098965414,
       "relative_l2": 0.04995779498756198,
       "component_rmse": [
         12.311052768228956,
@@ -551,7 +553,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291203E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003862"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003936"
       ],
       "stderr": ""
     },
@@ -560,7 +562,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "nt",
-      "elapsed_s": 0.04467412503436208,
+      "elapsed_s": 0.046453166025457904,
       "relative_l2": 0.0006499356560148548,
       "component_rmse": [
         0.16190036436528019,
@@ -582,7 +584,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291605E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.031199"
+        "DIAG|gauss_legendre|time|body_total_s=      0.030580"
       ],
       "stderr": ""
     },
@@ -591,7 +593,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "nt",
-      "elapsed_s": 0.017615624994505197,
+      "elapsed_s": 0.018455041979905218,
       "relative_l2": 0.001406088301506287,
       "component_rmse": [
         0.3711227216872234,
@@ -614,7 +616,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291016E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003791"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003821"
       ],
       "stderr": ""
     },
@@ -623,7 +625,7 @@
       "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "nt",
-      "elapsed_s": 0.013870250026229769,
+      "elapsed_s": 0.01630216700141318,
       "relative_l2": 0.17418489995164313,
       "component_rmse": [
         48.03093942775889,
@@ -644,11 +646,11 @@
         "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
         "DIAG|direct_sum|memory|source_arrays_mib=    0.078125",
         "DIAG|direct_sum|memory|total_est_mib=    0.079247",
-        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000017",
-        "DIAG|direct_sum|time|field_accum_s=    0.000091",
-        "DIAG|direct_sum|time|output_write_s=    0.000079",
-        "DIAG|direct_sum|time|body_total_s=    0.000203"
+        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000014",
+        "DIAG|direct_sum|time|field_accum_s=    0.000108",
+        "DIAG|direct_sum|time|output_write_s=    0.000105",
+        "DIAG|direct_sum|time|body_total_s=    0.000244"
       ],
       "stderr": ""
     },
@@ -657,7 +659,7 @@
       "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "nt",
-      "elapsed_s": 0.014404832967557013,
+      "elapsed_s": 0.01450441702036187,
       "relative_l2": 0.023883496648268533,
       "component_rmse": [
         7.274823167841269,
@@ -678,11 +680,11 @@
         "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
         "DIAG|direct_sum|memory|source_arrays_mib=    0.083008",
         "DIAG|direct_sum|memory|total_est_mib=    0.084129",
-        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000030",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000003",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000029",
         "DIAG|direct_sum|time|field_accum_s=    0.000274",
-        "DIAG|direct_sum|time|output_write_s=    0.000083",
-        "DIAG|direct_sum|time|body_total_s=    0.000404"
+        "DIAG|direct_sum|time|output_write_s=    0.000100",
+        "DIAG|direct_sum|time|body_total_s=    0.000420"
       ],
       "stderr": ""
     },
@@ -691,7 +693,7 @@
       "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "nt",
-      "elapsed_s": 0.014436166966333985,
+      "elapsed_s": 0.01474499999312684,
       "relative_l2": 0.0074894569095753484,
       "component_rmse": [
         2.284928021016419,
@@ -712,11 +714,11 @@
         "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
         "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
         "DIAG|direct_sum|memory|total_est_mib=    0.323387",
-        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000098",
-        "DIAG|direct_sum|time|field_accum_s=    0.001030",
-        "DIAG|direct_sum|time|output_write_s=    0.000084",
-        "DIAG|direct_sum|time|body_total_s=    0.001229"
+        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000091",
+        "DIAG|direct_sum|time|field_accum_s=    0.001005",
+        "DIAG|direct_sum|time|output_write_s=    0.000104",
+        "DIAG|direct_sum|time|body_total_s=    0.001216"
       ],
       "stderr": ""
     },
@@ -725,7 +727,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "nt",
-      "elapsed_s": 0.12913637497695163,
+      "elapsed_s": 0.14178370899753645,
       "relative_l2": 1.0000678324332417,
       "component_rmse": [
         287.1249196555491,
@@ -752,6 +754,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -764,14 +768,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
         "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000546",
-        "DIAG|spectral|time|fit_assembly_s=    0.114511",
-        "DIAG|spectral|time|linear_solve_s=    0.000545",
-        "DIAG|spectral|time|field_eval_s=    0.000006",
+        "DIAG|spectral|time|source_mesh_s=    0.000568",
+        "DIAG|spectral|time|fit_assembly_s=    0.126954",
+        "DIAG|spectral|time|linear_solve_s=    0.000730",
+        "DIAG|spectral|time|field_eval_s=    0.000017",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000112",
+        "DIAG|spectral|time|output_write_s=    0.000119",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.115780"
+        "DIAG|spectral|time|body_total_s=    0.128430"
       ],
       "stderr": ""
     },
@@ -780,7 +784,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "nt",
-      "elapsed_s": 0.13296050002099946,
+      "elapsed_s": 0.14457120798761025,
       "relative_l2": 1.0002220922272829,
       "component_rmse": [
         287.16219861661386,
@@ -807,6 +811,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -819,14 +825,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000562",
-        "DIAG|spectral|time|fit_assembly_s=    0.113823",
-        "DIAG|spectral|time|linear_solve_s=    0.003198",
-        "DIAG|spectral|time|field_eval_s=    0.000019",
+        "DIAG|spectral|time|source_mesh_s=    0.000576",
+        "DIAG|spectral|time|fit_assembly_s=    0.124831",
+        "DIAG|spectral|time|linear_solve_s=    0.003414",
+        "DIAG|spectral|time|field_eval_s=    0.000038",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000129",
+        "DIAG|spectral|time|output_write_s=    0.000137",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.117790"
+        "DIAG|spectral|time|body_total_s=    0.129054"
       ],
       "stderr": ""
     },
@@ -835,7 +841,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "nt",
-      "elapsed_s": 0.16379099996993318,
+      "elapsed_s": 0.17905616699135862,
       "relative_l2": 1.0002071776376573,
       "component_rmse": [
         287.16831424062156,
@@ -862,6 +868,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -873,15 +881,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
-        "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000612",
-        "DIAG|spectral|time|fit_assembly_s=    0.131973",
-        "DIAG|spectral|time|linear_solve_s=    0.015782",
-        "DIAG|spectral|time|field_eval_s=    0.000047",
+        "DIAG|spectral|time|obs_grid_s=    0.000003",
+        "DIAG|spectral|time|source_mesh_s=    0.000552",
+        "DIAG|spectral|time|fit_assembly_s=    0.147171",
+        "DIAG|spectral|time|linear_solve_s=    0.016232",
+        "DIAG|spectral|time|field_eval_s=    0.000070",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000088",
+        "DIAG|spectral|time|output_write_s=    0.000124",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.148557"
+        "DIAG|spectral|time|body_total_s=    0.164211"
       ],
       "stderr": ""
     },
@@ -890,15 +898,15 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "nt",
-      "elapsed_s": 1.4098835830227472,
-      "relative_l2": 0.9939844761420821,
+      "elapsed_s": 1.4691898750024848,
+      "relative_l2": 1.002714269824006,
       "component_rmse": [
-        288.3454938329897,
-        310.5702437653946,
-        299.7341497747913
+        287.8970240710907,
+        305.88439499784323,
+        312.63576660732576
       ],
-      "vector_rmse": 519.0737526281832,
-      "max_vector_difference": 1037.249909657407,
+      "vector_rmse": 523.6325831480858,
+      "max_vector_difference": 1115.409457855254,
       "options": {
         "lmax": 24,
         "ntheta_fit": 50,
@@ -917,6 +925,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -928,15 +938,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
-        "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000576",
-        "DIAG|spectral|time|fit_assembly_s=    0.485758",
-        "DIAG|spectral|time|linear_solve_s=    0.908312",
-        "DIAG|spectral|time|field_eval_s=    0.000136",
+        "DIAG|spectral|time|obs_grid_s=    0.000001",
+        "DIAG|spectral|time|source_mesh_s=    0.000571",
+        "DIAG|spectral|time|fit_assembly_s=    0.545807",
+        "DIAG|spectral|time|linear_solve_s=    0.907347",
+        "DIAG|spectral|time|field_eval_s=    0.000239",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000118",
+        "DIAG|spectral|time|output_write_s=    0.000142",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.394957"
+        "DIAG|spectral|time|body_total_s=    1.454168"
       ],
       "stderr": ""
     },
@@ -945,7 +955,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "nt",
-      "elapsed_s": 0.01460383302764967,
+      "elapsed_s": 0.013603208004496992,
       "relative_l2": 0.004923504129782206,
       "component_rmse": [
         0.15870223045826082,
@@ -967,7 +977,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=4",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291094E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000137"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000144"
       ],
       "stderr": ""
     },
@@ -976,7 +986,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "nt",
-      "elapsed_s": 0.013724584016017616,
+      "elapsed_s": 0.012532209017081186,
       "relative_l2": 4.464613056767102e-06,
       "component_rmse": [
         0.00015413758918280835,
@@ -998,7 +1008,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291102E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000192"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000202"
       ],
       "stderr": ""
     },
@@ -1007,7 +1017,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "nt",
-      "elapsed_s": 0.013783791975583881,
+      "elapsed_s": 0.013119959010509774,
       "relative_l2": 1.76285285120796e-12,
       "component_rmse": [
         5.826125410127747e-11,
@@ -1029,7 +1039,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=16",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585290992E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000600"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000593"
       ],
       "stderr": ""
     },
@@ -1038,7 +1048,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "nt",
-      "elapsed_s": 0.017351290967781097,
+      "elapsed_s": 0.016314833977958187,
       "relative_l2": 1.4454774878628453e-15,
       "component_rmse": [
         5.978410822226232e-14,
@@ -1060,7 +1070,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291203E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003870"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003836"
       ],
       "stderr": ""
     },
@@ -1069,7 +1079,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "nt",
-      "elapsed_s": 0.0442622079863213,
+      "elapsed_s": 0.0429173749871552,
       "relative_l2": 8.2357374714311e-16,
       "component_rmse": [
         3.5471185069345456e-14,
@@ -1091,7 +1101,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291605E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.030744"
+        "DIAG|gauss_legendre|time|body_total_s=      0.030447"
       ],
       "stderr": ""
     },
@@ -1100,7 +1110,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "nt",
-      "elapsed_s": 0.01792783400742337,
+      "elapsed_s": 0.017160290997708216,
       "relative_l2": 8.595397790583498e-15,
       "component_rmse": [
         2.9914015312926163e-13,
@@ -1123,7 +1133,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291016E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003908"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003734"
       ],
       "stderr": ""
     },
@@ -1132,7 +1142,7 @@
       "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "nt",
-      "elapsed_s": 0.013581625011283904,
+      "elapsed_s": 0.012946167000336573,
       "relative_l2": 0.0012327388112857497,
       "component_rmse": [
         0.04822803510482,
@@ -1153,11 +1163,11 @@
         "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
         "DIAG|direct_sum|memory|source_arrays_mib=    0.078125",
         "DIAG|direct_sum|memory|total_est_mib=    0.079247",
-        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000019",
-        "DIAG|direct_sum|time|field_accum_s=    0.000111",
-        "DIAG|direct_sum|time|output_write_s=    0.000096",
-        "DIAG|direct_sum|time|body_total_s=    0.000247"
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000017",
+        "DIAG|direct_sum|time|field_accum_s=    0.000092",
+        "DIAG|direct_sum|time|output_write_s=    0.000091",
+        "DIAG|direct_sum|time|body_total_s=    0.000216"
       ],
       "stderr": ""
     },
@@ -1166,7 +1176,7 @@
       "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "nt",
-      "elapsed_s": 0.013496999978087842,
+      "elapsed_s": 0.012857458990765736,
       "relative_l2": 0.00031531428621696834,
       "component_rmse": [
         0.012136526086652532,
@@ -1189,9 +1199,9 @@
         "DIAG|direct_sum|memory|total_est_mib=    0.084129",
         "DIAG|direct_sum|time|obs_grid_s=    0.000001",
         "DIAG|direct_sum|time|source_mesh_s=    0.000031",
-        "DIAG|direct_sum|time|field_accum_s=    0.000274",
-        "DIAG|direct_sum|time|output_write_s=    0.000084",
-        "DIAG|direct_sum|time|body_total_s=    0.000405"
+        "DIAG|direct_sum|time|field_accum_s=    0.000277",
+        "DIAG|direct_sum|time|output_write_s=    0.000094",
+        "DIAG|direct_sum|time|body_total_s=    0.000416"
       ],
       "stderr": ""
     },
@@ -1200,7 +1210,7 @@
       "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "nt",
-      "elapsed_s": 0.014043500006664544,
+      "elapsed_s": 0.013795374979963526,
       "relative_l2": 0.00011858834807174921,
       "component_rmse": [
         0.004168814563959231,
@@ -1222,10 +1232,10 @@
         "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
         "DIAG|direct_sum|memory|total_est_mib=    0.323387",
         "DIAG|direct_sum|time|obs_grid_s=    0.000001",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000091",
-        "DIAG|direct_sum|time|field_accum_s=    0.000979",
-        "DIAG|direct_sum|time|output_write_s=    0.000081",
-        "DIAG|direct_sum|time|body_total_s=    0.001169"
+        "DIAG|direct_sum|time|source_mesh_s=    0.000099",
+        "DIAG|direct_sum|time|field_accum_s=    0.000967",
+        "DIAG|direct_sum|time|output_write_s=    0.000096",
+        "DIAG|direct_sum|time|body_total_s=    0.001179"
       ],
       "stderr": ""
     },
@@ -1234,7 +1244,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "nt",
-      "elapsed_s": 0.12540354195516557,
+      "elapsed_s": 0.13941608302411623,
       "relative_l2": 1.0013435243438835,
       "component_rmse": [
         37.06131121180685,
@@ -1261,6 +1271,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -1272,15 +1284,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
-        "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000579",
-        "DIAG|spectral|time|fit_assembly_s=    0.109883",
-        "DIAG|spectral|time|linear_solve_s=    0.000548",
-        "DIAG|spectral|time|field_eval_s=    0.000007",
+        "DIAG|spectral|time|obs_grid_s=    0.000002",
+        "DIAG|spectral|time|source_mesh_s=    0.000587",
+        "DIAG|spectral|time|fit_assembly_s=    0.125504",
+        "DIAG|spectral|time|linear_solve_s=    0.000703",
+        "DIAG|spectral|time|field_eval_s=    0.000019",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000108",
+        "DIAG|spectral|time|output_write_s=    0.000104",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.111180"
+        "DIAG|spectral|time|body_total_s=    0.126962"
       ],
       "stderr": ""
     },
@@ -1289,7 +1301,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "nt",
-      "elapsed_s": 0.12920433399267495,
+      "elapsed_s": 0.14309399999910966,
       "relative_l2": 1.0036602894010644,
       "component_rmse": [
         37.14659443429741,
@@ -1316,6 +1328,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -1327,15 +1341,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
-        "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000586",
-        "DIAG|spectral|time|fit_assembly_s=    0.110144",
-        "DIAG|spectral|time|linear_solve_s=    0.003202",
-        "DIAG|spectral|time|field_eval_s=    0.000019",
+        "DIAG|spectral|time|obs_grid_s=    0.000001",
+        "DIAG|spectral|time|source_mesh_s=    0.000558",
+        "DIAG|spectral|time|fit_assembly_s=    0.125718",
+        "DIAG|spectral|time|linear_solve_s=    0.003310",
+        "DIAG|spectral|time|field_eval_s=    0.000035",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000132",
+        "DIAG|spectral|time|output_write_s=    0.000119",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.114141"
+        "DIAG|spectral|time|body_total_s=    0.129792"
       ],
       "stderr": ""
     },
@@ -1344,7 +1358,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "nt",
-      "elapsed_s": 0.16272687498712912,
+      "elapsed_s": 0.1783352909842506,
       "relative_l2": 1.0023898095271198,
       "component_rmse": [
         37.115708904103364,
@@ -1371,6 +1385,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -1382,15 +1398,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
-        "DIAG|spectral|time|obs_grid_s=    0.000001",
+        "DIAG|spectral|time|obs_grid_s=    0.000002",
         "DIAG|spectral|time|source_mesh_s=    0.000561",
-        "DIAG|spectral|time|fit_assembly_s=    0.130375",
-        "DIAG|spectral|time|linear_solve_s=    0.015968",
-        "DIAG|spectral|time|field_eval_s=    0.000051",
+        "DIAG|spectral|time|fit_assembly_s=    0.147212",
+        "DIAG|spectral|time|linear_solve_s=    0.016121",
+        "DIAG|spectral|time|field_eval_s=    0.000073",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000125",
+        "DIAG|spectral|time|output_write_s=    0.000113",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.147141"
+        "DIAG|spectral|time|body_total_s=    0.164133"
       ],
       "stderr": ""
     },
@@ -1399,15 +1415,15 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "nt",
-      "elapsed_s": 1.4163933329982683,
-      "relative_l2": 0.809705718443265,
+      "elapsed_s": 1.4793849999841768,
+      "relative_l2": 0.9916557982869512,
       "component_rmse": [
-        31.604395903937657,
-        34.82828955192326,
-        31.12553968350352
+        36.74307738411416,
+        46.182275249107974,
+        35.886667719410525
       ],
-      "vector_rmse": 56.39722346139738,
-      "max_vector_difference": 90.7264787597139,
+      "vector_rmse": 69.07032070899015,
+      "max_vector_difference": 116.83113736131887,
       "options": {
         "lmax": 24,
         "ntheta_fit": 50,
@@ -1426,6 +1442,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -1438,14 +1456,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
         "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000567",
-        "DIAG|spectral|time|fit_assembly_s=    0.488342",
-        "DIAG|spectral|time|linear_solve_s=    0.911961",
-        "DIAG|spectral|time|field_eval_s=    0.000132",
+        "DIAG|spectral|time|source_mesh_s=    0.000568",
+        "DIAG|spectral|time|fit_assembly_s=    0.549083",
+        "DIAG|spectral|time|linear_solve_s=    0.912732",
+        "DIAG|spectral|time|field_eval_s=    0.000226",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000120",
+        "DIAG|spectral|time|output_write_s=    0.000146",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.401183"
+        "DIAG|spectral|time|body_total_s=    1.462811"
       ],
       "stderr": ""
     },
@@ -1454,7 +1472,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "nt",
-      "elapsed_s": 0.01592908299062401,
+      "elapsed_s": 0.0142197500099428,
       "relative_l2": 0.003383263542907649,
       "component_rmse": [
         0.07133355641779171,
@@ -1485,7 +1503,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "nt",
-      "elapsed_s": 0.014759291021618992,
+      "elapsed_s": 0.013035249983659014,
       "relative_l2": 2.7339490789845667e-06,
       "component_rmse": [
         5.528965145375853e-05,
@@ -1507,7 +1525,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  1.6332293383881262E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000322"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000323"
       ],
       "stderr": ""
     },
@@ -1516,7 +1534,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "nt",
-      "elapsed_s": 0.015486084041185677,
+      "elapsed_s": 0.014428041002247483,
       "relative_l2": 1.2467887143536167e-12,
       "component_rmse": [
         2.4590091320024524e-11,
@@ -1538,7 +1556,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=16",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  1.6332293383881098E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.001500"
+        "DIAG|gauss_legendre|time|body_total_s=      0.001539"
       ],
       "stderr": ""
     },
@@ -1547,7 +1565,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "nt",
-      "elapsed_s": 0.025567584030795842,
+      "elapsed_s": 0.024033958005020395,
       "relative_l2": 1.5313898690694542e-15,
       "component_rmse": [
         5.0557727387474845e-14,
@@ -1569,7 +1587,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  1.6332293383881551E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.011599"
+        "DIAG|gauss_legendre|time|body_total_s=      0.011410"
       ],
       "stderr": ""
     },
@@ -1578,7 +1596,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "nt",
-      "elapsed_s": 0.10718541598180309,
+      "elapsed_s": 0.1053955829993356,
       "relative_l2": 7.479855219026807e-16,
       "component_rmse": [
         2.3750640004864572e-14,
@@ -1600,7 +1618,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  1.6332293383881436E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.092802"
+        "DIAG|gauss_legendre|time|body_total_s=      0.092860"
       ],
       "stderr": ""
     },
@@ -1609,7 +1627,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "nt",
-      "elapsed_s": 0.02647583303041756,
+      "elapsed_s": 0.025049957999726757,
       "relative_l2": 5.5099050348477385e-15,
       "component_rmse": [
         1.1033296217097735e-13,
@@ -1632,7 +1650,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  1.6332293383880930E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.011758"
+        "DIAG|gauss_legendre|time|body_total_s=      0.011377"
       ],
       "stderr": ""
     },
@@ -1641,7 +1659,7 @@
       "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "nt",
-      "elapsed_s": 0.014486625033896416,
+      "elapsed_s": 0.012975541001651436,
       "relative_l2": 0.001374648334796459,
       "component_rmse": [
         0.03910012734248906,
@@ -1662,11 +1680,11 @@
         "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
         "DIAG|direct_sum|memory|source_arrays_mib=    0.078125",
         "DIAG|direct_sum|memory|total_est_mib=    0.079247",
-        "DIAG|direct_sum|time|obs_grid_s=    0.000003",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000020",
-        "DIAG|direct_sum|time|field_accum_s=    0.000105",
-        "DIAG|direct_sum|time|output_write_s=    0.000094",
-        "DIAG|direct_sum|time|body_total_s=    0.000238"
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000015",
+        "DIAG|direct_sum|time|field_accum_s=    0.000092",
+        "DIAG|direct_sum|time|output_write_s=    0.000091",
+        "DIAG|direct_sum|time|body_total_s=    0.000216"
       ],
       "stderr": ""
     },
@@ -1675,7 +1693,7 @@
       "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "nt",
-      "elapsed_s": 0.014608374971430749,
+      "elapsed_s": 0.012676916987402365,
       "relative_l2": 0.000336607883050311,
       "component_rmse": [
         0.00940280724229796,
@@ -1696,11 +1714,11 @@
         "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
         "DIAG|direct_sum|memory|source_arrays_mib=    0.083008",
         "DIAG|direct_sum|memory|total_est_mib=    0.084129",
-        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000037",
-        "DIAG|direct_sum|time|field_accum_s=    0.000293",
-        "DIAG|direct_sum|time|output_write_s=    0.000081",
-        "DIAG|direct_sum|time|body_total_s=    0.000430"
+        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000030",
+        "DIAG|direct_sum|time|field_accum_s=    0.000253",
+        "DIAG|direct_sum|time|output_write_s=    0.000093",
+        "DIAG|direct_sum|time|body_total_s=    0.000398"
       ],
       "stderr": ""
     },
@@ -1709,7 +1727,7 @@
       "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "nt",
-      "elapsed_s": 0.014969499956350774,
+      "elapsed_s": 0.013589207985205576,
       "relative_l2": 0.0001321153554261338,
       "component_rmse": [
         0.0034736146032392974,
@@ -1731,10 +1749,10 @@
         "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
         "DIAG|direct_sum|memory|total_est_mib=    0.323387",
         "DIAG|direct_sum|time|obs_grid_s=    0.000002",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000091",
-        "DIAG|direct_sum|time|field_accum_s=    0.000820",
-        "DIAG|direct_sum|time|output_write_s=    0.000083",
-        "DIAG|direct_sum|time|body_total_s=    0.001016"
+        "DIAG|direct_sum|time|source_mesh_s=    0.000088",
+        "DIAG|direct_sum|time|field_accum_s=    0.000868",
+        "DIAG|direct_sum|time|output_write_s=    0.000092",
+        "DIAG|direct_sum|time|body_total_s=    0.001066"
       ],
       "stderr": ""
     },
@@ -1743,7 +1761,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "nt",
-      "elapsed_s": 0.09897437499603257,
+      "elapsed_s": 0.10839491701335646,
       "relative_l2": 1.0014870310080501,
       "component_rmse": [
         27.552604823070247,
@@ -1770,6 +1788,8 @@
         "  Cumulative source elements: 36864",
         "Hybrid mode inactive. input_complex=T mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=36864",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -1782,14 +1802,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000453",
-        "DIAG|spectral|time|fit_assembly_s=    0.083509",
-        "DIAG|spectral|time|linear_solve_s=    0.000672",
-        "DIAG|spectral|time|field_eval_s=    0.000008",
+        "DIAG|spectral|time|source_mesh_s=    0.000449",
+        "DIAG|spectral|time|fit_assembly_s=    0.094646",
+        "DIAG|spectral|time|linear_solve_s=    0.000716",
+        "DIAG|spectral|time|field_eval_s=    0.000017",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000107",
+        "DIAG|spectral|time|output_write_s=    0.000109",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.084821"
+        "DIAG|spectral|time|body_total_s=    0.095983"
       ],
       "stderr": ""
     },
@@ -1798,7 +1818,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "nt",
-      "elapsed_s": 0.10232220904435962,
+      "elapsed_s": 0.11151991700171493,
       "relative_l2": 1.004070316031148,
       "component_rmse": [
         27.62498516024487,
@@ -1825,6 +1845,8 @@
         "  Cumulative source elements: 36864",
         "Hybrid mode inactive. input_complex=T mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=36864",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -1837,14 +1859,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
         "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000431",
-        "DIAG|spectral|time|fit_assembly_s=    0.084015",
-        "DIAG|spectral|time|linear_solve_s=    0.003180",
-        "DIAG|spectral|time|field_eval_s=    0.000019",
+        "DIAG|spectral|time|source_mesh_s=    0.000438",
+        "DIAG|spectral|time|fit_assembly_s=    0.093450",
+        "DIAG|spectral|time|linear_solve_s=    0.003337",
+        "DIAG|spectral|time|field_eval_s=    0.000035",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000106",
+        "DIAG|spectral|time|output_write_s=    0.000115",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.087810"
+        "DIAG|spectral|time|body_total_s=    0.097422"
       ],
       "stderr": ""
     },
@@ -1853,7 +1875,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "nt",
-      "elapsed_s": 0.12845033302437514,
+      "elapsed_s": 0.14016970800003037,
       "relative_l2": 1.0025264433081353,
       "component_rmse": [
         27.598657767540793,
@@ -1880,6 +1902,8 @@
         "  Cumulative source elements: 36864",
         "Hybrid mode inactive. input_complex=T mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=36864",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -1891,15 +1915,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
-        "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000437",
-        "DIAG|spectral|time|fit_assembly_s=    0.097559",
-        "DIAG|spectral|time|linear_solve_s=    0.015898",
-        "DIAG|spectral|time|field_eval_s=    0.000041",
+        "DIAG|spectral|time|obs_grid_s=    0.000003",
+        "DIAG|spectral|time|source_mesh_s=    0.000442",
+        "DIAG|spectral|time|fit_assembly_s=    0.110041",
+        "DIAG|spectral|time|linear_solve_s=    0.015576",
+        "DIAG|spectral|time|field_eval_s=    0.000070",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000102",
+        "DIAG|spectral|time|output_write_s=    0.000121",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.114108"
+        "DIAG|spectral|time|body_total_s=    0.126302"
       ],
       "stderr": ""
     },
@@ -1908,15 +1932,15 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "nt",
-      "elapsed_s": 1.2944222500082105,
-      "relative_l2": 1.2286889406731836,
+      "elapsed_s": 1.3425409579940606,
+      "relative_l2": 0.9888336864575868,
       "component_rmse": [
-        33.04173860448475,
-        34.92258130831742,
-        39.38661916200581
+        27.251441758164436,
+        33.68449618250351,
+        24.989724408443635
       ],
-      "vector_rmse": 62.15021274505842,
-      "max_vector_difference": 106.61833654840365,
+      "vector_rmse": 50.017723728471346,
+      "max_vector_difference": 88.29181377256869,
       "options": {
         "lmax": 24,
         "ntheta_fit": 50,
@@ -1935,6 +1959,8 @@
         "  Cumulative source elements: 36864",
         "Hybrid mode inactive. input_complex=T mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=36864",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -1947,14 +1973,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000425",
-        "DIAG|spectral|time|fit_assembly_s=    0.367419",
-        "DIAG|spectral|time|linear_solve_s=    0.911121",
-        "DIAG|spectral|time|field_eval_s=    0.000143",
+        "DIAG|spectral|time|source_mesh_s=    0.000430",
+        "DIAG|spectral|time|fit_assembly_s=    0.409244",
+        "DIAG|spectral|time|linear_solve_s=    0.918336",
+        "DIAG|spectral|time|field_eval_s=    0.000236",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000120",
+        "DIAG|spectral|time|output_write_s=    0.000133",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.279285"
+        "DIAG|spectral|time|body_total_s=    1.328433"
       ],
       "stderr": ""
     },
@@ -1963,7 +1989,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "mgal",
-      "elapsed_s": 0.014536832983139902,
+      "elapsed_s": 0.014471291011432186,
       "relative_l2": 0.00016176361247999054,
       "component_rmse": [
         0.001253617701740782,
@@ -1985,7 +2011,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=4",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  9.5275339241928223E+12",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000145"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000162"
       ],
       "stderr": ""
     },
@@ -1994,7 +2020,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "mgal",
-      "elapsed_s": 0.014032874954864383,
+      "elapsed_s": 0.013612375012598932,
       "relative_l2": 1.816062421089312e-08,
       "component_rmse": [
         9.50127620972487e-08,
@@ -2016,7 +2042,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  9.5275339241928379E+12",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000217"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000236"
       ],
       "stderr": ""
     },
@@ -2025,7 +2051,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "mgal",
-      "elapsed_s": 0.014508540974929929,
+      "elapsed_s": 0.01412775000790134,
       "relative_l2": 2.48606720721267e-15,
       "component_rmse": [
         1.1418423480962275e-14,
@@ -2047,7 +2073,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=16",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  9.5275339241928281E+12",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000843"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000880"
       ],
       "stderr": ""
     },
@@ -2056,7 +2082,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "mgal",
-      "elapsed_s": 0.020475208992138505,
+      "elapsed_s": 0.019403499987674877,
       "relative_l2": 1.8038872716010815e-15,
       "component_rmse": [
         1.0327705761627688e-14,
@@ -2078,7 +2104,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  9.5275339241927930E+12",
-        "DIAG|gauss_legendre|time|body_total_s=      0.006071"
+        "DIAG|gauss_legendre|time|body_total_s=      0.006130"
       ],
       "stderr": ""
     },
@@ -2087,7 +2113,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "mgal",
-      "elapsed_s": 0.06233854201855138,
+      "elapsed_s": 0.0635574999905657,
       "relative_l2": 1.0951052238610582e-15,
       "component_rmse": [
         5.8088711802084784e-15,
@@ -2109,7 +2135,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  9.5275339241927949E+12",
-        "DIAG|gauss_legendre|time|body_total_s=      0.048502"
+        "DIAG|gauss_legendre|time|body_total_s=      0.049308"
       ],
       "stderr": ""
     },
@@ -2118,7 +2144,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "mgal",
-      "elapsed_s": 0.020123708993196487,
+      "elapsed_s": 0.020454915997106582,
       "relative_l2": 2.8082571841862215e-15,
       "component_rmse": [
         1.4366948426543232e-14,
@@ -2141,7 +2167,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  9.5275339241928633E+12",
-        "DIAG|gauss_legendre|time|body_total_s=      0.006098"
+        "DIAG|gauss_legendre|time|body_total_s=      0.006057"
       ],
       "stderr": ""
     },
@@ -2150,7 +2176,7 @@
       "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "mgal",
-      "elapsed_s": 0.013672208995558321,
+      "elapsed_s": 0.014317207998828962,
       "relative_l2": 0.0032369241957069307,
       "component_rmse": [
         0.017482331725683264,
@@ -2173,9 +2199,9 @@
         "DIAG|direct_sum|memory|total_est_mib=    0.079247",
         "DIAG|direct_sum|time|obs_grid_s=    0.000002",
         "DIAG|direct_sum|time|source_mesh_s=    0.000011",
-        "DIAG|direct_sum|time|field_accum_s=    0.000047",
-        "DIAG|direct_sum|time|output_write_s=    0.000081",
-        "DIAG|direct_sum|time|body_total_s=    0.000154"
+        "DIAG|direct_sum|time|field_accum_s=    0.000044",
+        "DIAG|direct_sum|time|output_write_s=    0.000101",
+        "DIAG|direct_sum|time|body_total_s=    0.000171"
       ],
       "stderr": ""
     },
@@ -2184,7 +2210,7 @@
       "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "mgal",
-      "elapsed_s": 0.013682959019206464,
+      "elapsed_s": 0.014466416992945597,
       "relative_l2": 0.0008206596949579053,
       "component_rmse": [
         0.004334345931374059,
@@ -2205,11 +2231,11 @@
         "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
         "DIAG|direct_sum|memory|source_arrays_mib=    0.083008",
         "DIAG|direct_sum|memory|total_est_mib=    0.084129",
-        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000025",
-        "DIAG|direct_sum|time|field_accum_s=    0.000163",
-        "DIAG|direct_sum|time|output_write_s=    0.000089",
-        "DIAG|direct_sum|time|body_total_s=    0.000290"
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000029",
+        "DIAG|direct_sum|time|field_accum_s=    0.000174",
+        "DIAG|direct_sum|time|output_write_s=    0.000113",
+        "DIAG|direct_sum|time|body_total_s=    0.000334"
       ],
       "stderr": ""
     },
@@ -2218,7 +2244,7 @@
       "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "mgal",
-      "elapsed_s": 0.014840457995887846,
+      "elapsed_s": 0.014634291990660131,
       "relative_l2": 0.0002628798782653999,
       "component_rmse": [
         0.0013028408594030602,
@@ -2239,11 +2265,11 @@
         "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
         "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
         "DIAG|direct_sum|memory|total_est_mib=    0.323387",
-        "DIAG|direct_sum|time|obs_grid_s=    0.000003",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000092",
-        "DIAG|direct_sum|time|field_accum_s=    0.000694",
-        "DIAG|direct_sum|time|output_write_s=    0.000094",
-        "DIAG|direct_sum|time|body_total_s=    0.000900"
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000097",
+        "DIAG|direct_sum|time|field_accum_s=    0.000730",
+        "DIAG|direct_sum|time|output_write_s=    0.000103",
+        "DIAG|direct_sum|time|body_total_s=    0.000947"
       ],
       "stderr": ""
     },
@@ -2252,7 +2278,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "mgal",
-      "elapsed_s": 0.04885266697965562,
+      "elapsed_s": 0.0632195420039352,
       "relative_l2": 0.9928587899760484,
       "component_rmse": [
         5.108636138609191,
@@ -2279,6 +2305,8 @@
         "  Cumulative source elements: 21504",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=21504",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -2291,14 +2319,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000289",
-        "DIAG|spectral|time|fit_assembly_s=    0.033499",
-        "DIAG|spectral|time|linear_solve_s=    0.000599",
-        "DIAG|spectral|time|field_eval_s=    0.000008",
+        "DIAG|spectral|time|source_mesh_s=    0.000271",
+        "DIAG|spectral|time|fit_assembly_s=    0.047153",
+        "DIAG|spectral|time|linear_solve_s=    0.000704",
+        "DIAG|spectral|time|field_eval_s=    0.000024",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000109",
+        "DIAG|spectral|time|output_write_s=    0.000129",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.034557"
+        "DIAG|spectral|time|body_total_s=    0.048329"
       ],
       "stderr": ""
     },
@@ -2307,7 +2335,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "mgal",
-      "elapsed_s": 0.050993625016417354,
+      "elapsed_s": 0.06524649998755194,
       "relative_l2": 0.9799922170522785,
       "component_rmse": [
         5.049094640957685,
@@ -2334,6 +2362,8 @@
         "  Cumulative source elements: 21504",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=21504",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -2346,14 +2376,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000263",
-        "DIAG|spectral|time|fit_assembly_s=    0.032826",
-        "DIAG|spectral|time|linear_solve_s=    0.003235",
-        "DIAG|spectral|time|field_eval_s=    0.000018",
+        "DIAG|spectral|time|source_mesh_s=    0.000253",
+        "DIAG|spectral|time|fit_assembly_s=    0.046873",
+        "DIAG|spectral|time|linear_solve_s=    0.003295",
+        "DIAG|spectral|time|field_eval_s=    0.000038",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000096",
+        "DIAG|spectral|time|output_write_s=    0.000123",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.036489"
+        "DIAG|spectral|time|body_total_s=    0.050638"
       ],
       "stderr": ""
     },
@@ -2362,7 +2392,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "mgal",
-      "elapsed_s": 0.06995970802381635,
+      "elapsed_s": 0.08745449999696575,
       "relative_l2": 0.9660890179704495,
       "component_rmse": [
         4.979218261068002,
@@ -2389,6 +2419,8 @@
         "  Cumulative source elements: 21504",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=21504",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -2401,14 +2433,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000277",
-        "DIAG|spectral|time|fit_assembly_s=    0.038829",
-        "DIAG|spectral|time|linear_solve_s=    0.015625",
-        "DIAG|spectral|time|field_eval_s=    0.000039",
+        "DIAG|spectral|time|source_mesh_s=    0.000253",
+        "DIAG|spectral|time|fit_assembly_s=    0.056003",
+        "DIAG|spectral|time|linear_solve_s=    0.016554",
+        "DIAG|spectral|time|field_eval_s=    0.000073",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000109",
+        "DIAG|spectral|time|output_write_s=    0.000144",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.054939"
+        "DIAG|spectral|time|body_total_s=    0.073082"
       ],
       "stderr": ""
     },
@@ -2417,15 +2449,15 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "mgal",
-      "elapsed_s": 1.0767371249967255,
-      "relative_l2": 0.8892660690888942,
+      "elapsed_s": 1.140914541989332,
+      "relative_l2": 0.867262071665929,
       "component_rmse": [
-        3.5902471317380393,
-        5.842430203688226,
-        4.572616320092014
+        4.47346524745827,
+        5.536812825705555,
+        3.7341984441835527
       ],
-      "vector_rmse": 8.242128679090948,
-      "max_vector_difference": 13.574690802801346,
+      "vector_rmse": 8.03818546735874,
+      "max_vector_difference": 13.66685320745099,
       "options": {
         "lmax": 24,
         "ntheta_fit": 50,
@@ -2444,6 +2476,8 @@
         "  Cumulative source elements: 21504",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=21504",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -2456,14 +2490,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000264",
-        "DIAG|spectral|time|fit_assembly_s=    0.145380",
-        "DIAG|spectral|time|linear_solve_s=    0.915664",
-        "DIAG|spectral|time|field_eval_s=    0.000133",
+        "DIAG|spectral|time|source_mesh_s=    0.000252",
+        "DIAG|spectral|time|fit_assembly_s=    0.207433",
+        "DIAG|spectral|time|linear_solve_s=    0.918165",
+        "DIAG|spectral|time|field_eval_s=    0.000222",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000115",
+        "DIAG|spectral|time|output_write_s=    0.000151",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.061616"
+        "DIAG|spectral|time|body_total_s=    1.126278"
       ],
       "stderr": ""
     },
@@ -2472,7 +2506,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "nt",
-      "elapsed_s": 0.014915417006704956,
+      "elapsed_s": 0.013921249978011474,
       "relative_l2": 2.0235428082043443e-15,
       "component_rmse": [
         1.026530790365282e-19,
@@ -2494,7 +2528,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=4",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291094E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000144"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000160"
       ],
       "stderr": ""
     },
@@ -2503,7 +2537,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "nt",
-      "elapsed_s": 0.013898374978452921,
+      "elapsed_s": 0.013323874998604879,
       "relative_l2": 2.4447708361848627e-15,
       "component_rmse": [
         1.2526272584620893e-19,
@@ -2534,7 +2568,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "nt",
-      "elapsed_s": 0.014461415994446725,
+      "elapsed_s": 0.013330292014870793,
       "relative_l2": 1.4077048279184547e-15,
       "component_rmse": [
         7.278330009883296e-20,
@@ -2556,7 +2590,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=16",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585290992E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000614"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000621"
       ],
       "stderr": ""
     },
@@ -2565,7 +2599,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "nt",
-      "elapsed_s": 0.017881250008940697,
+      "elapsed_s": 0.017512582999188453,
       "relative_l2": 4.566009331746382e-17,
       "component_rmse": [
         2.9041129620147442e-21,
@@ -2587,7 +2621,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291203E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003888"
+        "DIAG|gauss_legendre|time|body_total_s=      0.004152"
       ],
       "stderr": ""
     },
@@ -2596,7 +2630,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "nt",
-      "elapsed_s": 0.045091249980032444,
+      "elapsed_s": 0.046092000004136935,
       "relative_l2": 6.902825352776836e-16,
       "component_rmse": [
         3.5686337532975413e-20,
@@ -2618,7 +2652,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291605E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.031375"
+        "DIAG|gauss_legendre|time|body_total_s=      0.031143"
       ],
       "stderr": ""
     },
@@ -2627,7 +2661,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "nt",
-      "elapsed_s": 0.018217083998024464,
+      "elapsed_s": 0.019906582980183885,
       "relative_l2": 2.515557363322148e-15,
       "component_rmse": [
         1.2871989077574935e-19,
@@ -2650,7 +2684,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291016E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003820"
+        "DIAG|gauss_legendre|time|body_total_s=      0.004038"
       ],
       "stderr": ""
     },
@@ -2659,7 +2693,7 @@
       "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "nt",
-      "elapsed_s": 0.014099041000008583,
+      "elapsed_s": 0.014993125019827858,
       "relative_l2": 0.001019067863334415,
       "component_rmse": [
         5.2588669161692315e-08,
@@ -2680,11 +2714,11 @@
         "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
         "DIAG|direct_sum|memory|source_arrays_mib=    0.078125",
         "DIAG|direct_sum|memory|total_est_mib=    0.079247",
-        "DIAG|direct_sum|time|obs_grid_s=    0.000003",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000015",
+        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000014",
         "DIAG|direct_sum|time|field_accum_s=    0.000098",
-        "DIAG|direct_sum|time|output_write_s=    0.000090",
-        "DIAG|direct_sum|time|body_total_s=    0.000222"
+        "DIAG|direct_sum|time|output_write_s=    0.000103",
+        "DIAG|direct_sum|time|body_total_s=    0.000235"
       ],
       "stderr": ""
     },
@@ -2693,7 +2727,7 @@
       "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "nt",
-      "elapsed_s": 0.013766415999270976,
+      "elapsed_s": 0.014182208018610254,
       "relative_l2": 0.0008847369079752646,
       "component_rmse": [
         4.600667691289698e-08,
@@ -2715,8 +2749,8 @@
         "DIAG|direct_sum|memory|source_arrays_mib=    0.083008",
         "DIAG|direct_sum|memory|total_est_mib=    0.084129",
         "DIAG|direct_sum|time|obs_grid_s=    0.000001",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000030",
-        "DIAG|direct_sum|time|field_accum_s=    0.000277",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000032",
+        "DIAG|direct_sum|time|field_accum_s=    0.000279",
         "DIAG|direct_sum|time|output_write_s=    0.000102",
         "DIAG|direct_sum|time|body_total_s=    0.000430"
       ],
@@ -2727,7 +2761,7 @@
       "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "nt",
-      "elapsed_s": 0.014359916967805475,
+      "elapsed_s": 0.01534049998736009,
       "relative_l2": 0.0008230676247172196,
       "component_rmse": [
         4.235629863700082e-08,
@@ -2749,10 +2783,10 @@
         "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
         "DIAG|direct_sum|memory|total_est_mib=    0.323387",
         "DIAG|direct_sum|time|obs_grid_s=    0.000001",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000086",
-        "DIAG|direct_sum|time|field_accum_s=    0.001007",
-        "DIAG|direct_sum|time|output_write_s=    0.000091",
-        "DIAG|direct_sum|time|body_total_s=    0.001201"
+        "DIAG|direct_sum|time|source_mesh_s=    0.000103",
+        "DIAG|direct_sum|time|field_accum_s=    0.000973",
+        "DIAG|direct_sum|time|output_write_s=    0.000102",
+        "DIAG|direct_sum|time|body_total_s=    0.001198"
       ],
       "stderr": ""
     },
@@ -2761,7 +2795,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "nt",
-      "elapsed_s": 0.12741295795422047,
+      "elapsed_s": 0.1446241670055315,
       "relative_l2": 0.04137313737685072,
       "component_rmse": [
         2.122790021947766e-06,
@@ -2788,6 +2822,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -2799,15 +2835,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
-        "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000554",
-        "DIAG|spectral|time|fit_assembly_s=    0.112023",
-        "DIAG|spectral|time|linear_solve_s=    0.000578",
-        "DIAG|spectral|time|field_eval_s=    0.000009",
+        "DIAG|spectral|time|obs_grid_s=    0.000002",
+        "DIAG|spectral|time|source_mesh_s=    0.000571",
+        "DIAG|spectral|time|fit_assembly_s=    0.128967",
+        "DIAG|spectral|time|linear_solve_s=    0.000705",
+        "DIAG|spectral|time|field_eval_s=    0.000019",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000115",
+        "DIAG|spectral|time|output_write_s=    0.000134",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.113335"
+        "DIAG|spectral|time|body_total_s=    0.130458"
       ],
       "stderr": ""
     },
@@ -2816,7 +2852,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "nt",
-      "elapsed_s": 0.12999358400702477,
+      "elapsed_s": 0.14613849998568185,
       "relative_l2": 0.0005076415466161913,
       "component_rmse": [
         2.6068619361943794e-08,
@@ -2843,6 +2879,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -2854,15 +2892,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
-        "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000563",
-        "DIAG|spectral|time|fit_assembly_s=    0.112160",
-        "DIAG|spectral|time|linear_solve_s=    0.003034",
-        "DIAG|spectral|time|field_eval_s=    0.000022",
+        "DIAG|spectral|time|obs_grid_s=    0.000002",
+        "DIAG|spectral|time|source_mesh_s=    0.000560",
+        "DIAG|spectral|time|fit_assembly_s=    0.127209",
+        "DIAG|spectral|time|linear_solve_s=    0.003315",
+        "DIAG|spectral|time|field_eval_s=    0.000038",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000105",
+        "DIAG|spectral|time|output_write_s=    0.000142",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.115934"
+        "DIAG|spectral|time|body_total_s=    0.131323"
       ],
       "stderr": ""
     },
@@ -2871,7 +2909,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "nt",
-      "elapsed_s": 0.16283716697944328,
+      "elapsed_s": 0.1811640840023756,
       "relative_l2": 4.312150266021033e-06,
       "component_rmse": [
         2.2168965161634796e-10,
@@ -2898,6 +2936,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -2910,14 +2950,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000555",
-        "DIAG|spectral|time|fit_assembly_s=    0.130784",
-        "DIAG|spectral|time|linear_solve_s=    0.015968",
-        "DIAG|spectral|time|field_eval_s=    0.000044",
+        "DIAG|spectral|time|source_mesh_s=    0.000568",
+        "DIAG|spectral|time|fit_assembly_s=    0.149459",
+        "DIAG|spectral|time|linear_solve_s=    0.016243",
+        "DIAG|spectral|time|field_eval_s=    0.000069",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000119",
+        "DIAG|spectral|time|output_write_s=    0.000135",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.147530"
+        "DIAG|spectral|time|body_total_s=    0.166531"
       ],
       "stderr": ""
     },
@@ -2926,15 +2966,15 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "nt",
-      "elapsed_s": 1.4226721670129336,
-      "relative_l2": 9.844365445121653e-07,
+      "elapsed_s": 1.4831533750111703,
+      "relative_l2": 2.94421848966939e-08,
       "component_rmse": [
-        2.1072724302720707e-11,
-        5.1883198143441097e-11,
-        8.230394705649357e-11
+        1.4814959374785662e-12,
+        2.3051620192689084e-12,
+        1.1642386635401468e-12
       ],
-      "vector_rmse": 9.954830817351012e-11,
-      "max_vector_difference": 1.0086170200119993e-10,
+      "vector_rmse": 2.9772560879990076e-12,
+      "max_vector_difference": 3.5703763837054143e-12,
       "options": {
         "lmax": 24,
         "ntheta_fit": 50,
@@ -2953,6 +2993,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -2965,14 +3007,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
         "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000562",
-        "DIAG|spectral|time|fit_assembly_s=    0.489636",
-        "DIAG|spectral|time|linear_solve_s=    0.917026",
-        "DIAG|spectral|time|field_eval_s=    0.000132",
+        "DIAG|spectral|time|source_mesh_s=    0.000566",
+        "DIAG|spectral|time|fit_assembly_s=    0.551345",
+        "DIAG|spectral|time|linear_solve_s=    0.915986",
+        "DIAG|spectral|time|field_eval_s=    0.000226",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000127",
+        "DIAG|spectral|time|output_write_s=    0.000158",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.407557"
+        "DIAG|spectral|time|body_total_s=    1.468336"
       ],
       "stderr": ""
     },
@@ -2981,7 +3023,7 @@
       "solver": "gauss_legendre",
       "setting": "order_4",
       "unit": "mgal",
-      "elapsed_s": 0.014413457945920527,
+      "elapsed_s": 0.015074374998221174,
       "relative_l2": 2.0788206364650847e-15,
       "component_rmse": [
         2.4209830175537578e-18,
@@ -3003,7 +3045,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=4",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291094E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000140"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000162"
       ],
       "stderr": ""
     },
@@ -3012,7 +3054,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8",
       "unit": "mgal",
-      "elapsed_s": 0.01478441699873656,
+      "elapsed_s": 0.01565137502620928,
       "relative_l2": 2.4589624596662534e-15,
       "component_rmse": [
         2.8986455015248353e-18,
@@ -3034,7 +3076,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291102E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000215"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000202"
       ],
       "stderr": ""
     },
@@ -3043,7 +3085,7 @@
       "solver": "gauss_legendre",
       "setting": "order_16",
       "unit": "mgal",
-      "elapsed_s": 0.014774791023228317,
+      "elapsed_s": 0.015135875000851229,
       "relative_l2": 1.4071207769924466e-15,
       "component_rmse": [
         1.6896070533867119e-18,
@@ -3065,7 +3107,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=16",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585290992E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.000511"
+        "DIAG|gauss_legendre|time|body_total_s=      0.000523"
       ],
       "stderr": ""
     },
@@ -3074,7 +3116,7 @@
       "solver": "gauss_legendre",
       "setting": "order_32",
       "unit": "mgal",
-      "elapsed_s": 0.017827834002673626,
+      "elapsed_s": 0.01662800001213327,
       "relative_l2": 8.291696181273794e-17,
       "component_rmse": [
         9.795852311876957e-20,
@@ -3096,7 +3138,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=32",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291203E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.003134"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003085"
       ],
       "stderr": ""
     },
@@ -3105,7 +3147,7 @@
       "solver": "gauss_legendre",
       "setting": "order_64",
       "unit": "mgal",
-      "elapsed_s": 0.03863220801576972,
+      "elapsed_s": 0.038185875018825755,
       "relative_l2": 6.953474706459455e-16,
       "component_rmse": [
         8.113426134873485e-19,
@@ -3127,7 +3169,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=64",
         "DIAG|gauss_legendre|meta|subdivisions=1",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291605E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.024086"
+        "DIAG|gauss_legendre|time|body_total_s=      0.024901"
       ],
       "stderr": ""
     },
@@ -3136,7 +3178,7 @@
       "solver": "gauss_legendre",
       "setting": "order_8_panels_4",
       "unit": "mgal",
-      "elapsed_s": 0.017387625004630536,
+      "elapsed_s": 0.016519041993888095,
       "relative_l2": 2.517904654673357e-15,
       "component_rmse": [
         2.9919875039056306e-18,
@@ -3159,7 +3201,7 @@
         "DIAG|gauss_legendre|meta|longitude_order=8",
         "DIAG|gauss_legendre|meta|subdivisions=4",
         "DIAG|gauss_legendre|meta|volume_m3=  2.1776667585291016E+13",
-        "DIAG|gauss_legendre|time|body_total_s=      0.002951"
+        "DIAG|gauss_legendre|time|body_total_s=      0.003054"
       ],
       "stderr": ""
     },
@@ -3168,7 +3210,7 @@
       "solver": "direct_sum",
       "setting": "refine_1",
       "unit": "mgal",
-      "elapsed_s": 0.01434570801211521,
+      "elapsed_s": 0.013666082988493145,
       "relative_l2": 7.437124464918315e-07,
       "component_rmse": [
         6.967980259018859e-10,
@@ -3189,11 +3231,11 @@
         "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
         "DIAG|direct_sum|memory|source_arrays_mib=    0.078125",
         "DIAG|direct_sum|memory|total_est_mib=    0.079247",
-        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000016",
-        "DIAG|direct_sum|time|field_accum_s=    0.000093",
-        "DIAG|direct_sum|time|output_write_s=    0.000090",
-        "DIAG|direct_sum|time|body_total_s=    0.000215"
+        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000017",
+        "DIAG|direct_sum|time|field_accum_s=    0.000105",
+        "DIAG|direct_sum|time|output_write_s=    0.000111",
+        "DIAG|direct_sum|time|body_total_s=    0.000248"
       ],
       "stderr": ""
     },
@@ -3202,7 +3244,7 @@
       "solver": "direct_sum",
       "setting": "refine_2",
       "unit": "mgal",
-      "elapsed_s": 0.014709957991726696,
+      "elapsed_s": 0.014748833986232057,
       "relative_l2": 7.042334332845729e-07,
       "component_rmse": [
         7.651592937132134e-10,
@@ -3223,11 +3265,11 @@
         "DIAG|direct_sum|memory|obs_arrays_mib=    0.001122",
         "DIAG|direct_sum|memory|source_arrays_mib=    0.083008",
         "DIAG|direct_sum|memory|total_est_mib=    0.084129",
-        "DIAG|direct_sum|time|obs_grid_s=    0.000001",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000050",
-        "DIAG|direct_sum|time|field_accum_s=    0.000377",
-        "DIAG|direct_sum|time|output_write_s=    0.000091",
-        "DIAG|direct_sum|time|body_total_s=    0.000536"
+        "DIAG|direct_sum|time|obs_grid_s=    0.000002",
+        "DIAG|direct_sum|time|source_mesh_s=    0.000053",
+        "DIAG|direct_sum|time|field_accum_s=    0.000383",
+        "DIAG|direct_sum|time|output_write_s=    0.000101",
+        "DIAG|direct_sum|time|body_total_s=    0.000551"
       ],
       "stderr": ""
     },
@@ -3236,7 +3278,7 @@
       "solver": "direct_sum",
       "setting": "refine_4",
       "unit": "mgal",
-      "elapsed_s": 0.01561362500069663,
+      "elapsed_s": 0.01585170900216326,
       "relative_l2": 7.656211117770627e-07,
       "component_rmse": [
         9.88156056758351e-10,
@@ -3258,10 +3300,10 @@
         "DIAG|direct_sum|memory|source_arrays_mib=    0.322266",
         "DIAG|direct_sum|memory|total_est_mib=    0.323387",
         "DIAG|direct_sum|time|obs_grid_s=    0.000002",
-        "DIAG|direct_sum|time|source_mesh_s=    0.000193",
-        "DIAG|direct_sum|time|field_accum_s=    0.001734",
-        "DIAG|direct_sum|time|output_write_s=    0.000090",
-        "DIAG|direct_sum|time|body_total_s=    0.002035"
+        "DIAG|direct_sum|time|source_mesh_s=    0.000177",
+        "DIAG|direct_sum|time|field_accum_s=    0.001574",
+        "DIAG|direct_sum|time|output_write_s=    0.000107",
+        "DIAG|direct_sum|time|body_total_s=    0.001880"
       ],
       "stderr": ""
     },
@@ -3270,7 +3312,7 @@
       "solver": "spectral",
       "setting": "degree_4",
       "unit": "mgal",
-      "elapsed_s": 0.09198799997102469,
+      "elapsed_s": 0.12503841699799523,
       "relative_l2": 0.00527585406554098,
       "component_rmse": [
         6.267309760225196e-06,
@@ -3297,6 +3339,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -3308,15 +3352,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.005707",
         "DIAG|spectral|memory|total_est_mib=    5.403214",
-        "DIAG|spectral|time|obs_grid_s=    0.000002",
-        "DIAG|spectral|time|source_mesh_s=    0.000560",
-        "DIAG|spectral|time|fit_assembly_s=    0.076355",
-        "DIAG|spectral|time|linear_solve_s=    0.000582",
-        "DIAG|spectral|time|field_eval_s=    0.000007",
+        "DIAG|spectral|time|obs_grid_s=    0.000003",
+        "DIAG|spectral|time|source_mesh_s=    0.000541",
+        "DIAG|spectral|time|fit_assembly_s=    0.109529",
+        "DIAG|spectral|time|linear_solve_s=    0.000747",
+        "DIAG|spectral|time|field_eval_s=    0.000018",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000122",
+        "DIAG|spectral|time|output_write_s=    0.000130",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.077685"
+        "DIAG|spectral|time|body_total_s=    0.111020"
       ],
       "stderr": ""
     },
@@ -3325,7 +3369,7 @@
       "solver": "spectral",
       "setting": "degree_8",
       "unit": "mgal",
-      "elapsed_s": 0.0944202080136165,
+      "elapsed_s": 0.12592066600336693,
       "relative_l2": 3.7274902035683225e-05,
       "component_rmse": [
         4.438887341745767e-08,
@@ -3352,6 +3396,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -3364,14 +3410,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    0.053131",
         "DIAG|spectral|memory|total_est_mib=    5.450638",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000569",
-        "DIAG|spectral|time|fit_assembly_s=    0.076581",
-        "DIAG|spectral|time|linear_solve_s=    0.003052",
-        "DIAG|spectral|time|field_eval_s=    0.000021",
+        "DIAG|spectral|time|source_mesh_s=    0.000556",
+        "DIAG|spectral|time|fit_assembly_s=    0.107332",
+        "DIAG|spectral|time|linear_solve_s=    0.003314",
+        "DIAG|spectral|time|field_eval_s=    0.000039",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000112",
+        "DIAG|spectral|time|output_write_s=    0.000129",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.080389"
+        "DIAG|spectral|time|body_total_s=    0.111422"
       ],
       "stderr": ""
     },
@@ -3380,7 +3426,7 @@
       "solver": "spectral",
       "setting": "degree_12",
       "unit": "mgal",
-      "elapsed_s": 0.12012170802336186,
+      "elapsed_s": 0.15898375000688247,
       "relative_l2": 2.0326858934307723e-07,
       "component_rmse": [
         2.523654541886629e-10,
@@ -3407,6 +3453,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -3418,15 +3466,15 @@
         "DIAG|spectral|memory|source_arrays_mib=    5.395264",
         "DIAG|spectral|memory|solver_arrays_mib=    0.224335",
         "DIAG|spectral|memory|total_est_mib=    5.621841",
-        "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000569",
-        "DIAG|spectral|time|fit_assembly_s=    0.088852",
-        "DIAG|spectral|time|linear_solve_s=    0.015964",
-        "DIAG|spectral|time|field_eval_s=    0.000040",
+        "DIAG|spectral|time|obs_grid_s=    0.000002",
+        "DIAG|spectral|time|source_mesh_s=    0.000595",
+        "DIAG|spectral|time|fit_assembly_s=    0.127661",
+        "DIAG|spectral|time|linear_solve_s=    0.016196",
+        "DIAG|spectral|time|field_eval_s=    0.000062",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000122",
+        "DIAG|spectral|time|output_write_s=    0.000144",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    0.105603"
+        "DIAG|spectral|time|body_total_s=    0.144714"
       ],
       "stderr": ""
     },
@@ -3435,15 +3483,15 @@
       "solver": "spectral",
       "setting": "degree_24",
       "unit": "mgal",
-      "elapsed_s": 1.2871500829933211,
-      "relative_l2": 7.127850096828721e-08,
+      "elapsed_s": 1.4060592919995543,
+      "relative_l2": 2.7321573985727347e-08,
       "component_rmse": [
-        7.001563637940887e-11,
-        1.3007520326416239e-10,
-        7.431946047317174e-11
+        3.840392559214004e-11,
+        5.003994323163979e-11,
+        6.230008676193265e-12
       ],
-      "vector_rmse": 1.6536362975833016e-10,
-      "max_vector_difference": 2.2133095992712667e-10,
+      "vector_rmse": 6.338509625785705e-11,
+      "max_vector_difference": 1.1314433909143118e-10,
       "options": {
         "lmax": 24,
         "ntheta_fit": 50,
@@ -3462,6 +3510,8 @@
         "  Cumulative source elements: 49152",
         "Hybrid mode inactive. input_complex=F mode=0",
         "Single-body input detected; using the collective solver path.",
+        "DIAG|spectral|meta|normalization=schmidt_semi_normalized",
+        "DIAG|spectral|meta|condon_shortley_phase=excluded",
         "DIAG|spectral|meta|source_capacity=101024",
         "DIAG|spectral|meta|source_elements=49152",
         "DIAG|spectral|meta|collective_bodies=1",
@@ -3474,14 +3524,14 @@
         "DIAG|spectral|memory|solver_arrays_mib=    3.004059",
         "DIAG|spectral|memory|total_est_mib=    8.401566",
         "DIAG|spectral|time|obs_grid_s=    0.000001",
-        "DIAG|spectral|time|source_mesh_s=    0.000549",
-        "DIAG|spectral|time|fit_assembly_s=    0.333397",
-        "DIAG|spectral|time|linear_solve_s=    0.937044",
-        "DIAG|spectral|time|field_eval_s=    0.000149",
+        "DIAG|spectral|time|source_mesh_s=    0.000562",
+        "DIAG|spectral|time|fit_assembly_s=    0.473583",
+        "DIAG|spectral|time|linear_solve_s=    0.916897",
+        "DIAG|spectral|time|field_eval_s=    0.000223",
         "DIAG|spectral|time|hybrid_direct_eval_s=    0.000000",
-        "DIAG|spectral|time|output_write_s=    0.000122",
+        "DIAG|spectral|time|output_write_s=    0.000135",
         "DIAG|spectral|meta|hybrid_cells=0",
-        "DIAG|spectral|time|body_total_s=    1.271322"
+        "DIAG|spectral|time|body_total_s=    1.391462"
       ],
       "stderr": ""
     }

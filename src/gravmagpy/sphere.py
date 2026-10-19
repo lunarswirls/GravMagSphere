@@ -301,6 +301,8 @@ def run_sphere_model(model, *, solver="direct_sum", solver_options=None, output_
                   "model": deepcopy(model), "solver": solver, "stdout": run["stdout"], "stderr": run["stderr"]}
         result.update({f"{prefix}{axis}_{unit}": field[..., index] for index, axis in enumerate(("x", "y", "z"))})
         result[f"{prefix}tot_{unit}"] = result["total"]
+        if solver == "spectral":
+            result.update(normalization="schmidt", condon_shortley_phase=False)
         if output_dir is not None:
             result.update(input_path=path, output_path=run["output_path"])
     return result
