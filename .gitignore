@@ -27,3 +27,5 @@ __pycache__/
 /examples/earth_crust_cases/output/
 /diagnostics/qiu_chen_2020_magnetic
 tests/test_variable_order_magnetic.py
+/diagnostics/native_high_degree/degree_*
+/diagnostics/native_high_degree/*.log
