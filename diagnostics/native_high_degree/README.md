@@ -1,6 +1,6 @@
 # Native high-degree validation
 
-The current completed sweep reaches degree 10000. The full stopping record is in `limits.json` and `attempts.csv`.
+The current completed sweep reaches degree 10,000. The full stopping record is in `limits.json` and `attempts.csv`.
 
 Run from the GravMagSphere repository using the existing GravMagPy environment:
 
@@ -16,7 +16,7 @@ Each completed degree includes:
 - A full-bandwidth vector synthesis/analysis roundtrip with every coefficient populated, including both Fourier directions
 - Public gravity and magnetic calculations compared with analytical point-mass and dipole fields at 25 observations
 
-The test thresholds are 2e-9 for scaled individual function differences and maximum coefficient differences, 2e-10 for the relative coefficient norm, and 2e-9 for each relative source-field norm. Actual errors, not just threshold outcomes, are stored in `multiprecision.csv`, `results.csv`, and `summary.csv`. All values use Schmidt semi-normalization without the Condon–Shortley phase. Neither the implementation nor these references use SHTOOLS.
+The test thresholds are 2e-9 for scaled individual function differences and maximum coefficient differences, 2e-10 for the relative coefficient norm, and 2e-9 for each relative source-field norm. Actual errors, not just threshold outcomes, are stored in `multiprecision.csv`, `results.csv`, and `summary.csv`. All values use Schmidt semi-normalization without the Condon–Shortley phase.
 
 Method references include [Fukushima (2012), extended-exponent arithmetic](https://doi.org/10.1007/s00190-011-0519-2), [Sneeuw (1994), quadrature and least squares](https://doi.org/10.1111/j.1365-246X.1994.tb03995.x), and [Schaeffer (2013), spherical-harmonic transforms](https://doi.org/10.1002/ggge.20071). The manuscript gives the implemented recurrence, vector projection, and degree filter explicitly.
 
