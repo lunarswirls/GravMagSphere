@@ -1,7 +1,10 @@
 program gravmag_sphere_spectral
   use, intrinsic :: iso_fortran_env, only: int32, int64, real64
+  use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
   use gravmag_paths, only: default_output_path
-  use gravmag_sphere_harmonics, only: schmidt_basis
+  use gravmag_sphere_harmonics, only: schmidt_point
+  use gravmag_sphere_transform, only: transform_grid, gauss_nodes, sample_fourier, analyze_fourier, &
+       filter_coefficients, transform_memory, synthesize_fourier, inverse_ring, fft_roots
   implicit none
 
   !***********************************************************************
@@ -13,7 +16,7 @@ program gravmag_sphere_spectral
   ! - reconstruct field components on the observation grid
   !
   ! resolution note:
-  ! - this file implements a regularized least-squares spherical-harmonic fit
+  ! - native gauss-legendre/fourier projection diagonalizes the regularized vector fit
   ! - for compact/sharp sources, low lmax can smooth and spread anomalies
   ! - gravmag_sphere_direct_sum and gravmag_sphere_gauss_legendre avoid harmonic truncation
   !***********************************************************************
@@ -94,18 +97,21 @@ program gravmag_sphere_spectral
   integer(int32), allocatable :: body_complex_flag(:), body_nblim_arr(:), body_vertex_n(:)
   integer(int32) :: body_meta_cap, body_poly_cap, body_poly_size
 
-  integer(int32) :: i, j, is, it, ir, l, m
+  integer(int32) :: i, j, is, it, ir
   real(wp) :: lat_deg, lon_deg, lat_rad, lon_rad
   real(wp) :: xs, ys, zs, dV, r_mid
 
-  ! Gauss coefficient fit + sampled fitting data
-  integer(int32), allocatable :: idx_g(:,:), idx_h(:,:)
+  ! native harmonic projection and sampled fitting data
+  integer(int32) :: lmax_scan
+  real(wp), allocatable :: fit_theta(:),fit_weights(:),raw_coefficients(:),degree_energy(:)
+  complex(wp), allocatable :: fourier_samples(:,:,:),fourier_fit(:,:,:),roots(:)
+  real(wp), allocatable :: predicted_ring(:,:),source_ring(:,:)
+  real(wp) :: data_energy,effective_dof,memory_limit_mib
+  character(len=64) :: memory_env
   integer(int32) :: ncoef
   real(wp), allocatable :: coef(:)
   integer(int32) :: nsamp, samp_idx, ncorr
-  real(wp), allocatable :: samp_theta(:), samp_phi(:), samp_w(:)
   real(wp), allocatable :: samp_lon(:), samp_lat(:)
-  real(wp), allocatable :: samp_br(:), samp_bt(:), samp_bp(:)
   real(wp), allocatable :: fit_res_br(:), fit_res_bt(:), fit_res_bp(:)
   real(wp), allocatable :: corr_lon(:), corr_lat(:), corr_coef_br(:), corr_coef_bt(:), corr_coef_bp(:)
   real(wp), allocatable :: corr_center_lon(:), corr_center_lat(:)
@@ -117,12 +123,10 @@ program gravmag_sphere_spectral
   real(wp) :: theta, phi, st, ct, cp, sp
   real(wp) :: xb, yb, zb
   real(wp) :: dBx, dBy, dBz
-  real(wp) :: br_fit, bt_fit, bp_fit, w
   real(wp) :: br_monopole
   integer(int32) :: itheta, iphi
 
   real(wp) :: br, bt, bp, bxv, byv, bzv, btot_nt, gtot_mgal
-  real(wp) :: reg_w, lnorm
   real(wp) :: corr_br, corr_bt, corr_bp
   real(wp) :: corr_br_body, corr_bt_body, corr_bp_body
   integer(int32) :: out_body_id, ibody, npts_body, p0, c0
@@ -134,7 +138,7 @@ program gravmag_sphere_spectral
   character(len=32) :: diag_env
   real :: t_body0, t_body1, t_phase0, t_phase1
   real :: t_obsgrid_s, t_source_s, t_fit_s, t_solve_s, t_eval_s, t_hybrid_s, t_output_s
-  integer(int64) :: obs_cells64, lside64, ncoef64
+  integer(int64) :: obs_cells64
   integer(int64) :: mem_obs_bytes, mem_source_bytes, mem_solver_bytes, mem_total_bytes
 
   ! ----------------------------
@@ -572,120 +576,81 @@ program gravmag_sphere_spectral
   call cpu_time(t_phase1)
   t_obsgrid_s = t_obsgrid_s + (t_phase1 - t_phase0)
 
-  ! ------------------------------------------
-  ! Build fitting samples on sphere (Br/Btheta/Bphi)
-  ! ------------------------------------------
-  call cpu_time(t_phase0)
-  nsamp = ntheta_fit * nphi_fit
-  if (allocated(samp_theta)) deallocate(samp_theta, samp_phi, samp_w, samp_lon, samp_lat, samp_br, samp_bt, samp_bp)
-  allocate(samp_theta(nsamp), samp_phi(nsamp), samp_w(nsamp))
-  allocate(samp_lon(nsamp), samp_lat(nsamp))
-  allocate(samp_br(nsamp), samp_bt(nsamp), samp_bp(nsamp))
-
-  ! fix the gravity degree-zero coefficient from the collective source mass
-  ! fitting only the remainder keeps regularization from changing the total mass
+  ! the source mass fixes the gravity monopole independently of spectral damping
   br_monopole = 0.0_wp
-  if (ifield == 1) br_monopole = -grav_g * sum(mass_list(1:ns)) / ro_m**2
-
-  samp_idx = 0
-  do itheta=1, ntheta_fit
-    theta = (real(itheta,wp)-0.5_wp) * pi / real(ntheta_fit,wp)
-    st = sin(theta)
-    ct = cos(theta)
-
-    do iphi=1, nphi_fit
-      phi = -pi + (real(iphi-1,wp) * 2.0_wp*pi/real(nphi_fit,wp))
-      cp = cos(phi)
-      sp = sin(phi)
-      xb = ro_m * st * cp
-      yb = ro_m * st * sp
-      zb = ro_m * ct
-
-      dBx = 0.0_wp
-      dBy = 0.0_wp
-      dBz = 0.0_wp
-      do is=1, ns
-        if (ifield == 2) then
-          call add_dipole_field_cart64(xb, yb, zb, xs_list(is), ys_list(is), zs_list(is), &
-                                       mx_list(is), my_list(is), mz_list(is), br, bt, bp)
-        else
-          call add_pointmass_field_cart64(xb, yb, zb, xs_list(is), ys_list(is), zs_list(is), &
-                                          mass_list(is), br, bt, bp)
-        end if
-        dBx = dBx + br
-        dBy = dBy + bt
-        dBz = dBz + bp
-      end do
-
-      br_fit = dBx*(st*cp) + dBy*(st*sp) + dBz*ct
-      bt_fit = dBx*(ct*cp) + dBy*(ct*sp) - dBz*st
-      bp_fit = -dBx*sp + dBy*cp
-
-      samp_idx = samp_idx + 1
-      samp_theta(samp_idx) = theta
-      samp_phi(samp_idx) = phi
-      samp_w(samp_idx) = max(st, 1.0e-10_wp)
-      samp_lon(samp_idx) = phi / deg2rad
-      call wrap180_scalar(samp_lon(samp_idx))
-      samp_lat(samp_idx) = 90.0_wp - theta/deg2rad
-      samp_br(samp_idx) = br_fit - br_monopole
-      samp_bt(samp_idx) = bt_fit
-      samp_bp(samp_idx) = bp_fit
-    end do
-  end do
+  if (ifield == 1) br_monopole = -grav_g*sum(mass_list(1:ns))/ro_m**2
+  lmax_scan = lmax
+  if (lmax > 46339_int32-merge(6_int32,0_int32,auto_mode)) &
+    error stop 'ERROR: degree including automatic search exceeds the integer indexing range'
+  if (auto_mode) lmax_scan = max(6_int32,lmax+6)
+  call transform_grid(lmax_scan,ntheta_fit,nphi_fit)
+  mem_solver_bytes = transform_memory(lmax_scan,ntheta_fit,nphi_fit,edge_corr_enabled)
+  memory_limit_mib = 16384.0_wp
+  call get_environment_variable('GRAVMAG_SPECTRAL_MAX_MIB',memory_env,status=ios)
+  if (ios == 0 .and. len_trim(memory_env) > 0) then
+    read(memory_env,*,iostat=ios) memory_limit_mib
+    if (ios /= 0 .or. .not. ieee_is_finite(memory_limit_mib) .or. memory_limit_mib <= 0.0_wp) &
+      error stop 'ERROR: invalid spectral memory limit'
+  end if
+  if (real(mem_solver_bytes,wp) > memory_limit_mib*1048576.0_wp) then
+    write(*,'(A,F12.1,A,F12.1)') 'ERROR: estimated spectral workspace MiB=',bytes_to_mib(mem_solver_bytes), &
+                               ' exceeds GRAVMAG_SPECTRAL_MAX_MIB=',memory_limit_mib
+    stop 1
+  end if
+  write(*,'(A,I0,A,I0,A,I0)') 'Native gauss-legendre/fourier grid: ',ntheta_fit,' x ',nphi_fit,' degree=',lmax_scan
+  call cpu_time(t_phase0)
+  allocate(fit_theta(ntheta_fit),fit_weights(ntheta_fit))
+  call gauss_nodes(ntheta_fit,fit_theta,fit_weights)
+  allocate(fourier_samples(ntheta_fit,0:lmax_scan,3))
+  call sample_fourier(lmax_scan,nphi_fit,fit_theta,fit_weights,joint_strength,sample_source_ring, &
+                      fourier_samples,data_energy)
   call cpu_time(t_phase1)
-  t_fit_s = t_fit_s + (t_phase1 - t_phase0)
+  t_fit_s = t_fit_s+(t_phase1-t_phase0)
 
-  ! ------------------------------------------
-  ! Auto-select (lmax, reg_lambda, reg_power) from a pilot sweep
-  ! ------------------------------------------
+  call cpu_time(t_phase0)
+  allocate(raw_coefficients(lmax_scan*(lmax_scan+2)),degree_energy(lmax_scan))
+  call analyze_fourier(lmax_scan,fit_theta,fit_weights,fourier_samples,joint_strength,raw_coefficients,degree_energy)
+  deallocate(fourier_samples)
   lmax_use = lmax
   reg_lambda_use = reg_lambda
   reg_power_use = reg_power
   if (auto_mode) then
-    call cpu_time(t_phase0)
-    call auto_select_params(lmax, reg_lambda, reg_power, joint_strength, &
-                            samp_theta, samp_phi, samp_w, samp_br, samp_bt, samp_bp, &
-                            lmax_use, reg_lambda_use, reg_power_use)
-    call cpu_time(t_phase1)
-    t_fit_s = t_fit_s + (t_phase1 - t_phase0)
+    call auto_select_params(lmax,reg_lambda,reg_power,joint_strength,raw_coefficients,degree_energy, &
+                            data_energy,int(ntheta_fit,int64)*int(nphi_fit,int64), &
+                            lmax_use,reg_lambda_use,reg_power_use)
   end if
-
-  ! ------------------------------------------
-  ! Joint vector fit (Br/Btheta/Bphi) with shared coefficients
-  ! ------------------------------------------
-  call cpu_time(t_phase0)
-  if (allocated(idx_g)) deallocate(idx_g, idx_h)
-  if (allocated(coef)) deallocate(coef)
-  call solve_coeffs_from_samples(lmax_use, reg_lambda_use, reg_power_use, joint_strength, &
-                                 samp_theta, samp_phi, samp_w, samp_br, samp_bt, samp_bp, &
-                                 idx_g, idx_h, coef, ncoef, fit_rss, fit_regnorm, ios)
-  if (ios /= 0) stop 'ERROR: failed to solve normal equations for Gauss coefficients'
+  ncoef = lmax_use*(lmax_use+2)
+  allocate(coef(ncoef))
+  call filter_coefficients(lmax_use,raw_coefficients,degree_energy,data_energy,joint_strength, &
+                            reg_lambda_use,reg_power_use,coef,fit_rss,fit_regnorm,effective_dof)
+  deallocate(raw_coefficients,degree_energy)
   call cpu_time(t_phase1)
-  t_solve_s = t_solve_s + (t_phase1 - t_phase0)
+  t_solve_s = t_solve_s+(t_phase1-t_phase0)
 
   if (diag_enabled) then
-    obs_cells64 = int(nlat, int64) * int(nlon, int64)
-    ncoef64 = int(ncoef, int64)
-    lside64 = int(lmax_use + 1, int64)
-    mem_obs_bytes = 6_int64 * obs_cells64 * 8_int64
-    mem_source_bytes = int(cap, int64) * 7_int64 * 8_int64
-    mem_solver_bytes = (ncoef64*ncoef64 + 3_int64*ncoef64 + 3_int64*lside64*lside64) * 8_int64 + &
-                       (2_int64*lside64*lside64) * 4_int64
-    mem_total_bytes = mem_obs_bytes + mem_source_bytes + mem_solver_bytes
+    obs_cells64 = int(nlat,int64)*int(nlon,int64)
+    mem_obs_bytes = 6_int64*obs_cells64*8_int64
+    mem_source_bytes = int(cap,int64)*7_int64*8_int64
+    mem_total_bytes = mem_obs_bytes+mem_source_bytes+mem_solver_bytes
     write(*,'(A)') 'DIAG|spectral|meta|normalization=schmidt_semi_normalized'
     write(*,'(A)') 'DIAG|spectral|meta|condon_shortley_phase=excluded'
-    write(*,'(A,I0)') 'DIAG|spectral|meta|source_capacity=', cap
-    write(*,'(A,I0)') 'DIAG|spectral|meta|source_elements=', ns
-    write(*,'(A,I0)') 'DIAG|spectral|meta|collective_bodies=', nbody_total
-    write(*,'(A,I0)') 'DIAG|spectral|meta|lmax_used=', lmax_use
-    write(*,'(A,ES12.4)') 'DIAG|spectral|meta|reg_lambda_used=', reg_lambda_use
-    write(*,'(A,F8.3)') 'DIAG|spectral|meta|reg_power_used=', reg_power_use
-    write(*,'(A,F8.3)') 'DIAG|spectral|meta|joint_strength=', joint_strength
-    write(*,'(A,F12.6)') 'DIAG|spectral|memory|obs_arrays_mib=', bytes_to_mib(mem_obs_bytes)
-    write(*,'(A,F12.6)') 'DIAG|spectral|memory|source_arrays_mib=', bytes_to_mib(mem_source_bytes)
-    write(*,'(A,F12.6)') 'DIAG|spectral|memory|solver_arrays_mib=', bytes_to_mib(mem_solver_bytes)
-    write(*,'(A,F12.6)') 'DIAG|spectral|memory|total_est_mib=', bytes_to_mib(mem_total_bytes)
+    write(*,'(A)') 'DIAG|spectral|meta|algorithm=native_gauss_legendre_fourier'
+    write(*,'(A)') 'DIAG|spectral|meta|recurrence=fukushima_extended_range_radix_2_512'
+    write(*,'(A,I0)') 'DIAG|spectral|meta|source_capacity=',cap
+    write(*,'(A,I0)') 'DIAG|spectral|meta|source_elements=',ns
+    write(*,'(A,I0)') 'DIAG|spectral|meta|collective_bodies=',nbody_total
+    write(*,'(A,I0)') 'DIAG|spectral|meta|lmax_used=',lmax_use
+    write(*,'(A,I0)') 'DIAG|spectral|meta|ntheta_fit=',ntheta_fit
+    write(*,'(A,I0)') 'DIAG|spectral|meta|nphi_fit=',nphi_fit
+    write(*,'(A,ES12.4)') 'DIAG|spectral|meta|reg_lambda_used=',reg_lambda_use
+    write(*,'(A,F8.3)') 'DIAG|spectral|meta|reg_power_used=',reg_power_use
+    write(*,'(A,F8.3)') 'DIAG|spectral|meta|joint_strength=',joint_strength
+    write(*,'(A,ES16.8)') 'DIAG|spectral|meta|weighted_residual_energy=',fit_rss
+    write(*,'(A,ES16.8)') 'DIAG|spectral|meta|effective_degrees_of_freedom=',effective_dof
+    write(*,'(A,F12.6)') 'DIAG|spectral|memory|obs_arrays_mib=',bytes_to_mib(mem_obs_bytes)
+    write(*,'(A,F12.6)') 'DIAG|spectral|memory|source_arrays_mib=',bytes_to_mib(mem_source_bytes)
+    write(*,'(A,F12.6)') 'DIAG|spectral|memory|solver_arrays_mib=',bytes_to_mib(mem_solver_bytes)
+    write(*,'(A,F12.6)') 'DIAG|spectral|memory|total_est_mib=',bytes_to_mib(mem_total_bytes)
   end if
 
   ! ------------------------------------------
@@ -694,16 +659,28 @@ program gravmag_sphere_spectral
   ncorr = 0
   if (edge_corr_enabled) then
     call cpu_time(t_phase0)
-    if (allocated(fit_res_br)) deallocate(fit_res_br, fit_res_bt, fit_res_bp)
-    allocate(fit_res_br(nsamp), fit_res_bt(nsamp), fit_res_bp(nsamp))
-    ! samples and fitted coefficients both exclude the fixed monopole
-    ! their difference is also the residual of the complete field
-    do samp_idx=1, nsamp
-      call evaluate_from_coeffs_point(samp_theta(samp_idx), samp_phi(samp_idx), lmax_use, idx_g, idx_h, coef, br, bt, bp)
-      fit_res_br(samp_idx) = samp_br(samp_idx) - br
-      fit_res_bt(samp_idx) = samp_bt(samp_idx) - bt
-      fit_res_bp(samp_idx) = samp_bp(samp_idx) - bp
+    if (int(ntheta_fit,int64)*int(nphi_fit,int64) > int(huge(nsamp),int64)) &
+      error stop 'ERROR: correction grid exceeds the integer indexing range'
+    nsamp = ntheta_fit*nphi_fit
+    allocate(samp_lon(nsamp),samp_lat(nsamp),fit_res_br(nsamp),fit_res_bt(nsamp),fit_res_bp(nsamp))
+    allocate(fourier_fit(ntheta_fit,0:lmax_use,3),roots(0:nphi_fit/2-1))
+    allocate(predicted_ring(nphi_fit,3),source_ring(nphi_fit,3))
+    call synthesize_fourier(lmax_use,fit_theta,coef,fourier_fit)
+    call fft_roots(nphi_fit,roots)
+    do itheta=1, ntheta_fit
+      call inverse_ring(fourier_fit(itheta,:,:),roots,predicted_ring)
+      call sample_source_ring(fit_theta(itheta),source_ring)
+      do iphi=1, nphi_fit
+        samp_idx = (itheta-1)*nphi_fit+iphi
+        samp_lon(samp_idx) = 360.0_wp*real(iphi-1,wp)/real(nphi_fit,wp)
+        call wrap180_scalar(samp_lon(samp_idx))
+        samp_lat(samp_idx) = 90.0_wp-fit_theta(itheta)/deg2rad
+        fit_res_br(samp_idx) = source_ring(iphi,1)-predicted_ring(iphi,1)
+        fit_res_bt(samp_idx) = source_ring(iphi,2)-predicted_ring(iphi,2)
+        fit_res_bp(samp_idx) = source_ring(iphi,3)-predicted_ring(iphi,3)
+      end do
     end do
+    deallocate(fourier_fit,roots,predicted_ring,source_ring)
 
     if (allocated(corr_start)) deallocate(corr_start, corr_n)
     allocate(corr_start(nbody_total), corr_n(nbody_total))
@@ -768,7 +745,7 @@ program gravmag_sphere_spectral
       cp = cos(phi)
       sp = sin(phi)
 
-      call evaluate_from_coeffs_point(theta, phi, lmax_use, idx_g, idx_h, coef, br, bt, bp)
+      call evaluate_from_coeffs_point(theta, phi, lmax_use, coef, br, bt, bp)
       br = br + br_monopole
 
       if (edge_corr_enabled .and. ncorr > 0) then
@@ -877,6 +854,8 @@ program gravmag_sphere_spectral
     end if
     write(2,'(A)') '# normalization=schmidt_semi_normalized condon_shortley_phase=excluded'
     write(2,'(A)') '# numerical_floor=epsilon_times_mean_data_diagonal'
+    write(2,'(A)') '# algorithm=native_gauss_legendre_fourier recurrence=fukushima_extended_range_radix_2_512'
+    write(2,'(A,I0,A,I0)') '# ntheta_fit=',ntheta_fit,' nphi_fit=',nphi_fit
     write(2,'(A,I0,A,ES13.5,A,F8.3)') '# lmax=', lmax_use, ' reg_lambda=', reg_lambda_use, ' reg_power=', reg_power_use
     write(2,'(A,I0,A,F8.3,A,I0,A,I0)') '# auto_mode=', merge(1,0,auto_mode), &
                                         ' joint_strength=', joint_strength, &
@@ -900,11 +879,11 @@ program gravmag_sphere_spectral
         call wrap180_scalar(lon_deg)
         if (ifield == 2) then
           btot_nt = sqrt((Bx(i,j)*T_to_nT)**2 + (By(i,j)*T_to_nT)**2 + (Bz(i,j)*T_to_nT)**2)
-          write(2,'(I6,1X,F12.6,1X,F12.6,1X,ES15.7,1X,ES15.7,1X,ES15.7,1X,ES15.7)') &
+          write(2,'(I6,1X,F12.6,1X,F12.6,1X,ES24.16,1X,ES24.16,1X,ES24.16,1X,ES24.16)') &
             out_body_id, lon_deg, lat_deg, Bx(i,j)*T_to_nT, By(i,j)*T_to_nT, Bz(i,j)*T_to_nT, btot_nt
         else
           gtot_mgal = sqrt((Bx(i,j)*mps2_to_mgal)**2 + (By(i,j)*mps2_to_mgal)**2 + (Bz(i,j)*mps2_to_mgal)**2)
-          write(2,'(I6,1X,F12.6,1X,F12.6,1X,ES15.7,1X,ES15.7,1X,ES15.7,1X,ES15.7)') &
+          write(2,'(I6,1X,F12.6,1X,F12.6,1X,ES24.16,1X,ES24.16,1X,ES24.16,1X,ES24.16)') &
             out_body_id, lon_deg, lat_deg, Bx(i,j)*mps2_to_mgal, By(i,j)*mps2_to_mgal, Bz(i,j)*mps2_to_mgal, gtot_mgal
         end if
       end do
@@ -1192,28 +1171,7 @@ contains
   ! map (l,m) coefficient pairs into packed 1-D vector indices
   ! g_lm and h_lm each get their own index stream except m=0
   ! where h_l0 is not used
-  subroutine build_index_maps(lm, ig, ih, ncoef_out)
-    integer(int32), intent(in) :: lm
-    integer(int32), intent(out) :: ig(0:lm,0:lm), ih(0:lm,0:lm)
-    integer(int32), intent(out) :: ncoef_out
 
-    integer(int32) :: l, m, idx
-
-    ig = 0
-    ih = 0
-    idx = 0
-    do l=1, lm
-      do m=0, l
-        idx = idx + 1
-        ig(l,m) = idx
-        if (m > 0) then
-          idx = idx + 1
-          ih(l,m) = idx
-        end if
-      end do
-    end do
-    ncoef_out = idx
-  end subroutine build_index_maps
 
   pure real(wp) function unwrap_lon_to_ref(lon_deg, lon_ref_deg)
     real(wp), intent(in) :: lon_deg, lon_ref_deg
@@ -1398,206 +1356,52 @@ contains
     if (compactness > 2.25_wp .and. nv >= max(6_int32, vertex_threshold - 4_int32)) classify_source_complexity = .true.
   end function classify_source_complexity
 
-  subroutine evaluate_from_coeffs_point(theta, phi, lm, ig, ih, coef_in, br_out, bt_out, bp_out)
-    real(wp), intent(in) :: theta, phi
+  subroutine evaluate_from_coeffs_point(theta,phi,lm,coef_in,br_out,bt_out,bp_out)
+    real(wp), intent(in) :: theta,phi,coef_in(:)
     integer(int32), intent(in) :: lm
-    integer(int32), intent(in) :: ig(0:lm,0:lm), ih(0:lm,0:lm)
-    real(wp), intent(in) :: coef_in(:)
-    real(wp), intent(out) :: br_out, bt_out, bp_out
-    integer(int32) :: ncoef_local
-    real(wp), allocatable :: row_br(:), row_bt(:), row_bp(:)
-
-    ncoef_local = size(coef_in)
-    allocate(row_br(ncoef_local), row_bt(ncoef_local), row_bp(ncoef_local))
-    call schmidt_basis(theta, phi, lm, ig, ih, row_br, row_bt, row_bp)
-    br_out = sum(row_br * coef_in)
-    bt_out = sum(row_bt * coef_in)
-    bp_out = sum(row_bp * coef_in)
-    deallocate(row_br, row_bt, row_bp)
+    real(wp), intent(out) :: br_out,bt_out,bp_out
+    real(wp) :: field(3)
+    call schmidt_point(lm,theta,phi,coef_in,field)
+    br_out = field(1)
+    bt_out = field(2)
+    bp_out = field(3)
   end subroutine evaluate_from_coeffs_point
 
-  subroutine solve_coeffs_from_samples(lm, reg_lam, reg_pow, joint_w, &
-                                       theta_s, phi_s, w_s, br_s, bt_s, bp_s, &
-                                       ig, ih, coef_out, ncoef_out, rss_out, regnorm_out, info)
-    integer(int32), intent(in) :: lm
-    real(wp), intent(in) :: reg_lam, reg_pow, joint_w
-    real(wp), intent(in) :: theta_s(:), phi_s(:), w_s(:), br_s(:), bt_s(:), bp_s(:)
-    integer(int32), allocatable, intent(out) :: ig(:,:), ih(:,:)
-    real(wp), allocatable, intent(out) :: coef_out(:)
-    integer(int32), intent(out) :: ncoef_out, info
-    real(wp), intent(out) :: rss_out, regnorm_out
-
-    integer(int32) :: nobs, i, j, s, l, m
-    real(wp), allocatable :: ATA(:,:), ATb(:), row_br(:), row_bt(:), row_bp(:)
-    real(wp) :: w, pred_br, pred_bt, pred_bp, rr, lnorm, reg_w, numerical_floor
-    real(wp), allocatable :: normal_diagonal(:)
-
-    nobs = size(theta_s)
-    info = 0
-    rss_out = 0.0_wp
-    regnorm_out = 0.0_wp
-
-    allocate(ig(0:lm,0:lm), ih(0:lm,0:lm))
-    call build_index_maps(lm, ig, ih, ncoef_out)
-    allocate(coef_out(ncoef_out))
-    allocate(ATA(ncoef_out,ncoef_out), ATb(ncoef_out))
-    allocate(row_br(ncoef_out), row_bt(ncoef_out), row_bp(ncoef_out))
-    ATA(:,:) = 0.0_wp
-    ATb(:) = 0.0_wp
-
-    do s=1, nobs
-      call schmidt_basis(theta_s(s), phi_s(s), lm, ig, ih, row_br, row_bt, row_bp)
-      w = max(w_s(s), 1.0e-12_wp)
-
-      if (joint_w > 0.0_wp) then
-        do i=1, ncoef_out
-          ATb(i) = ATb(i) + w * (row_br(i)*br_s(s) + joint_w*(row_bt(i)*bt_s(s) + row_bp(i)*bp_s(s)))
-          do j=1, ncoef_out
-            ATA(i,j) = ATA(i,j) + w * (row_br(i)*row_br(j) + joint_w*(row_bt(i)*row_bt(j) + row_bp(i)*row_bp(j)))
-          end do
-        end do
-      else
-        do i=1, ncoef_out
-          ATb(i) = ATb(i) + w * row_br(i) * br_s(s)
-          do j=1, ncoef_out
-            ATA(i,j) = ATA(i,j) + w * row_br(i) * row_br(j)
-          end do
-        end do
-      end if
-    end do
-
-    allocate(normal_diagonal(ncoef_out))
-    do i=1, ncoef_out
-      normal_diagonal(i) = ata(i,i)
-    end do
-    numerical_floor = epsilon(1.0_wp)*max(sum(normal_diagonal)/real(ncoef_out,wp), tiny(1.0_wp))
-    if (reg_lam > 0.0_wp) then
-      do l=1, lm
-        lnorm = real(l,wp) / real(max(1_int32,lm),wp)
-        reg_w = max(lnorm, 1.0e-6_wp)**reg_pow
-        do m=0, l
-          if (ig(l,m) > 0) ATA(ig(l,m),ig(l,m)) = ATA(ig(l,m),ig(l,m)) * (1.0_wp + reg_lam*reg_w)
-          if (ih(l,m) > 0) ATA(ih(l,m),ih(l,m)) = ATA(ih(l,m),ih(l,m)) * (1.0_wp + reg_lam*reg_w)
-        end do
-      end do
-    end if
-    do i=1, ncoef_out
-      ata(i,i) = ata(i,i) + numerical_floor
-    end do
-
-    call solve_linear_system(ATA, ATb, coef_out, ncoef_out, info)
-    if (info /= 0) then
-      deallocate(ata, atb, row_br, row_bt, row_bp, normal_diagonal)
-      return
-    end if
-
-    rss_out = 0.0_wp
-    do s=1, nobs
-      call schmidt_basis(theta_s(s), phi_s(s), lm, ig, ih, row_br, row_bt, row_bp)
-      pred_br = sum(row_br * coef_out)
-      pred_bt = sum(row_bt * coef_out)
-      pred_bp = sum(row_bp * coef_out)
-      rr = pred_br - br_s(s)
-      rss_out = rss_out + rr*rr
-      if (joint_w > 0.0_wp) then
-        rr = pred_bt - bt_s(s)
-        rss_out = rss_out + joint_w * rr*rr
-        rr = pred_bp - bp_s(s)
-        rss_out = rss_out + joint_w * rr*rr
-      end if
-    end do
-
-    ! use the same data-diagonal weighted norm as the fitted damping penalty
-    regnorm_out = 0.0_wp
-    do l=1, lm
-      lnorm = real(l,wp) / real(max(1_int32,lm),wp)
-      reg_w = max(lnorm, 1.0e-6_wp)**reg_pow
-      do m=0, l
-        if (ig(l,m) > 0) regnorm_out = regnorm_out + reg_w * normal_diagonal(ig(l,m)) * coef_out(ig(l,m))**2
-        if (ih(l,m) > 0) regnorm_out = regnorm_out + reg_w * normal_diagonal(ih(l,m)) * coef_out(ih(l,m))**2
-      end do
-    end do
-
-    deallocate(ata, atb, row_br, row_bt, row_bp, normal_diagonal)
-  end subroutine solve_coeffs_from_samples
-
-  subroutine auto_select_params(lmax_seed, reg_lam_seed, reg_pow_seed, joint_w, &
-                                theta_s, phi_s, w_s, br_s, bt_s, bp_s, &
-                                lmax_sel, reg_lam_sel, reg_pow_sel)
+  subroutine auto_select_params(lmax_seed,reg_lam_seed,reg_pow_seed,joint_w,raw,power_spectrum,energy,nsamples, &
+                                lmax_sel,reg_lam_sel,reg_pow_sel)
     integer(int32), intent(in) :: lmax_seed
-    real(wp), intent(in) :: reg_lam_seed, reg_pow_seed, joint_w
-    real(wp), intent(in) :: theta_s(:), phi_s(:), w_s(:), br_s(:), bt_s(:), bp_s(:)
+    integer(int64), intent(in) :: nsamples
+    real(wp), intent(in) :: reg_lam_seed,reg_pow_seed,joint_w,raw(:),power_spectrum(:),energy
     integer(int32), intent(out) :: lmax_sel
-    real(wp), intent(out) :: reg_lam_sel, reg_pow_sel
-
-    integer(int32) :: i, il, ilam, ipow, np, stride, nall, ncoef_t, info_t, lm_try
-    integer(int32) :: lm_cand(3)
-    real(wp) :: lam_cand(4), pow_cand(3)
-    real(wp), allocatable :: th_p(:), ph_p(:), ww_p(:), br_p(:), bt_p(:), bp_p(:)
-    integer(int32), allocatable :: ig_t(:,:), ih_t(:,:)
-    real(wp), allocatable :: coef_t(:)
-    real(wp) :: rss, regn, gcv, lcurve, best_gcv, best_lcurve
-    real(wp) :: nobs_eff, dof_eff
-
-    nall = size(theta_s)
-    stride = max(1_int32, int(sqrt(real(max(1,nall),wp)/600.0_wp)))
-    np = 0
-    do i=1, nall, stride
-      np = np + 1
-    end do
-    allocate(th_p(np), ph_p(np), ww_p(np), br_p(np), bt_p(np), bp_p(np))
-    np = 0
-    do i=1, nall, stride
-      np = np + 1
-      th_p(np) = theta_s(i)
-      ph_p(np) = phi_s(i)
-      ww_p(np) = w_s(i)
-      br_p(np) = br_s(i)
-      bt_p(np) = bt_s(i)
-      bp_p(np) = bp_s(i)
-    end do
-
-    lm_cand(1) = max(6_int32, lmax_seed - 6_int32)
-    lm_cand(2) = max(6_int32, lmax_seed)
-    lm_cand(3) = max(6_int32, lmax_seed + 6_int32)
-
+    real(wp), intent(out) :: reg_lam_sel,reg_pow_sel
+    integer(int32) :: il,ilam,ipow,lm_try,lm_cand(3)
+    real(wp) :: lam_cand(4),pow_cand(3),rss,regn,gcv,lcurve,best_gcv,best_lcurve,nobs_eff,dof_eff
+    real(wp), allocatable :: trial(:)
+    lm_cand = [max(6_int32,lmax_seed-6),max(6_int32,lmax_seed),max(6_int32,lmax_seed+6)]
     if (reg_lam_seed <= 1.0e-12_wp) then
-      lam_cand = [0.0_wp, 2.0e-2_wp, 1.0e-1_wp, 5.0e-1_wp]
+      lam_cand = [0.0_wp,0.02_wp,0.1_wp,0.5_wp]
     else
-      lam_cand = [0.0_wp, max(0.0_wp, 0.25_wp*reg_lam_seed), max(0.0_wp, reg_lam_seed), max(0.0_wp, 1.5_wp*reg_lam_seed)]
+      lam_cand = [0.0_wp,0.25_wp*reg_lam_seed,reg_lam_seed,1.5_wp*reg_lam_seed]
     end if
-    pow_cand = [max(1.0_wp, reg_pow_seed-2.0_wp), max(1.0_wp, reg_pow_seed), max(1.0_wp, reg_pow_seed+2.0_wp)]
-
+    pow_cand = [max(1.0_wp,reg_pow_seed-2),max(1.0_wp,reg_pow_seed),max(1.0_wp,reg_pow_seed+2)]
+    nobs_eff = real(nsamples,wp)
+    if (joint_w > 0.0_wp) nobs_eff = 3*nobs_eff
     lmax_sel = lm_cand(2)
-    reg_lam_sel = lam_cand(3)
-    reg_pow_sel = pow_cand(2)
+    reg_lam_sel = reg_lam_seed
+    reg_pow_sel = reg_pow_seed
     best_gcv = huge(1.0_wp)
     best_lcurve = huge(1.0_wp)
-
     do il=1, 3
       lm_try = lm_cand(il)
+      allocate(trial(lm_try*(lm_try+2)))
       do ilam=1, 4
         do ipow=1, 3
-          if (allocated(ig_t)) deallocate(ig_t, ih_t)
-          if (allocated(coef_t)) deallocate(coef_t)
-          call solve_coeffs_from_samples(lm_try, lam_cand(ilam), pow_cand(ipow), joint_w, &
-                                         th_p, ph_p, ww_p, br_p, bt_p, bp_p, &
-                                         ig_t, ih_t, coef_t, ncoef_t, rss, regn, info_t)
-          if (info_t /= 0) cycle
-
-          nobs_eff = real(size(th_p),wp)
-          if (joint_w > 0.0_wp) nobs_eff = 3.0_wp * nobs_eff
-          dof_eff = min(real(ncoef_t,wp), max(1.0_wp, nobs_eff-1.0_wp))
-          gcv = rss / max(1.0_wp, (nobs_eff - dof_eff)*(nobs_eff - dof_eff))
-          lcurve = sqrt(max(rss,1.0e-30_wp)) * sqrt(max(regn,1.0e-30_wp))
-
-          if (gcv < best_gcv) then
+          call filter_coefficients(lm_try,raw,power_spectrum,energy,joint_w,lam_cand(ilam),pow_cand(ipow), &
+                                   trial,rss,regn,dof_eff)
+          gcv = max(rss,epsilon(1.0_wp)*energy)/max(1.0_wp,(nobs_eff-dof_eff)**2)
+          lcurve = sqrt(max(rss,tiny(1.0_wp)))*sqrt(max(regn,tiny(1.0_wp)))
+          if (gcv < best_gcv .or. (gcv <= 1.05_wp*best_gcv .and. lcurve < best_lcurve)) then
             best_gcv = gcv
-            best_lcurve = lcurve
-            lmax_sel = lm_try
-            reg_lam_sel = lam_cand(ilam)
-            reg_pow_sel = pow_cand(ipow)
-          else if (gcv <= 1.05_wp*best_gcv .and. lcurve < best_lcurve) then
             best_lcurve = lcurve
             lmax_sel = lm_try
             reg_lam_sel = lam_cand(ilam)
@@ -1605,12 +1409,47 @@ contains
           end if
         end do
       end do
+      deallocate(trial)
     end do
-
-    write(*,'(A,I0,A,ES12.4,A,F7.3)') '  Auto-selected spectral controls: lmax=', lmax_sel, &
-                                       ' reg_lambda=', reg_lam_sel, ' reg_power=', reg_pow_sel
-    deallocate(th_p, ph_p, ww_p, br_p, bt_p, bp_p)
+    write(*,'(A,I0,A,ES12.4,A,F7.3)') '  Auto-selected spectral controls: lmax=',lmax_sel, &
+                                     ' reg_lambda=',reg_lam_sel,' reg_power=',reg_pow_sel
   end subroutine auto_select_params
+
+  subroutine sample_source_ring(angle,field)
+    real(wp), intent(in) :: angle
+    real(wp), intent(out) :: field(:,:)
+    integer(int32) :: longitude_index,source_index,count
+    real(wp) :: sine,cosine,azimuth,cosine_phi,sine_phi,x,y,z,fx,fy,fz,dx,dy,dz
+    sine = sin(angle)
+    cosine = cos(angle)
+    count = size(field,1)
+    do longitude_index=1, count
+      azimuth = 2*pi*real(longitude_index-1,wp)/real(count,wp)
+      cosine_phi = cos(azimuth)
+      sine_phi = sin(azimuth)
+      x = ro_m*sine*cosine_phi
+      y = ro_m*sine*sine_phi
+      z = ro_m*cosine
+      fx = 0.0_wp
+      fy = 0.0_wp
+      fz = 0.0_wp
+      do source_index=1, ns
+        if (ifield == 2) then
+          call add_dipole_field_cart64(x,y,z,xs_list(source_index),ys_list(source_index),zs_list(source_index), &
+                                       mx_list(source_index),my_list(source_index),mz_list(source_index),dx,dy,dz)
+        else
+          call add_pointmass_field_cart64(x,y,z,xs_list(source_index),ys_list(source_index),zs_list(source_index), &
+                                          mass_list(source_index),dx,dy,dz)
+        end if
+        fx = fx+dx
+        fy = fy+dy
+        fz = fz+dz
+      end do
+      field(longitude_index,1) = fx*sine*cosine_phi+fy*sine*sine_phi+fz*cosine-br_monopole
+      field(longitude_index,2) = fx*cosine*cosine_phi+fy*cosine*sine_phi-fz*sine
+      field(longitude_index,3) = -fx*sine_phi+fy*cosine_phi
+    end do
+  end subroutine sample_source_ring
 
   subroutine fit_edge_rbf_correction(lon_s, lat_s, res_br, res_bt, res_bp, lon_ref_deg, poly_lon, poly_lat, &
                                      sigma_deg, band_deg, lambda_corr, centers_per_edge, &

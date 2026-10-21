@@ -10,6 +10,8 @@ The Python model interface (`block`, `polygon`, `equivalent_source_grid`, `spher
 
 The five executable programs share `gravmag_paths.f90`. Omitted or empty output arguments create files in an `output/` folder beside the input; explicit arguments select a destination. Compile this utility before each executable when building manually. Python and shell builders include it automatically. See [output path conventions](../docs/output_paths.md) for filenames and positional argument examples.
 
+The spectral executable additionally requires `gravmag_sphere_harmonics.f90` followed by `gravmag_sphere_transform.f90` before `gravmag_sphere_spectral.f90`. These provide Fukushima-style extended-range Schmidt recurrences and the native Gauss–Legendre/Fourier projection. Enable the compiler's OpenMP option for parallel execution. The Python and shell builders include these modules and flags. No external Fourier library is needed.
+
 `gravmag_sphere_gauss_legendre.f90` is the `gauss_legendre` target. It restores the original nested Gauss–Legendre volume method with double precision, generated nodes/weights, optional composite panels and polygon boundary integration. It uses the current magnetic/gravity cards and emits one XYZ block per body, in nT or mGal. It is distinct from the spectral `gravmag_sphere_spectral.f90` program.
 
 ```bash

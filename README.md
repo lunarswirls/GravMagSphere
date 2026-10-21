@@ -9,7 +9,7 @@ The toolkit models finite blocks, polygonal bodies, and source layers on a spher
 | Method | Fortran source / executable | Calculation |
 |---|---|---|
 | `direct_sum` | `gravmag_sphere_direct_sum` | Uses magnetic surface-charge quadrature or gravity midpoint-volume quadrature, summing contributions on a regular observation grid |
-| `spectral` | `gravmag_sphere_spectral` | Fits Schmidt semi-normalized harmonics without the Condon-Shortley phase, including the gravity degree-zero mass term, with optional local and hybrid corrections |
+| `spectral` | `gravmag_sphere_spectral` | Native Gauss–Legendre/Fourier projection with Fukushima-style extended-range Schmidt harmonics, no Condon-Shortley phase, a fixed gravity mass term, and optional local/hybrid corrections |
 | `gauss_legendre` | `gravmag_sphere_gauss_legendre` | Integrates magnetic and gravity volume kernels with configurable Gauss–Legendre orders and composite panels |
 | `orbital` | `orbital.f90` shared library | Evaluates magnetic volume kernels at arbitrary observation positions for prediction and inversion |
 | `dipole_grid` | `gravmag_sphere_dipole_grid_fit` | Fits equivalent magnetic point-dipole moments on a fixed source grid |
@@ -57,7 +57,16 @@ Use a virtual environment and an installed `gfortran` compiler:
 /Users/danywaller/code/venvs/gravmagpy/bin/python -m pip install -e '.[plot]'
 ```
 
-Imports do not compile or run models. `build_fortran()` or the first forward call compiles into a temporary-directory cache keyed by source contents, compiler version, flags, and platform. Pass `compiler=` and `build_dir=` to `build_fortran` for other locations. Wheels include the Fortran source and compile locally when used; they do not include machine-specific binaries. See [the architecture notes](docs/architecture.md).
+To run the numerical checks, install the validation dependency and execute the test suite:
+
+```bash
+/Users/danywaller/code/venvs/gravmagpy/bin/python -m pip install -e '.[plot,validation]'
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MPLBACKEND=Agg /Users/danywaller/code/venvs/gravmagpy/bin/python -m unittest discover -s tests -v
+```
+
+The [native high-degree benchmark](diagnostics/native_high_degree/README.md) completed the full validation protocol at degrees 600, 1200, 2800, 4096, 5600, 8192, and 10000. Degree 10,000 took 27.79 minutes with eight threads on an Apple M4 Max. Degree 11200 passed the transform and gravity checks but reached the 30-minute protocol limit during the magnetic check.
+
+Imports do not compile or run models. `build_fortran()` or the first forward call compiles into a temporary-directory cache keyed by source contents, compiler version, flags, and platform. Pass `compiler=` and `build_dir=` to `build_fortran` for other locations. Wheels include the Fortran source and compile locally when used, they do not include machine-specific binaries. See [the architecture notes](docs/architecture.md).
 
 ## Model magnetic and gravity fields
 
@@ -93,7 +102,7 @@ plot_fields(input_path, result['output_path'])
 
 `build_fortran` supports `orbital`, `direct_sum`, `spectral`, `gauss_legendre`, `xyz_to_brtp`, and `dipole_grid`. `run_fortran` exposes the positional interfaces. Shell runners work from `examples`; their builds resolve the canonical files directly under `fortran`. Fortran `.in` files are supported directly. See [architecture and development direction](docs/architecture.md) and the [solver guide](examples/README.md).
 
-Use `run_sphere_model(model, solver="gauss_legendre")` to evaluate blocks or polygons with the Gauss–Legendre volume method in double precision. Node orders and composite subdivisions are configurable; see the [Python modeling guide](docs/sphere.md). The [three-solver diagnostic report](diagnostics/gauss_legendre_comparison/README.md) compares quadrature convergence with direct_sum and pure spectral fields at surface, orbital and far-field altitudes.
+Use `run_sphere_model(model, solver="gauss_legendre")` to evaluate blocks or polygons with the Gauss–Legendre volume method in double precision. Node orders and composite subdivisions are configurable, see the [Python modeling guide](docs/sphere.md). The [three-solver diagnostic report](diagnostics/gauss_legendre_comparison/README.md) compares quadrature convergence with direct_sum and pure spectral fields at surface, orbital and far-field altitudes.
 
 ## Fit orbital measurements
 
@@ -135,7 +144,7 @@ PYTHONPATH=src /Users/danywaller/code/venvs/gravmagpy/bin/python examples/lpmag/
 
 See the architecture's [LPMAG reference workflow](docs/architecture.md#lpmag-reference-workflow) for coordinate conventions, quality selection, uncertainties, priors, and practical limits, followed by the path to body-independent, multi-solver equivalent sources.
 
-For geologic context maps, use `gravmagpy.maps.plot_equivalent_maps` to place the fitted equivalent field and source moments alongside GeoTIFF products. The [runnable map example](examples/lpmag/plot_equivalent_geotiffs.py) uses a local WAC mosaic and a 30 km magnetic-model map; [the mapping guide](docs/maps.md) explains CRS handling, spectral-map settings, and prediction at new altitudes. Install `.[maps]` for the optional Rasterio/Matplotlib dependencies.
+For geologic context maps, use `gravmagpy.maps.plot_equivalent_maps` to place the fitted equivalent field and source moments alongside GeoTIFF products. The [runnable map example](examples/lpmag/plot_equivalent_geotiffs.py) uses a local WAC mosaic and a 30 km magnetic-model map, [the mapping guide](docs/maps.md) explains CRS handling, spectral-map settings, and prediction at new altitudes. Install `.[maps]` for the optional Rasterio/Matplotlib dependencies.
 
 ## Tests and diagnostics
 

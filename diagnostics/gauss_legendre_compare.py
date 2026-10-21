@@ -9,6 +9,9 @@ import subprocess
 import sys
 from time import perf_counter
 
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+
 import numpy as np
 
 from gravmagpy import block, polygon, sphere_model, run_sphere_model, write_model_input, build_fortran
@@ -40,8 +43,8 @@ def compare_fields(field, reference):
 if "--help" in sys.argv or "-h" in sys.argv:
     print("usage: python diagnostics/gauss_legendre_compare.py [output_directory]\n"
           "runs magnetic and gravity block/polygon comparisons at surface, orbital and far-field altitudes\n"
-          "edit the settings dictionary to change the sweep; default output: diagnostics/gauss_legendre_comparison\n"
-          "all numeric residuals use summed xyz vectors; pure spectral disables auto, edge and hybrid corrections")
+          "edit the settings dictionary to change the sweep. Default output: diagnostics/gauss_legendre_comparison\n"
+          "all numeric residuals use summed xyz vectors. Pure spectral disables auto, edge and hybrid corrections")
     raise SystemExit(0)
 if len(sys.argv) > 2:
     raise SystemExit("supply at most one output directory")
@@ -115,24 +118,25 @@ for case in cases:
 
 np.savez_compressed(destination/"fields.npz", **arrays)
 report = {"settings": settings, "platform": platform.platform(), "python": platform.python_version(),
-          "numpy": np.__version__, "compiler": compiler, "harmonic_normalization": "schmidt", "condon_shortley_phase": False,
+          "numpy": np.__version__, "compiler": compiler, "threads": os.environ["OMP_NUM_THREADS"],
+          "spectral_algorithm": "native_gauss_legendre_fourier", "recurrence": "fukushima_extended_range_radix_2_512", "harmonic_normalization": "schmidt", "condon_shortley_phase": False,
           "binaries": {key: str(value) for key, value in binaries.items()},
           "cases": cases, "references": references, "runs": rows}
 (destination/"results.json").write_text(json.dumps(report, indent=2)+"\n")
 columns = ["case", "solver", "setting", "unit", "relative_l2", "vector_rmse", "max_vector_difference", "elapsed_s"]
 with (destination/"results.csv").open("w", newline="") as stream:
-    writer = csv.DictWriter(stream, fieldnames=columns, extrasaction="ignore")
+    writer = csv.DictWriter(stream, fieldnames=columns, extrasaction="ignore", lineterminator="\n")
     writer.writeheader()
     writer.writerows(rows)
 
 lines = ["# Gauss–Legendre, direct_sum and pure spectral comparison", "",
          "Residuals are vector L2 differences divided by the reference vector L2 norm over identical observation grids. "
-         "The reference is higher-order composite Gauss–Legendre integration, checked against a second resolution; "
+         "The reference is higher-order composite Gauss–Legendre integration, checked against a second resolution. "
          "it is a numerical reference, not an exact solution. Independent kernel, geometry and unit checks live in "
          "`tests/test_gauss_legendre.py`.", "",
-         "Pure spectral runs use Schmidt semi-normalization without the Condon-Shortley phase and set `auto_mode=0`, `edge_correction=0`, `hybrid_mode=0` and `reg_lambda=0`. "
-         "Their source mesh uses horizontal refine factor 4 and 12 radial samples. Direct summation runs retain card radial count 4. "
-         "Each timing is one warmed-build Python call including subprocess startup and file I/O; it is not a repeated benchmark.", "",
+         "Pure spectral runs use the native Gauss–Legendre/Fourier transform with extended-range Schmidt semi-normalization without the Condon-Shortley phase and set `auto_mode=0`, `edge_correction=0`, `hybrid_mode=0` and `reg_lambda=0`. "
+         "Fit latitudes are Gauss–Legendre nodes and longitude counts round upward to powers of two. Their source mesh uses horizontal refine factor 4 and 12 radial samples. Point-source runs retain card radial count 4. "
+         "Each timing is one warmed-build Python call including subprocess startup and file I/O. It is not a repeated benchmark.", "",
          "The cases span magnetic surface/orbital/far fields, a concave magnetic polygon and gravity. "
          "Low harmonic degrees cannot resolve the narrow near-surface sources. Spectral gravity includes the degree-zero "
          "mass term from the signed sum of discretized source masses, with degrees 1 through lmax fitted to the remaining field. "
@@ -149,7 +153,7 @@ for row in rows:
     lines.append(f"| {row['case']} | {row['solver']} | {row['setting']} | {row['relative_l2']:.3e} | "
                  f"{row['vector_rmse']:.3e} | {row['elapsed_s']:.4f} |")
 lines += ["", "![Convergence and cost](convergence.png)", "", "Exact models, options, per-component RMSE and solver diagnostics "
-          "are saved in `results.json`; summed XYZ fields are saved in `fields.npz`. Residual units follow each case. "
+          "are saved in `results.json`. Summed XYZ fields are saved in `fields.npz`. Residual units follow each case. "
           "`results.csv` provides the compact sweep table. Plot labels show the first and final node orders, direct_sum refine "
           "factors or spectral degrees. The separate diamond labelled 8×4 uses order 8 with four panels in each dimension.", ""]
 (destination/"README.md").write_text("\n".join(lines))
