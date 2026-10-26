@@ -265,6 +265,8 @@ def _solver_arguments(solver, options):
             raise ValueError(f"{key} must be 0 or 1")
         if key == "hybrid_mode" and value not in (0, 1, 2):
             raise ValueError("hybrid_mode must be 0, 1, or 2")
+    if solver == "spectral" and values["lmax"] + 6*values["auto_mode"] > 46339:
+        raise ValueError("spectral degree including the automatic search must be at most 46339")
     return tuple(values.values())
 
 
@@ -302,7 +304,9 @@ def run_sphere_model(model, *, solver="direct_sum", solver_options=None, output_
         result.update({f"{prefix}{axis}_{unit}": field[..., index] for index, axis in enumerate(("x", "y", "z"))})
         result[f"{prefix}tot_{unit}"] = result["total"]
         if solver == "spectral":
-            result.update(normalization="schmidt", condon_shortley_phase=False)
+            result.update(normalization="schmidt", condon_shortley_phase=False,
+                          spectral_algorithm="native_gauss_legendre_fourier",
+                          harmonic_recurrence="fukushima_extended_range_radix_2_512")
         if output_dir is not None:
             result.update(input_path=path, output_path=run["output_path"])
     return result

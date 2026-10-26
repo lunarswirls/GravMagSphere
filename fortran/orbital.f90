@@ -96,4 +96,32 @@ contains
       end do
     end do
   end subroutine dipole_field
+  subroutine monopole_kernel(nobs, nsource, xyz_km, source_xyz_km, kernel, status) &
+      bind(c, name="monopole_kernel")
+    ! Equivalent magnetic charges q in nT km^2: B=q*(x-s)/|x-s|^3.
+    ! Kernel layout matches a C-contiguous Python (nobs,3,nsource) array.
+    integer(c_int), value, intent(in) :: nobs, nsource
+    real(c_double), intent(in) :: xyz_km(3,nobs), source_xyz_km(3,nsource)
+    real(c_double), intent(out) :: kernel(nsource,3,nobs)
+    integer(c_int), intent(out) :: status
+    integer :: i, j
+    real(c_double) :: delta(3), distance2
+    status = 0
+    kernel = 0.0_c_double
+    if (nobs < 1 .or. nsource < 1) then
+      status = 1
+      return
+    end if
+    do i = 1, nobs
+      do j = 1, nsource
+        delta = xyz_km(:,i) - source_xyz_km(:,j)
+        distance2 = sum(delta**2)
+        if (distance2 <= 1.0e-18_c_double) then
+          status = 2
+          return
+        end if
+        kernel(j,:,i) = delta / (distance2 * sqrt(distance2))
+      end do
+    end do
+  end subroutine monopole_kernel
 end module gravmag_orbital

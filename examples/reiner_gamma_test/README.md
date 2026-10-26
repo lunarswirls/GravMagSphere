@@ -9,9 +9,9 @@ This case approximates a published equivalent-dipole array with finite magnetize
 - `run_reiner_gamma_table4_direct.sh` and `run_reiner_gamma_table4_surface_direct.sh`: direct_sum solver and component conversion workflows
 - `plot_reiner_gamma_table4_*.py`: field maps and three-dimensional field-line views
 - `output/`: numeric field tables and field-line caches
-- `figs`: PNG maps and HTML views
+- `figs/`: PNG maps and HTML views
 
-Run the Python case scripts with `/Users/danywaller/code/venvs/gravmagpy/bin/python`. Field-line HTML views require Plotly. The case uses singular `figs`; see [output path conventions](../../docs/output_paths.md).
+Run the Python case scripts with `/Users/danywaller/code/venvs/gravmagpy/bin/python`. Field-line HTML views require Plotly. See [output path conventions](../../docs/output_paths.md) for default directories and explicit overrides.
 
 ## Hemingway & Garrick-Bethell Table 4 definitions
 

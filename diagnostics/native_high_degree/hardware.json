@@ -1,0 +1,8 @@
+{
+  "processor": "Apple M4 Max",
+  "model": "Mac16,5",
+  "physical_memory_gib": 64,
+  "cpu_cores": 16,
+  "architecture": "arm64",
+  "operating_system": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+}

@@ -124,6 +124,8 @@ def build_binaries(
     physics = source_dir / "gravmag_sphere_physics.f90"
     direct_sum = source_dir / "gravmag_sphere_direct_sum.f90"
     spectral = source_dir / "gravmag_sphere_spectral.f90"
+    harmonics = source_dir / "gravmag_sphere_harmonics.f90"
+    transform = source_dir / "gravmag_sphere_transform.f90"
     conv = source_dir / "gravmag_xyz_to_brtp.f90"
     paths = source_dir / "gravmag_paths.f90"
 
@@ -149,7 +151,10 @@ def build_binaries(
 
     cmd_spectral = [
         *common,
+        *omp_flags,
         f"-J{mod_dir}", f"-I{mod_dir}", str(paths),
+        str(harmonics),
+        str(transform),
         str(spectral),
         "-o",
         str(bin_dir / "gravmag_sphere_spectral"),

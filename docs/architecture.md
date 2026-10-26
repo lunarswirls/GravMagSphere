@@ -1,6 +1,6 @@
 # GravMagSphere architecture
 
-GravMagSphere is the complete Fortran magnetic and gravity solver and inversion toolkit. GravMagPy (`gravmagpy`) is its Python frontend for source construction, spacecraft-data ingestion, inversion, and visualization. Users work with dictionaries, arrays, and tables; adapters handle input cards and executable calls when needed.
+GravMagSphere is the complete Fortran magnetic and gravity solver and inversion toolkit. GravMagPy (`gravmagpy`) is its Python frontend for source construction, spacecraft-data ingestion, inversion, and visualization. Users work with dictionaries, arrays, and tables. Adapters handle input cards and executable calls when needed.
 
 The numerical foundation uses a configurable spherical reference body. The orbital-data adapter targets wake-sorted Lunar Prospector magnetic measurements. The development direction is a body-independent equivalent-source framework with interchangeable forward backends and inversion methods. Those extensions are described separately from the implemented capabilities below.
 
@@ -26,7 +26,7 @@ data/spice_kernels/         kernels and metakernel for coordinate workflows
 docs/                      modeling, data, mapping, and execution guides
 ```
 
-The package owns validation and public interfaces. Fortran owns the numerical kernels. Examples choose data paths, source hypotheses, and run settings; the package does not import or execute them. Diagnostic integrations are comparison tools, not automatically available production inversion backends.
+The package owns validation and public interfaces. Fortran owns the numerical kernels. Examples choose data paths, source hypotheses, and run settings. The package does not import or execute them. Diagnostic integrations are comparison tools, not automatically available production inversion backends.
 
 ## Data and model contracts
 
@@ -42,14 +42,14 @@ The magnetic inversion interfaces consume an observation dictionary with:
 
 `load_lpmag_csv` normalizes body-fixed SEL columns and retains source filenames, row indices, and available timestamps. It supports configurable column mappings and geographic position columns, but it is an LPMAG/SEL adapter, not a general mission-frame transformation service. Field variability such as `Brms` is a quality-selection quantity, not automatically an independent measurement uncertainty. The [LPMAG reference workflow](#lpmag-reference-workflow) supplies the input template and practical constraints for the mission-neutral development plan.
 
-Python modeling positions and depths use km; magnetic fields use nT; magnetization uses A/m. Equivalent dipole moments use A m² and are not interchangeable with magnetization. The dipole CSV stores radius in metres, with explicit conversion at the prediction boundary. Grid gravity models use density contrast in kg/m³ and return acceleration in mGal.
+Python modeling positions and depths use km; magnetic fields use nT; magnetization uses A/m. Equivalent dipole moments use A-m² and are not interchangeable with magnetization. The dipole CSV stores radius in metres, with explicit conversion at the prediction boundary. Grid gravity models use density contrast in kg/m³ and return acceleration in mGal.
 
 ### Sources
 
 There are three distinct source representations:
 
 - Orbital inversion blocks describe center latitude/longitude, angular widths, top depth, thickness, and uniform body-fixed Cartesian magnetization
-- Grid models contain block or polygon dictionaries, material properties, a reference radius, and a regular observation grid; `equivalent_source_grid` constructs finite-volume cells
+- Grid models contain block or polygon dictionaries, material properties, a reference radius, and a regular observation grid, `equivalent_source_grid` constructs finite-volume cells
 - Equivalent dipole solutions contain source positions and fitted Cartesian moments, optionally organized into depth layers
 
 These representations have separate adapters and validation. A point-dipole solution is not implicitly converted into a volume model: that needs an explicit volume and material assumption. `read_model_input` and `write_model_input` connect supported dictionary models to Fortran input cards. Lower-level card/executable interfaces support card-based workflows. See [source modeling](sphere.md).
@@ -83,7 +83,7 @@ The orbital volume kernel integrates magnetic dipole contributions with tensor G
 
 `fit_sources` uses bounded `scipy.optimize.least_squares` to fit parameters selected by the bounds dictionaries. Unselected parameters and source count remain fixed. Available parameters include block position, widths, depth, thickness, and magnetization. The objective supports component uncertainty weighting, parameter priors, robust losses, and optional constant background vectors per file or observation group.
 
-Every residual evaluation uses the samples' individual positions. The quadrature rule retains a fixed node topology as block dimensions change. Bounds keep source volumes admissible throughout the search. Convergence and Jacobian diagnostics describe the chosen optimization problem; they do not establish a unique subsurface interpretation.
+Every residual evaluation uses the samples' individual positions. The quadrature rule retains a fixed node topology as block dimensions change. Bounds keep source volumes admissible throughout the search. Convergence and Jacobian diagnostics describe the chosen optimization problem, they do not establish a unique subsurface interpretation.
 
 ### Fixed-grid equivalent sources
 
@@ -99,9 +99,9 @@ Every residual evaluation uses the samples' individual positions. The quadrature
 
 `build_fortran` compiles the requested target with a compatible Fortran compiler. Source contents, compiler identity/version, flags, and platform determine the cache key. Temporary compilation directories isolate module files; completed binaries are published into the cache. The default cache is under the system temporary directory, and `build_dir` selects an explicit location.
 
-The checkout uses `fortran/`; installed wheels contain sources under `gravmagpy/_fortran`. Compilation occurs on use, not on package import. A compiler and its runtime must be available on the execution machine. NumPy, SciPy, and pandas are core dependencies; plotting and geospatial integrations are optional extras.
+The checkout uses `fortran/`; installed wheels contain sources under `gravmagpy/_fortran`. Compilation occurs on use, not on package import. A compiler and its runtime must be available on the execution machine. NumPy, SciPy, and pandas are core dependencies, plotting and geospatial integrations are optional extras.
 
-`run_fortran` passes arguments as a subprocess argument list and checks both return status and Fortran error messages. Executable programs use `gravmag_paths.f90` for default destinations and POSIX directory creation. Bash launchers resolve paths directly. Numeric products default to input-relative `output/` and figures to `figs/`; Reiner Gamma's case scripts use `fig/`. Explicit destinations override defaults. In-memory modeling calls do not implicitly persist their temporary cards or results. See [output paths](output_paths.md).
+`run_fortran` passes arguments as a subprocess argument list and checks both return status and Fortran error messages. Executable programs use `gravmag_paths.f90` for default destinations and POSIX directory creation. Bash launchers resolve paths directly. Numeric products default to input-relative `output/` and figures to `figs/`. Explicit destinations override defaults. In-memory modeling calls do not implicitly persist their temporary cards or results. See [output paths](output_paths.md).
 
 ## Path forward: body-independent, multi-solver equivalent sources
 

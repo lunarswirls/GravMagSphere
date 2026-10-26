@@ -1,0 +1,60 @@
+{
+  "per_degree_timeout_s": 1800,
+  "workspace_limit_mib": 32768.0,
+  "threads": "8",
+  "physical_memory_gib": 64,
+  "logical_cpus": 16,
+  "highest_completed_degree": 10000,
+  "definition": "complete independent function checks, full-bandwidth vector roundtrip, and both public source-field checks",
+  "shtools_used": false,
+  "attempts": [
+    {
+      "degree": 600,
+      "status": "passed",
+      "elapsed_s": 0.949726584018208,
+      "estimated_workspace_mib": 32.646846771240234
+    },
+    {
+      "degree": 1200,
+      "status": "passed",
+      "elapsed_s": 3.965138083003694,
+      "estimated_workspace_mib": 117.47625350952148
+    },
+    {
+      "degree": 2800,
+      "status": "passed",
+      "elapsed_s": 41.62789504099055,
+      "estimated_workspace_mib": 595.4816246032715
+    },
+    {
+      "degree": 4096,
+      "status": "passed",
+      "elapsed_s": 130.6978189579968,
+      "estimated_workspace_mib": 1266.596248626709
+    },
+    {
+      "degree": 5600,
+      "status": "passed",
+      "elapsed_s": 310.7150640000182,
+      "estimated_workspace_mib": 2327.435359954834
+    },
+    {
+      "degree": 8192,
+      "status": "passed",
+      "elapsed_s": 931.3754330000085,
+      "estimated_workspace_mib": 4965.189998626709
+    },
+    {
+      "degree": 10000,
+      "status": "passed",
+      "elapsed_s": 1667.1076020829787,
+      "estimated_workspace_mib": 7353.7909507751465
+    },
+    {
+      "degree": 11200,
+      "status": "time_limit",
+      "elapsed_s": 1800.0165037080003,
+      "estimated_workspace_mib": 9200.76665878296
+    }
+  ]
+}

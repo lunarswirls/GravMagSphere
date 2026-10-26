@@ -1,0 +1,95 @@
+{
+  "source_repository": "https://github.com/lunarswirls/GravMagSphere",
+  "commit": "45423d1a956a5f0b21dd0db74c126d57d4046588",
+  "working_tree_status": "M README.md\n M diagnostics/diagnostic_fortran.py\n M diagnostics/gauss_legendre_compare.py\n M diagnostics/gauss_legendre_comparison/README.md\n M diagnostics/gauss_legendre_comparison/convergence.png\n M diagnostics/gauss_legendre_comparison/fields.npz\n M diagnostics/gauss_legendre_comparison/results.csv\n M diagnostics/gauss_legendre_comparison/results.json\n M docs/sphere.md\n M examples/build_gravmag_tools.sh\n M fortran/README.md\n M fortran/gravmag_sphere_harmonics.f90\n M fortran/gravmag_sphere_spectral.f90\n M pyproject.toml\n M src/gravmagpy/sphere.py\n M src/gravmagpy/utils/fortran.py\n M tests/test_schmidt.py\n?? diagnostics/native_high_degree.py\n?? diagnostics/native_high_degree/\n?? fortran/gravmag_sphere_transform.f90\n?? tests/fixtures/native_probe.f90\n?? tests/native_support.py",
+  "validation_time_utc": "2026-10-19T20:06:44.972934+00:00",
+  "hardware": {
+    "processor": "Apple M4 Max",
+    "model": "Mac16,5",
+    "physical_memory_gib": 64,
+    "cpu_cores": 16,
+    "architecture": "arm64",
+    "operating_system": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "python": "3.14.8",
+  "numpy": "2.4.2",
+  "scipy": "1.17.1",
+  "pandas": "3.0.1",
+  "mpmath": "1.4.1",
+  "shtools_used": false,
+  "compiler": "GNU Fortran (Homebrew GCC 16.2.0) 16.2.0",
+  "harmonic_normalization": "schmidt_semi_normalized",
+  "condon_shortley_phase": false,
+  "legacy_normalization_option": false,
+  "spectral_algorithm": "native_gauss_legendre_fourier",
+  "recurrence": "fukushima_extended_range_radix_2_512",
+  "high_degree_limits": {
+    "per_degree_timeout_s": 1800,
+    "workspace_limit_mib": 32768.0,
+    "threads": "8",
+    "physical_memory_gib": 64,
+    "logical_cpus": 16,
+    "highest_completed_degree": 10000,
+    "definition": "complete independent function checks, full-bandwidth vector roundtrip, and both public source-field checks",
+    "shtools_used": false,
+    "attempts": [
+      {
+        "degree": 600,
+        "status": "passed",
+        "elapsed_s": 0.949726584018208,
+        "estimated_workspace_mib": 32.646846771240234
+      },
+      {
+        "degree": 1200,
+        "status": "passed",
+        "elapsed_s": 3.965138083003694,
+        "estimated_workspace_mib": 117.47625350952148
+      },
+      {
+        "degree": 2800,
+        "status": "passed",
+        "elapsed_s": 41.62789504099055,
+        "estimated_workspace_mib": 595.4816246032715
+      },
+      {
+        "degree": 4096,
+        "status": "passed",
+        "elapsed_s": 130.6978189579968,
+        "estimated_workspace_mib": 1266.596248626709
+      },
+      {
+        "degree": 5600,
+        "status": "passed",
+        "elapsed_s": 310.7150640000182,
+        "estimated_workspace_mib": 2327.435359954834
+      },
+      {
+        "degree": 8192,
+        "status": "passed",
+        "elapsed_s": 931.3754330000085,
+        "estimated_workspace_mib": 4965.189998626709
+      },
+      {
+        "degree": 10000,
+        "status": "passed",
+        "elapsed_s": 1667.1076020829787,
+        "estimated_workspace_mib": 7353.7909507751465
+      },
+      {
+        "degree": 11200,
+        "status": "time_limit",
+        "elapsed_s": 1800.0165037080003,
+        "estimated_workspace_mib": 9200.76665878296
+      }
+    ]
+  },
+  "harmonic_validation": "tests/test_schmidt.py with NumPy, SciPy, mpmath and analytical source fields",
+  "benchmark_command": "python scripts/reproduce_solver_comparison.py data/validation/solver_comparison",
+  "test_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MPLBACKEND=Agg python -m unittest discover -s tests -v",
+  "tests_passed": 75,
+  "benchmark_runs": 78,
+  "reference_runs": 12,
+  "validation_scope": "native scaled harmonics, complete vector transforms, both source fields and all six forward cases",
+  "other_examples": "synthetic orbital and Osborne examples retained from their prior evaluations"
+}
