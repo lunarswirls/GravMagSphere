@@ -4,6 +4,11 @@
 
 The same module exposes `dipole_field` for evaluating fitted equivalent-source moments at arbitrary positions through `predict_equivalent_field`.
 
+It also exposes `monopole_kernel` for the regional Ravat-style L2resL1 pipeline.
+The kernel maps equivalent charges in nT km² to XYZ fields in nT; Python handles
+endpoint frame rotations, difference covariance, robust IRLS and surface-Br
+regularization. See [the method documentation](../docs/ravat.md).
+
 `gravmag_sphere_direct_sum.f90` evaluates extended blocks and polygonal bodies by direct summation. Its magnetic branch uses surface-charge quadrature, placing equivalent charges at surface-patch centers and triangle centroids. Its gravity branch uses midpoint-volume quadrature, placing each cell's mass at its midpoint. The Python target is `direct_sum`; `direct` remains a selector alias.
 
 The Python model interface (`block`, `polygon`, `equivalent_source_grid`, `sphere_model`, and `run_sphere_model`) generates cards internally and runs `gravmag_sphere_direct_sum`, `gravmag_sphere_spectral` or `gravmag_sphere_gauss_legendre`. `fit_equivalent_sources` calls `gravmag_sphere_dipole_grid_fit` using normalized observation CSVs. Lower-level `build_fortran`, `run_fortran`, and `run_grid_model` expose compilation, positional arguments, and card execution. The [shell build workflow](../examples/README.md) lives in `examples`.

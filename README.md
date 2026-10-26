@@ -20,6 +20,13 @@ Choose a grid method with `run_sphere_model(..., solver="direct_sum")`, `solver=
 
 `fit_sources` uses Python optimization and the orbital Fortran kernel to fit finite-volume geometry and magnetization. `fit_equivalent_sources` calls the Fortran dipole-grid fitter. Gravity forward modeling is supported; these inversion interfaces currently target magnetic observations.
 
+`fit_ravat_l2resl1` adds a regional equivalent-monopole workflow: robust along-track
+vector differences, an L2 surface-Br baseline, and an L1 surface-Br residual
+correction. See the [method and input requirements](docs/ravat.md), the runnable
+[pipeline notebook](examples/ravat_l2resl1_pipeline.ipynb), and
+[CLI](examples/ravat_l2resl1/run.py). The default example is synthetic; reproducing
+the published inversion requires the selected orbital observations and tuning.
+
 Python calls and the generic shell/batch runners accept the former `direct` selector as an alias for `direct_sum`, and `gauss` as an alias for `spectral`. Source files, executable names, and individual solver launchers use the canonical names.
 
 ## Repository layout
@@ -33,6 +40,7 @@ src/gravmagpy/              GravMagPy Python frontend
   cards.py                 .in cards, grid runs, fitted-model export
   sphere.py                Python block/polygon models, equivalent volume grids, solver calls
   equivalent.py            Python interface to the equivalent dipole-grid fitter
+  ravat.py                 regional monopole L2 + residual-L1 inversion
   plotting.py              Bx/By/Bz/Btot grid and orbital-fit plots
   maps.py                  georeferenced GeoTIFF panels and equivalent-source maps
   utils/fortran.py          cached compilation and GravMagSphere executable calls

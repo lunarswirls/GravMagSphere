@@ -30,3 +30,5 @@ __pycache__/
 tests/test_variable_order_magnetic.py
 /diagnostics/native_high_degree/degree_*
 /diagnostics/native_high_degree/*.log
+/data/Ravat_etal_2020/comparison_outputs
+/data/Ravat_etal_2020
