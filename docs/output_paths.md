@@ -17,8 +17,6 @@ Directories are created when files are written. A derived input already inside a
 
 Explicit destinations override defaults. Multi-case diagnostic workflows use their configured diagnostic workspace destinations.
 
-The Reiner Gamma case uses `reiner_gamma_test/output/` for tables and caches and singular `reiner_gamma_test/fig/` for its case-specific plots. Other case defaults use `figs/`.
-
 ## Fortran executables
 
 | Program | Omitted output argument |

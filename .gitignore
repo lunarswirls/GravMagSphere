@@ -11,6 +11,7 @@ __pycache__/
 /dist/
 /.pytest_cache/
 /examples/lpmag/output/
+/examples/ravat_l2resl1/output/
 /examples/lpmag/figs/
 /examples/.mplconfig/
 /diagnostics/.mplconfig/

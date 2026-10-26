@@ -14,7 +14,7 @@ GravMagPy (`gravmagpy`) is the Python frontend for GravMagSphere. Reusable compi
 - `<input-directory>/output`: numeric outputs (`*.txt`, `*.csv`)
 - `<input-directory>/figs`: figures (`*.png`, `*.html`)
 
-The Reiner Gamma case scripts use singular `reiner_gamma_test/figs`. Solver comparison scripts, formatted external inputs, and reports are in the top-level [diagnostics folder](../diagnostics/README.md). See [output path conventions](../docs/output_paths.md) for default filenames and explicit overrides.
+Solver comparison scripts, formatted external inputs, and reports are in the top-level [diagnostics folder](../diagnostics/README.md). See [output path conventions](../docs/output_paths.md) for default filenames and explicit overrides.
 
 ## Build
 
