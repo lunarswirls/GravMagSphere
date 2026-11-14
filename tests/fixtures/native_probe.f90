@@ -85,3 +85,33 @@ subroutine native_point_probe(lm,theta,phi,coefficients,field) bind(c)
   real(c_double), intent(out) :: field(3)
   call schmidt_point(lm,theta,phi,coefficients,field)
 end subroutine native_point_probe
+
+subroutine normalized_roundtrip_probe(lm, ntheta, nphi, joint, normalization, coefficients, recovered, statistics) bind(c)
+  use, intrinsic :: iso_c_binding, only: c_int,c_double
+  use gravmag_sphere_transform
+  implicit none
+  integer(c_int), value :: lm,ntheta,nphi,normalization
+  real(c_double), value :: joint
+  real(c_double), intent(in) :: coefficients(lm*(lm+2))
+  real(c_double), intent(out) :: recovered(lm*(lm+2)),statistics(3)
+  real(c_double) :: theta(ntheta),weights(ntheta),degree_energy(lm)
+  complex(c_double) :: fourier(ntheta,0:lm,3)
+  ! Fourier roundtrip is covered by native_roundtrip_probe; isolate normalization here.
+  call gauss_nodes(ntheta,theta,weights)
+  call synthesize_fourier(lm,theta,coefficients,fourier,normalization)
+  call analyze_fourier(lm,theta,weights,fourier,joint,recovered,degree_energy,normalization)
+  statistics(1) = sum(weights)
+  statistics(2) = maxval(abs(recovered-coefficients))/maxval(abs(coefficients))
+  statistics(3) = sqrt(sum((recovered-coefficients)**2)/sum(coefficients**2))
+end subroutine normalized_roundtrip_probe
+
+subroutine normalized_point_probe(lm,theta,phi,normalization,coefficients,field) bind(c)
+  use, intrinsic :: iso_c_binding, only: c_int,c_double
+  use gravmag_sphere_harmonics, only: schmidt_point
+  implicit none
+  integer(c_int), value :: lm,normalization
+  real(c_double), value :: theta,phi
+  real(c_double), intent(in) :: coefficients(lm*(lm+2))
+  real(c_double), intent(out) :: field(3)
+  call schmidt_point(lm,theta,phi,coefficients,field,normalization)
+end subroutine normalized_point_probe

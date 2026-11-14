@@ -175,13 +175,13 @@ class schmidt_tests(unittest.TestCase):
             options = {"lmax": 6, "ntheta_fit": 24, "nphi_fit": 48, "refine_factor": 1,
                        "source_nlat": 2, "source_nlon": 2, "source_nr": 2,
                        "auto_mode": 1, "edge_correction": 1, "hybrid_mode": 2}
-            automatic = run_sphere_model(model, solver="spectral", solver_options=options)
+            automatic = run_sphere_model(model, solver="gauss_legendre", solver_options={"normalization": 2, **options})
             selected = re.search(r'Auto-selected spectral controls: lmax=\s*(\d+)\s+reg_lambda=\s*([\d.E+-]+)'
                                  r'\s+reg_power=\s*([\d.E+-]+)', automatic["stdout"])
             self.assertIsNotNone(selected)
             options.update(lmax=int(selected[1]), reg_lambda=float(selected[2]), reg_power=float(selected[3]),
                            auto_mode=0)
-            explicit = run_sphere_model(model, solver="spectral", solver_options=options)
+            explicit = run_sphere_model(model, solver="gauss_legendre", solver_options={"normalization": 2, **options})
             np.testing.assert_array_equal(automatic["field"], explicit["field"])
             self.records.append({"check": "automatic_selection_replay", "field": kind,
                                  "degree": options["lmax"], "damping": options["reg_lambda"],
@@ -191,13 +191,13 @@ class schmidt_tests(unittest.TestCase):
         source=block([6,8],[-60,-58],[2,8],density_kg_m3=400)
         model=sphere_model([source],latitude_deg=[6,7],longitude_deg=[-60,-59],altitude_km=5000)
         with self.assertRaisesRegex(ValueError,'46339'):
-            run_sphere_model(model,solver='spectral',solver_options={'lmax':46334})
+            run_sphere_model(model,solver='gauss_legendre',solver_options={"normalization": 2, 'lmax':46334})
         with patch.dict(os.environ,{'GRAVMAG_SPECTRAL_MAX_MIB':'.001'}):
             with self.assertRaisesRegex(RuntimeError,'estimated spectral workspace'):
-                run_sphere_model(model,solver='spectral',solver_options={'lmax':24})
+                run_sphere_model(model,solver='gauss_legendre',solver_options={"normalization": 2, 'lmax':24})
         with patch.dict(os.environ,{'GRAVMAG_SPECTRAL_MAX_MIB':'nan'}):
             with self.assertRaisesRegex(RuntimeError,'invalid spectral memory limit'):
-                run_sphere_model(model,solver='spectral',solver_options={'lmax':24})
+                run_sphere_model(model,solver='gauss_legendre',solver_options={"normalization": 2, 'lmax':24})
 
     def check_source_fit(self, degree):
         radius = 1737.4
@@ -267,7 +267,7 @@ class schmidt_tests(unittest.TestCase):
                     vector[0] += monopole
                     reference.append(spherical_axes(lat, lon).T@vector*unit_scale)
                 output = Path(self.directory.name)/f"{kind}_{damping}"
-                result = run_sphere_model(model, solver="spectral", output_dir=output, solver_options={
+                result = run_sphere_model(model, solver="gauss_legendre", output_dir=output, solver_options={"normalization": 2,
                     "lmax": degree, "ntheta_fit": ntheta, "nphi_fit": nphi, "refine_factor": 1,
                     "source_nlat": 1, "source_nlon": 1, "source_nr": 1, "auto_mode": 0,
                     "edge_correction": 0, "hybrid_mode": 0, "reg_lambda": damping})

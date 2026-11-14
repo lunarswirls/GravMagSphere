@@ -1,6 +1,8 @@
 # Native high-degree validation
 
-The current completed sweep reaches degree 10,000. The full stopping record is in `limits.json` and `attempts.csv`.
+These preserved historical results evaluate the recent Schmidt implementation, now available as **Gauss–Legendre normalization option 2**. They do not evaluate the restored dense `spectral` method or establish a degree-10,000 validation for fully normalized option 3. Source hashes and timings below retain their original provenance. The rerun script now selects `solver="gauss_legendre", solver_options={"normalization": 2, ...}`.
+
+The recorded completed sweep reaches degree 10,000. The full stopping record is in `limits.json` and `attempts.csv`.
 
 Run from the GravMagSphere repository using the existing GravMagPy environment:
 

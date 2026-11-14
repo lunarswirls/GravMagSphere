@@ -52,7 +52,42 @@ The direct_sum magnetic solver orients side-wall surface charges from the polygo
 
 Spectral options use the Fortran names: `lmax`, `refine_factor`, `ntheta_fit`, `nphi_fit`, `reg_lambda`, `reg_power`, `source_nlat`, `source_nlon`, `source_nr`, `auto_mode`, `joint_strength`, `edge_correction`, `hybrid_mode`, `hybrid_band_deg`, `complex_vertex_threshold`, and `hybrid_transition_deg`. Defaults match the executable. Set `auto_mode=0` to prevent its automatic parameter selection. Compiler/cache/timeout options can be passed through as keyword arguments.
 
-The spectral basis always uses real Schmidt semi-normalized associated Legendre functions without the Condon-Shortley phase. There is no normalization selector. A shared recurrence returns the functions, their colatitude derivatives, and the finite `p/sin(theta)` limits for nonzero order used for azimuthal fields at the poles. Fitting and final field evaluation use the same vector basis. Output headers record the convention, and Python results include `normalization="schmidt"` and `condon_shortley_phase=False`.
+`solver="spectral"` restores the original pre-Schmidt method from commit `9b7e7ef`: unnormalized associated Legendre functions (including the Condon–Shortley phase), a regular latitude/longitude fitting grid, and dense regularized normal equations. It retains the historical gravity mass term and local/hybrid controls. Its dense storage and unnormalized recurrence are intended for the original low-degree use; the high-degree results below apply to Gauss–Legendre option 2. Python reports `normalization="unnormalized"` and `spectral_algorithm="dense_regularized_least_squares"`.
+
+`solver="gauss_legendre"` provides three explicit options, selected by `solver_options["normalization"]`:
+
+| Option | Name | Calculation and controls |
+|---|---|---|
+| **1** (default) | `"unnormalized"` | Original nested volume quadrature; no spherical-harmonic normalization. Uses `radial_order`, `latitude_order`, `longitude_order`, `subdivisions`. |
+| **2** | `"schmidt"` | Recent Schmidt semi-normalized Gauss–Legendre/Fourier solver for geomagnetism, including extended-range arithmetic, automatic selection, damping, gravity mass term, and local/hybrid corrections. Uses the harmonic controls listed above. |
+| **3** | `"fully_normalized"` (also `"4pi"`) | Geodetic fully normalized version of option 2 for gravimetry, with the same harmonic controls. |
+
+All three options support both magnetic and gravity inputs. The convention is chosen explicitly, not inferred from material type. Quadrature controls belong to option 1; harmonic controls belong to options 2 and 3. Unknown or incompatible controls are rejected.
+
+```python
+# Original non-normalized volume method, unchanged numerical calculation:
+original = run_sphere_model(model, solver="gauss_legendre", solver_options={
+    "normalization": 1, "radial_order": 8, "latitude_order": 16,
+    "longitude_order": 16, "subdivisions": 2,
+})
+# All recent Schmidt work and controls:
+geomagnetic = run_sphere_model(model, solver="gauss_legendre", solver_options={
+    "normalization": 2, "lmax": 24, "auto_mode": 0,
+    "edge_correction": 0, "hybrid_mode": 0,
+})
+# Fully normalized harmonic solver:
+gravimetric = run_sphere_model(model, solver="gauss_legendre", solver_options={
+    "normalization": 3, "lmax": 24, "auto_mode": 0,
+    "edge_correction": 0, "hybrid_mode": 0,
+})
+```
+
+Options 2 and 3 exclude the Condon–Shortley phase. Option 2 uses
+`S_lm = sqrt((2-delta_m0)*(l-m)!/(l+m)!) * P_lm`, where `P_lm` here excludes the phase.
+Option 3 uses `F_lm = sqrt(2*l+1) * S_lm`, the [geodetic 4pi convention](https://shtools.github.io/SHTOOLS/fortran-real-spherical-harmonics.html).
+The same degree factor scales the colatitude derivatives and azimuthal quotients; the projection norm scales by `2*l+1`, and the fitted coefficients scale inversely. This is applied during analysis, filtering, correction synthesis and final point synthesis, rather than relabeling output. Corresponding coefficients represent the same physical field. Normalization alone does not remove harmonic truncation or source-mesh error.
+
+The following native algorithm details apply to Gauss–Legendre options **2 and 3**.
 
 The native Gauss–Legendre/Fourier solver samples at Gauss–Legendre colatitudes and equally spaced longitudes. It raises `ntheta_fit` to at least `lmax+1` and rounds `nphi_fit` upward to a power of two at least `2*lmax+1`. Automatic selection uses the highest candidate degree, `lmax+6`, to set these bounds. These are minimum transform counts for band-limited vector potentials. Actual source fields have power above the truncation, so increase the fitting grid independently to check aliasing.
 
@@ -62,13 +97,13 @@ The recurrence implements Fukushima-style extended-range arithmetic with double 
 
 For a fitting grid proportional to degree, the transform costs order `lmax**3` operations and `lmax**2` storage. Source-field sampling also costs the product of source count and grid size. Final arbitrary-point synthesis costs order `lmax**2` per point. OpenMP parallelizes latitude sampling and harmonic orders. Set `OMP_NUM_THREADS` to control the worker count. `GRAVMAG_SPECTRAL_MAX_MIB` limits estimated transform workspace, defaulting to 16384 MiB. It excludes source and observation storage and is a preflight estimate rather than an operating-system memory cap. Edge corrections require additional grid storage. `run_sphere_model` defaults to a 300-second subprocess timeout. Pass a larger `timeout` explicitly for expensive calculations. The high-degree benchmark uses `timeout=1800` within an outer 1800-second limit for the entire protocol at each degree. Pure high-degree runs can disable `auto_mode`, `edge_correction`, and `hybrid_mode` to isolate the spectral approximation. The integer indexing limit is degree 46339, including the automatic search, but this is not a tested accuracy or practical runtime limit.
 
-The [recorded high-degree protocol](../diagnostics/native_high_degree/README.md) completed through degree 10,000 with eight threads on an Apple M4 Max, taking 27.79 minutes for independent function checks, a full-bandwidth vector roundtrip, and both public source-field checks. Its peak individual-process RSS was 7.21 GiB. Degree 11200 reached the 30-minute limit after its transform and gravity checks. Practical costs also depend on source-element count, fitting-grid oversampling, output locations, and correction settings.
+For option 2, the historical [recorded high-degree protocol](../diagnostics/native_high_degree/README.md) completed through degree 10,000 with eight threads on an Apple M4 Max, taking 27.79 minutes for independent function checks, a full-bandwidth vector roundtrip, and both public source-field checks. Its peak individual-process RSS was 7.21 GiB. Degree 11200 reached the 30-minute limit after its transform and gravity checks. Practical costs also depend on source-element count, fitting-grid oversampling, output locations, and correction settings.
 
 Python results record `spectral_algorithm="native_gauss_legendre_fourier"` and `harmonic_recurrence="fukushima_extended_range_radix_2_512"`. For compatibility, diagnostic timing keys `fit_assembly_s` and `linear_solve_s` now denote source sampling/Fourier analysis and Legendre projection/filtering. These are CPU times. Use an external wall timer for multithreaded performance. Independent validation uses SciPy, NumPy, analytical source fields, and arbitrary-precision Jacobi identities. Install the `validation` extra to run the harmonic tests.
 
-Spectral gravity includes the degree-zero radial acceleration `-G * total_mass / radius**2`, using the signed sum of all discretized source masses. This coefficient is fixed before fitting degrees 1 through `lmax`, so regularization preserves the mass term. Source-mesh resolution controls the mass approximation. Magnetic fields retain zero degree-zero coefficient.
+Both the restored spectral method and normalized Gauss–Legendre methods include the degree-zero radial acceleration `-G * total_mass / radius**2`, using the signed sum of all discretized source masses. This coefficient is fixed before fitting degrees 1 through `lmax`, so regularization preserves the mass term. Source-mesh resolution controls the mass approximation. Magnetic fields retain zero degree-zero coefficient.
 
-`solver="gauss_legendre"` uses nested longitude, latitude and radius Gauss–Legendre volume integration. It supports magnetic and gravity blocks and simple concave polygons in double precision through `gravmag_sphere_gauss_legendre`. The separate `gravmag_sphere_spectral` executable performs the spherical-harmonic fit.
+`solver="gauss_legendre", solver_options={"normalization": 1}` uses nested longitude, latitude and radius Gauss–Legendre volume integration. It supports magnetic and gravity blocks and simple concave polygons in double precision through `gravmag_sphere_gauss_legendre`. Options 2 and 3 use the normalized harmonic implementation in `gravmag_sphere_normalized.f90`; the separate `gravmag_sphere_spectral` executable uses the restored dense fit.
 
 ```python
 result = run_sphere_model(model, solver="gauss_legendre", solver_options={
@@ -83,7 +118,7 @@ Polygon edges are straight in unwrapped longitude/latitude coordinates. Integrat
 
 This restores the numerical method from `gravmag_sphere_brtp.f` at historical Git revision `71d13a1`, using computed roots/weights, modern SI properties and XYZ output. It does not reproduce the old single-precision program or its obsolete card conventions bit for bit. Cards 4 and 6 remain compatibility metadata. See the [executed comparison report](../diagnostics/gauss_legendre_comparison/README.md) for convergence, timing and spectral limitations.
 
-Returned `field` has shape `(nlat, nlon, 3)` in the input grid order; `total` has shape `(nlat, nlon)`. Magnetic aliases are `bx_nt`, `by_nt`, `bz_nt`, `btot_nt`; gravity aliases are `gx_mgal`, `gy_mgal`, `gz_mgal`, `gtot_mgal`. Direct summation and Gauss–Legendre body contributions are summed as vectors before calculating total magnitude. Spectral output already represents the collective model and is not multiplied by the source count. `raw_output`, `stdout`, and `stderr` are available for diagnostics.
+Returned `field` has shape `(nlat, nlon, 3)` in the input grid order; `total` has shape `(nlat, nlon)`. Magnetic aliases are `bx_nt`, `by_nt`, `bz_nt`, `btot_nt`; gravity aliases are `gx_mgal`, `gy_mgal`, `gz_mgal`, `gtot_mgal`. Direct summation and Gauss–Legendre option 1 emit per-body contributions, summed as vectors before calculating total magnitude. Spectral and Gauss–Legendre options 2/3 already emit the collective model and are not multiplied by the source count. Gauss–Legendre results include `normalization` and `normalization_option`; harmonic modes also include `condon_shortley_phase=False`. `raw_output`, `stdout`, and `stderr` are available for diagnostics.
 
 For magnetic plotting, retain outputs and call `gravmagpy.plotting.plot_fields(result['input_path'], result['output_path'])`. Figures default to the owning input directory's `figs/`; an explicit third `image_path` argument overrides it. `run_grid_model(input_path)` defaults numeric output to `output/<input-stem>.txt` for the direct_sum solver. See [output paths](output_paths.md).
 

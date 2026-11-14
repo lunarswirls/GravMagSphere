@@ -1,0 +1,51 @@
+{
+  "threads": 1,
+  "degree": 600,
+  "binary_sha256": "b5a4f909c207229b436136d20cea71a763e09e978d67f706e8a1e2b51c0dc430",
+  "checks": [
+    {
+      "normalization": 2,
+      "check": "full_bandwidth_vector_projection",
+      "degree": 600,
+      "relative_l2": 3.479885284722066e-14,
+      "scaled_max": 4.4198038944672986e-13,
+      "elapsed_s": 1.3138441250193864
+    },
+    {
+      "normalization": 2,
+      "check": "magnetic_source",
+      "degree": 600,
+      "relative_l2": 9.456342325900293e-13,
+      "elapsed_s": 3.4715929169906303
+    },
+    {
+      "normalization": 2,
+      "check": "gravity_source",
+      "degree": 600,
+      "relative_l2": 9.176567363936005e-14,
+      "elapsed_s": 0.7393517919699661
+    },
+    {
+      "normalization": 3,
+      "check": "full_bandwidth_vector_projection",
+      "degree": 600,
+      "relative_l2": 6.806154949733023e-14,
+      "scaled_max": 4.513950935474791e-12,
+      "elapsed_s": 1.3188703329651617
+    },
+    {
+      "normalization": 3,
+      "check": "magnetic_source",
+      "degree": 600,
+      "relative_l2": 1.09709691712292e-12,
+      "elapsed_s": 0.7467214579810388
+    },
+    {
+      "normalization": 3,
+      "check": "gravity_source",
+      "degree": 600,
+      "relative_l2": 6.493596374172528e-13,
+      "elapsed_s": 0.7441912919748574
+    }
+  ]
+}

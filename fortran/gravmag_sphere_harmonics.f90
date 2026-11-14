@@ -3,11 +3,20 @@ module gravmag_sphere_harmonics
   implicit none
   private
   public :: schmidt_legendre, schmidt_basis, schmidt_seeds, schmidt_start, schmidt_advance
-  public :: schmidt_values, schmidt_point, coefficient_index
+  public :: schmidt_values, schmidt_point, coefficient_index, normalization_scale
   integer, parameter :: scale_step = 512
   real(real64), parameter :: scale_low = 2.0_real64**(-256), scale_high = 2.0_real64**256
 
 contains
+
+  pure real(real64) function normalization_scale(l, normalization) result(factor)
+    integer(int32), intent(in) :: l
+    integer, optional, intent(in) :: normalization
+    factor = 1.0_real64
+    if (present(normalization)) then
+      if (normalization == 3) factor = sqrt(real(2*l+1,real64))
+    end if
+  end function normalization_scale
 
   ! fukushima extended-range arithmetic with radix 2**512 and double mantissas
   ! sectoral quotients are retained before multiplication by the small sine
@@ -111,8 +120,10 @@ contains
     index = l*l + max(0,2*m-1)
   end function coefficient_index
 
-  ! schmidt semi-normalization without the condon-shortley phase
-  pure subroutine schmidt_legendre(lm, theta, p, dp, p_over_sin)
+  ! Schmidt semi-normalization without the Condon-Shortley phase by default.
+  ! Optional normalization=3 applies geodetic fully normalized degree factors.
+  pure subroutine schmidt_legendre(lm, theta, p, dp, p_over_sin, normalization)
+    integer, optional, intent(in) :: normalization
     integer(int32), intent(in) :: lm
     real(real64), intent(in) :: theta
     real(real64), intent(out) :: p(0:lm,0:lm), dp(0:lm,0:lm), p_over_sin(0:lm,0:lm)
@@ -131,6 +142,7 @@ contains
       do l=m, lm
         if (l > m) call schmidt_advance(l, m, st, ct, previous, current, powers)
         call schmidt_values(current, powers, values)
+        values = values*normalization_scale(l,normalization)
         p(l,m) = values(1,1)
         dp(l,m) = values(1,2)
         p_over_sin(l,m) = values(1,3)
@@ -138,8 +150,10 @@ contains
     end do
   end subroutine schmidt_legendre
 
-  ! point synthesis streams orders without a square basis workspace
-  pure subroutine schmidt_point(lm, theta, phi, coefficients, field)
+  ! Point synthesis streams orders without a square basis workspace.
+  ! normalization=2 (default): Schmidt; normalization=3: geodetic 4pi.
+  pure subroutine schmidt_point(lm, theta, phi, coefficients, field, normalization)
+    integer, optional, intent(in) :: normalization
     integer(int32), intent(in) :: lm
     real(real64), intent(in) :: theta, phi, coefficients(:)
     real(real64), intent(out) :: field(3)
@@ -159,6 +173,7 @@ contains
         if (l > m) call schmidt_advance(l, m, st, ct, previous, current, powers)
         if (l == 0) cycle
         call schmidt_values(current, powers, values)
+        values = values*normalization_scale(l,normalization)
         index = coefficient_index(l,m)
         g = coefficients(index)
         h = 0.0_real64

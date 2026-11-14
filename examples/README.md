@@ -51,6 +51,10 @@ Example:
 
 ### 2) Spectral solver (Fortran)
 
+`gravmag_sphere_gauss_legendre` now offers normalization options 1 (original volume quadrature, default), 2 (recent Schmidt normalized harmonic solver), and 3 (fully normalized harmonic solver). See the [Fortran argument reference](../fortran/README.md) and [Python examples](../docs/sphere.md#solver-controls-and-results). Existing quadrature calls are unchanged. For example, `./gravmag_sphere_gauss_legendre 1737.4 input.in "" 0 0 0 1 2` selects Schmidt with default harmonic controls; use `3` in place of `2` for fully normalized harmonics.
+
+`gravmag_sphere_spectral` restores the original unnormalized dense fit. The original controls below still apply to that method; the recent high-degree Schmidt results now belong to Gauss–Legendre option 2.
+
 `gravmag_sphere_spectral` fits spherical harmonic coefficients and evaluates XYZ fields
 
 ```bash

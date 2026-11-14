@@ -236,6 +236,17 @@ def read_model_input(path, *, radius_km=1737.4):
                         longitude_deg=lon0 + dlon*np.arange(int(nlon)), altitude_km=altitude, radius_km=radius_km)
 
 
+def _normalization_option(value):
+    """GL choices: original volume rule, Schmidt harmonics, geodetic 4pi harmonics."""
+    names = {"unnormalized": 1, "none": 1, "schmidt": 2,
+             "fully_normalized": 3, "full": 3, "4pi": 3}
+    if isinstance(value, str):
+        value = names.get(value.lower())
+    if not np.isscalar(value) or value not in (1, 2, 3):
+        raise ValueError("normalization must be 1 (unnormalized), 2 (schmidt), or 3 (fully_normalized)")
+    return int(value)
+
+
 def _solver_arguments(solver, options):
     direct_sum = {"refine_factor": 2, "source_nlat": 0, "source_nlon": 0, "source_nr": 0}
     spectral = {"lmax": 24, "refine_factor": 2, "ntheta_fit": 72, "nphi_fit": 144,
@@ -246,7 +257,11 @@ def _solver_arguments(solver, options):
     solvers = {"direct_sum": direct_sum, "spectral": spectral, "gauss_legendre": gauss_legendre}
     if solver not in solvers:
         raise ValueError("solver must be direct_sum, spectral, or gauss_legendre")
-    defaults = solvers[solver]
+    options = dict(options)
+    normalization = 1
+    if solver == "gauss_legendre":
+        normalization = _normalization_option(options.pop("normalization", 1))
+    defaults = spectral if normalization > 1 else solvers[solver]
     if set(options) - set(defaults):
         raise ValueError(f"unknown {solver} options: {sorted(set(options)-set(defaults))}")
     values = {**defaults, **options}
@@ -259,14 +274,18 @@ def _solver_arguments(solver, options):
             values[key] = int(value)
         if key in ("lmax", "refine_factor", "ntheta_fit", "nphi_fit", "complex_vertex_threshold", "subdivisions") and value < 1:
             raise ValueError(f"{key} must be positive")
-        if solver == "gauss_legendre" and value > 256:
+        if solver == "gauss_legendre" and normalization == 1 and value > 256:
             raise ValueError(f"{key} must be at most 256")
         if key in ("auto_mode", "edge_correction") and value not in (0, 1):
             raise ValueError(f"{key} must be 0 or 1")
         if key == "hybrid_mode" and value not in (0, 1, 2):
             raise ValueError("hybrid_mode must be 0, 1, or 2")
-    if solver == "spectral" and values["lmax"] + 6*values["auto_mode"] > 46339:
+    if normalization > 1 and values["lmax"] + 6*values["auto_mode"] > 46339:
         raise ValueError("spectral degree including the automatic search must be at most 46339")
+    if solver == "gauss_legendre":
+        if normalization > 1:
+            return (0, 0, 0, 1, normalization, *values.values())
+        return (*values.values(), normalization)
     return tuple(values.values())
 
 
@@ -280,6 +299,8 @@ def run_sphere_model(model, *, solver="direct_sum", solver_options=None, output_
     solver = _solver_name(solver)
     content, field_type = _model_cards(model)
     arguments = _solver_arguments(solver, solver_options or {})
+    normalization = _normalization_option((solver_options or {}).get("normalization", 1)) if solver == "gauss_legendre" else 1
+    collective = solver == "spectral" or normalization > 1
     with tempfile.TemporaryDirectory(prefix="gravmagpy-sphere-") as temporary:
         directory = Path(output_dir).expanduser().resolve() if output_dir is not None else Path(temporary)
         directory.mkdir(parents=True, exist_ok=True)
@@ -291,10 +312,10 @@ def run_sphere_model(model, *, solver="direct_sum", solver_options=None, output_
         lat = np.asarray(model["grid"]["latitude_deg"])
         lon = np.asarray(model["grid"]["longitude_deg"])
         count = len(lat)*len(lon)
-        blocks = 1 if solver == "spectral" else len(model["sources"])
+        blocks = 1 if collective else len(model["sources"])
         if table.shape != (count*blocks, 7) or not np.isfinite(table).all():
             raise RuntimeError("unexpected gravmag sphere output dimensions or nonfinite fields")
-        # all solvers emit latitude-major grids; only spectral combines bodies on disk
+        # spectral and normalized GL modes combine bodies on disk
         field = table[:, 3:6].reshape(blocks, len(lat), len(lon), 3).sum(axis=0)
         unit = "nt" if field_type == "magnetic" else "mgal"
         prefix = "b" if field_type == "magnetic" else "g"
@@ -304,7 +325,12 @@ def run_sphere_model(model, *, solver="direct_sum", solver_options=None, output_
         result.update({f"{prefix}{axis}_{unit}": field[..., index] for index, axis in enumerate(("x", "y", "z"))})
         result[f"{prefix}tot_{unit}"] = result["total"]
         if solver == "spectral":
-            result.update(normalization="schmidt", condon_shortley_phase=False,
+            result.update(normalization="unnormalized", condon_shortley_phase=True, spectral_algorithm="dense_regularized_least_squares")
+        if solver == "gauss_legendre":
+            result.update(normalization=("unnormalized", "schmidt", "fully_normalized")[normalization-1],
+                          normalization_option=normalization)
+        if normalization > 1:
+            result.update(condon_shortley_phase=False,
                           spectral_algorithm="native_gauss_legendre_fourier",
                           harmonic_recurrence="fukushima_extended_range_radix_2_512")
         if output_dir is not None:
