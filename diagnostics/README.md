@@ -127,3 +127,7 @@ After generating the corresponding BRTP tables:
 ```
 
 Use `--out` to select a figure path explicitly. See [residual methodology](external_solver_residuals_method.md), [solver comparison](external_solver_comparison.md), and [coordinate conventions](gravmagsphere_inclination_declination_physical_audit.md) for interpretation. Benchmark timings and residual tables describe their recorded configurations, not universal accuracy or performance guarantees.
+
+## Normalization options
+
+The recent Schmidt implementation and its saved reports now belong to Gauss–Legendre option 2. `spectral` restores the original unnormalized dense fit. Gauss–Legendre option 1 retains volume quadrature; option 3 extends option 2 to fully normalized harmonics. See [migration and validation](normalization_migration.md) for historical references and current tests.

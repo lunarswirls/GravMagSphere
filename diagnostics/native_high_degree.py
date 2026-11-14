@@ -37,7 +37,7 @@ package=Path(gravmagpy.__file__).resolve().parents[2]
 sys.path.insert(0,str(package/'tests'))
 from native_support import native_library,jacobi_reference
 
-destination=root/'diagnostics/native_high_degree'
+destination=Path(os.environ.get('GRAVMAG_NATIVE_DESTINATION',root/'diagnostics/native_high_degree')).expanduser().resolve()
 destination.mkdir(parents=True,exist_ok=True)
 try:
     physical_memory_gib=os.sysconf('SC_PHYS_PAGES')*os.sysconf('SC_PAGE_SIZE')/2**30
@@ -61,11 +61,11 @@ def source_check(degree,kind):
     source=block([6,8],[-60,-58],[2,8],**material)
     model=sphere_model([source],latitude_deg=latitudes,longitude_deg=longitudes,
                        altitude_km=altitude,radius_km=radius)
-    options={'lmax':degree,'ntheta_fit':degree+1,'nphi_fit':2*degree+1,
+    options={'normalization':2,'lmax':degree,'ntheta_fit':degree+1,'nphi_fit':2*degree+1,
              'refine_factor':1,'source_nlat':1,'source_nlon':1,'source_nr':1,
              'auto_mode':0,'edge_correction':0,'hybrid_mode':0,'reg_lambda':0}
     start=perf_counter()
-    result=run_sphere_model(model,solver='spectral',solver_options=options,
+    result=run_sphere_model(model,solver='gauss_legendre',solver_options=options,
                            output_dir=destination/f'degree_{degree}'/kind,timeout=1800)
     elapsed=perf_counter()-start
     # reconstruct the executed observation geometry from the input card precision
@@ -100,7 +100,7 @@ if len(sys.argv)==2 and os.environ.get('GRAVMAG_NATIVE_WORKER')=='1':
     run=destination/f'degree_{degree}'
     run.mkdir(parents=True,exist_ok=True)
     library=native_library()
-    binary=build_fortran("spectral")
+    binary=build_fortran("gauss_legendre")
     records=[]
     high_precision=[]
     start_total=perf_counter()
@@ -158,7 +158,7 @@ else:
     if len(sys.argv)>2:
         raise SystemExit('supply no argument for the resource-limited sweep or one degree for a single validation')
     native_library()
-    build_fortran('spectral')
+    build_fortran('gauss_legendre')
     degrees=(int(sys.argv[1]),) if len(sys.argv)==2 else (600,1200,2800,4096,5600,8192,10000,11200,14000,18000,22000)
     if any(degree<1 or degree>46339 for degree in degrees):
         raise SystemExit('degrees must be between 1 and 46339')
@@ -166,7 +166,7 @@ else:
     existing=destination/'attempts.csv'
     if len(sys.argv)==2 and existing.exists():
         attempts=pd.read_csv(existing).to_dict('records')
-        binary_hash=hashlib.sha256(build_fortran('spectral').read_bytes()).hexdigest()
+        binary_hash=hashlib.sha256(build_fortran('gauss_legendre').read_bytes()).hexdigest()
         for item in attempts:
             if item['status']=='passed':
                 prior=json.loads((destination/f'degree_{item["degree"]}/metadata.json').read_text())

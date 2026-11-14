@@ -1,5 +1,7 @@
 # Gauss–Legendre, direct_sum and pure spectral comparison
 
+> Historical report: the Schmidt harmonic results labelled `spectral` below now correspond to **Gauss–Legendre normalization option 2**. Option 1 preserves the volume quadrature calculation. The restored dense spectral method and fully normalized option 3 were not measured in this saved report. Original numerical results and source provenance are retained. See [migration checks](../normalization_migration.md).
+
 Residuals are vector L2 differences divided by the reference vector L2 norm over identical observation grids. The reference is higher-order composite Gauss–Legendre integration, checked against a second resolution. it is a numerical reference, not an exact solution. Independent kernel, geometry and unit checks live in `tests/test_gauss_legendre.py`.
 
 Pure spectral runs use the native Gauss–Legendre/Fourier transform with extended-range Schmidt semi-normalization without the Condon-Shortley phase and set `auto_mode=0`, `edge_correction=0`, `hybrid_mode=0` and `reg_lambda=0`. Fit latitudes are Gauss–Legendre nodes and longitude counts round upward to powers of two. Their source mesh uses horizontal refine factor 4 and 12 radial samples. Point-source runs retain card radial count 4. Each timing is one warmed-build Python call including subprocess startup and file I/O. It is not a repeated benchmark.

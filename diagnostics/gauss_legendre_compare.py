@@ -1,4 +1,4 @@
-"""compare quadrature, direct_sum and pure spectral fields at matched grid points"""
+"""compare original quadrature, direct_sum, restored spectral and normalized harmonic fields at matched grid points"""
 
 import csv
 import json
@@ -106,24 +106,34 @@ for case in cases:
     runs += [("spectral", f"degree_{degree}", {"lmax": degree, "ntheta_fit": max(24, 2*degree+2),
               "nphi_fit": max(48, 4*degree+4), "auto_mode": 0, "edge_correction": 0, "hybrid_mode": 0,
               "reg_lambda": 0, "refine_factor": 4, "source_nr": 12}) for degree in settings["degrees"]]
+    # Use the same source and harmonic controls for all harmonic conventions.
+    harmonic_runs = [item for item in runs if item[0] == "spectral"]
+    for normalization in (2, 3):
+        runs += [("gauss_legendre", label, dict(options, normalization=normalization))
+                 for _, label, options in harmonic_runs]
     for solver, label, options in runs:
         start = perf_counter()
         result = run_sphere_model(model, solver=solver, solver_options=options)
         elapsed = perf_counter()-start
         metrics = compare_fields(result["field"], reference["field"])
-        rows.append({"case": name, "solver": solver, "setting": label, "unit": result["unit"],
+        mode = options.get("normalization", 1)
+        series = f"gauss_legendre_{result['normalization']}" if solver == "gauss_legendre" and mode > 1 else solver
+        rows.append({"case": name, "solver": solver, "series": series,
+                     "normalization": result.get("normalization", "none"), "setting": label, "unit": result["unit"],
                      "elapsed_s": elapsed, **metrics, "options": options,
                      "diagnostics": result["stdout"].splitlines(), "stderr": result["stderr"]})
-        arrays[f"{name}__{solver}__{label}"] = result["field"]
+        arrays[f"{name}__{series}__{label}"] = result["field"]
 
 np.savez_compressed(destination/"fields.npz", **arrays)
 report = {"settings": settings, "platform": platform.platform(), "python": platform.python_version(),
           "numpy": np.__version__, "compiler": compiler, "threads": os.environ["OMP_NUM_THREADS"],
-          "spectral_algorithm": "native_gauss_legendre_fourier", "recurrence": "fukushima_extended_range_radix_2_512", "harmonic_normalization": "schmidt", "condon_shortley_phase": False,
+          "spectral_algorithm": "dense_regularized_least_squares",
+          "normalized_gauss_legendre_algorithm": "native_gauss_legendre_fourier",
+          "normalization_options": {"1": "unnormalized_volume", "2": "schmidt", "3": "fully_normalized_4pi"},
           "binaries": {key: str(value) for key, value in binaries.items()},
           "cases": cases, "references": references, "runs": rows}
 (destination/"results.json").write_text(json.dumps(report, indent=2)+"\n")
-columns = ["case", "solver", "setting", "unit", "relative_l2", "vector_rmse", "max_vector_difference", "elapsed_s"]
+columns = ["case", "solver", "series", "normalization", "setting", "unit", "relative_l2", "vector_rmse", "max_vector_difference", "elapsed_s"]
 with (destination/"results.csv").open("w", newline="") as stream:
     writer = csv.DictWriter(stream, fieldnames=columns, extrasaction="ignore", lineterminator="\n")
     writer.writeheader()
@@ -134,8 +144,8 @@ lines = ["# Gauss–Legendre, direct_sum and pure spectral comparison", "",
          "The reference is higher-order composite Gauss–Legendre integration, checked against a second resolution. "
          "it is a numerical reference, not an exact solution. Independent kernel, geometry and unit checks live in "
          "`tests/test_gauss_legendre.py`.", "",
-         "Pure spectral runs use the native Gauss–Legendre/Fourier transform with extended-range Schmidt semi-normalization without the Condon-Shortley phase and set `auto_mode=0`, `edge_correction=0`, `hybrid_mode=0` and `reg_lambda=0`. "
-         "Fit latitudes are Gauss–Legendre nodes and longitude counts round upward to powers of two. Their source mesh uses horizontal refine factor 4 and 12 radial samples. Point-source runs retain card radial count 4. "
+         "The restored spectral method uses unnormalized dense least squares. Gauss–Legendre options 2/3 use native Gauss–Legendre/Fourier transforms with extended-range Schmidt or fully normalized harmonics, without the Condon-Shortley phase. Harmonic comparisons set `auto_mode=0`, `edge_correction=0`, `hybrid_mode=0` and `reg_lambda=0`. "
+         "For options 2/3, fit latitudes are Gauss–Legendre nodes and longitude counts round upward to powers of two. Their source mesh uses horizontal refine factor 4 and 12 radial samples. Point-source runs retain card radial count 4. "
          "Each timing is one warmed-build Python call including subprocess startup and file I/O. It is not a repeated benchmark.", "",
          "The cases span magnetic surface/orbital/far fields, a concave magnetic polygon and gravity. "
          "Low harmonic degrees cannot resolve the narrow near-surface sources. Spectral gravity includes the degree-zero "
@@ -160,8 +170,9 @@ lines += ["", "![Convergence and cost](convergence.png)", "", "Exact models, opt
 
 figure, axes = plt.subplots(2, 3, figsize=(13, 7), constrained_layout=True)
 for axis, case in zip(axes.flat, cases):
-    for solver, marker in (("gauss_legendre", "o"), ("direct_sum", "s"), ("spectral", "^")):
-        selected = [row for row in rows if row["case"] == case["name"] and row["solver"] == solver
+    for solver, marker in (("gauss_legendre", "o"), ("direct_sum", "s"), ("spectral", "^"),
+                           ("gauss_legendre_schmidt", "v"), ("gauss_legendre_fully_normalized", "x")):
+        selected = [row for row in rows if row["case"] == case["name"] and row["series"] == solver
                     and "panels" not in row["setting"]]
         curves = axis.loglog([row["elapsed_s"] for row in selected], [max(row["relative_l2"], 1e-15) for row in selected],
                              marker=marker, label=solver)

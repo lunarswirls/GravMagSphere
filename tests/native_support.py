@@ -32,6 +32,10 @@ def native_library():
     library.native_fft_probe.argtypes = [ctypes.c_int,complex_array,ctypes.c_int]
     library.native_nodes_probe.argtypes = [ctypes.c_int,array,array]
     library.native_point_probe.argtypes = [ctypes.c_int,ctypes.c_double,ctypes.c_double,array,array]
+    library.normalized_roundtrip_probe.argtypes = [ctypes.c_int]*3+[ctypes.c_double,ctypes.c_int,array,array,array]
+    library.normalized_point_probe.argtypes = [ctypes.c_int,ctypes.c_double,ctypes.c_double,ctypes.c_int,array,array]
+    library.normalized_roundtrip_probe.restype = None
+    library.normalized_point_probe.restype = None
     for name in ('native_roundtrip_probe','native_selected_probe','native_fft_probe','native_nodes_probe','native_point_probe'):
         getattr(library,name).restype = None
     return library

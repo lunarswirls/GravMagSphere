@@ -10,12 +10,23 @@ The Python model interface (`block`, `polygon`, `equivalent_source_grid`, `spher
 
 The five executable programs share `gravmag_paths.f90`. Omitted or empty output arguments create files in an `output/` folder beside the input; explicit arguments select a destination. Compile this utility before each executable when building manually. Python and shell builders include it automatically. See [output path conventions](../docs/output_paths.md) for filenames and positional argument examples.
 
-The spectral executable additionally requires `gravmag_sphere_harmonics.f90` followed by `gravmag_sphere_transform.f90` before `gravmag_sphere_spectral.f90`. These provide Fukushima-style extended-range Schmidt recurrences and the native Gauss–Legendre/Fourier projection. Enable the compiler's OpenMP option for parallel execution. The Python and shell builders include these modules and flags. No external Fourier library is needed.
+`gravmag_sphere_gauss_legendre.f90` dispatches three options: 1 is the original nested volume method, 2 is the recent Schmidt harmonic method, and 3 is the fully normalized geodetic harmonic method. Compile `gravmag_paths.f90`, `gravmag_sphere_harmonics.f90`, `gravmag_sphere_transform.f90`, `gravmag_sphere_normalized.f90`, then `gravmag_sphere_gauss_legendre.f90`. Enable OpenMP for the native transforms. Python and shell builders include these dependencies. No external Fourier library is needed.
 
-`gravmag_sphere_gauss_legendre.f90` is the `gauss_legendre` target. It restores the original nested Gauss–Legendre volume method with double precision, generated nodes/weights, optional composite panels and polygon boundary integration. It uses the current magnetic/gravity cards and emits one XYZ block per body, in nT or mGal. It is distinct from the spectral `gravmag_sphere_spectral.f90` program.
+Option 1 emits one XYZ block per body. Options 2/3 emit the collective XYZ field once. Magnetic units are nT and gravity units are mGal. Default normalization is 1, so existing positional calls retain the original volume calculation.
 
 ```bash
 bash examples/run_gravmag_sphere_gauss_legendre.sh 1737.4 sources.in "" 8 16 16 2
 ```
 
-Arguments are radius, input, optional output, radial order, latitude order, longitude order and subdivisions. Zero orders use card 3; subdivisions defaults to 1. Omitted output becomes `output/<input-stem>_quadrature.txt`. `GRAVMAG_DIAGNOSTICS=1` reports body timing, node counts, effective orders, subdivisions and integrated volume. The general `run_input_to_xyz.sh gauss_legendre` and shell batch launcher also support this solver: their existing `source_nr/source_nlat/source_nlon` options specify node orders, and `refine_factor` specifies subdivisions (default 2 in those launchers). Python option names and method limits are documented in [sphere.md](../docs/sphere.md).
+Arguments are radius, input, optional output, radial order, latitude order, longitude order and subdivisions, followed by optional normalization `1|2|3`. Zero orders use card 3; subdivisions defaults to 1. Omitted output becomes `output/<input-stem>_quadrature.txt`. `GRAVMAG_DIAGNOSTICS=1` reports body timing, node counts, effective orders, subdivisions and integrated volume. The general `run_input_to_xyz.sh gauss_legendre` and shell batch launcher also support this solver: their existing `source_nr/source_nlat/source_nlon` options specify node orders, and `refine_factor` specifies subdivisions (default 2 in those launchers). Python option names and method limits are documented in [sphere.md](../docs/sphere.md).
+
+For options 2/3, use `0 0 0 1` in the four volume-control positions, put normalization at position 8, then append the original harmonic controls (`lmax`, `refine_factor`, `ntheta_fit`, `nphi_fit`, `reg_lambda`, `reg_power`, `source_nlat`, `source_nlon`, `source_nr`, `auto_mode`, `joint_strength`, `edge_correction`, `hybrid_mode`, `hybrid_band_deg`, `complex_vertex_threshold`, `hybrid_transition_deg`). The volume positions must keep these placeholders in normalized modes. Harmonic controls can be omitted to use their existing defaults.
+
+```bash
+# Schmidt, degree 24, pure harmonic evaluation:
+bash examples/run_gravmag_sphere_gauss_legendre.sh 1737.4 sources.in "" 0 0 0 1 2 24 2 72 144 0.2 4 0 0 0 0 1 0 0
+# Fully normalized: same controls, normalization 3:
+bash examples/run_gravmag_sphere_gauss_legendre.sh 1737.4 sources.in "" 0 0 0 1 3 24 2 72 144 0.2 4 0 0 0 0 1 0 0
+```
+
+`GRAVMAG_SPECTRAL_MAX_MIB` retains its name for compatibility and limits the workspace of normalized Gauss–Legendre transforms. Historical Schmidt validation is retained under `diagnostics/native_high_degree/`; reruns now select Gauss–Legendre option 2.

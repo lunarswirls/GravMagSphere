@@ -1,6 +1,6 @@
 module gravmag_sphere_transform
   use, intrinsic :: iso_fortran_env, only: int32, int64, real64
-  use gravmag_sphere_harmonics, only: schmidt_seeds, schmidt_start, schmidt_advance, schmidt_values, coefficient_index
+  use gravmag_sphere_harmonics, only: schmidt_seeds, schmidt_start, schmidt_advance, schmidt_values, coefficient_index, normalization_scale
   implicit none
   private
   public :: transform_grid, gauss_nodes, fft_roots, native_fft, sample_fourier, analyze_fourier
@@ -153,14 +153,17 @@ contains
     energy = sum(energies)
   end subroutine sample_fourier
 
-  pure real(real64) function spectral_norm(l,joint) result(norm)
+  pure real(real64) function spectral_norm(l,joint,normalization) result(norm)
     integer(int32), intent(in) :: l
+    integer, optional, intent(in) :: normalization
     real(real64), intent(in) :: joint
     norm = 4*pi*(real(l+1,real64)**2+joint*real(l,real64)*real(l+1,real64))/real(2*l+1,real64)
+    norm = norm*normalization_scale(l,normalization)**2
   end function spectral_norm
 
   ! orthogonal vector projection with one shared exterior-potential coefficient set
-  subroutine analyze_fourier(lm, theta, weights, fourier, joint, coefficients, degree_energy)
+  subroutine analyze_fourier(lm, theta, weights, fourier, joint, coefficients, degree_energy, normalization)
+    integer, optional, intent(in) :: normalization
     integer(int32), intent(in) :: lm
     real(real64), intent(in) :: theta(:), weights(:), joint
     complex(real64), intent(in) :: fourier(:,0:,:)
@@ -184,9 +187,10 @@ contains
         if (l > m) call schmidt_advance(l,m,st,ct,previous,current,powers)
         if (l == 0) cycle
         call schmidt_values(current,powers,values)
+        values = values*normalization_scale(l,normalization)
         projection = 2*pi*sum(weights*(real(l+1,real64)*values(:,1)*fourier(:,m,1) &
                      -joint*values(:,2)*fourier(:,m,2)+imaginary*joint*real(m,real64)*values(:,3)*fourier(:,m,3))) &
-                     /spectral_norm(l,joint)
+                     /spectral_norm(l,joint,normalization)
         index = coefficient_index(l,m)
         coefficients(index) = real(projection,real64)
         if (m > 0) coefficients(index+1) = -aimag(projection)
@@ -196,12 +200,13 @@ contains
     deallocate(previous,current,values,powers)
     !$omp end parallel
     do l=1, lm
-      degree_energy(l) = spectral_norm(l,joint)*sum(coefficients(l*l:(l+1)*(l+1)-1)**2)
+      degree_energy(l) = spectral_norm(l,joint,normalization)*sum(coefficients(l*l:(l+1)*(l+1)-1)**2)
     end do
   end subroutine analyze_fourier
 
   ! synthesize longitude fourier coefficients without allocating a spatial grid
-  subroutine synthesize_fourier(lm, theta, coefficients, fourier)
+  subroutine synthesize_fourier(lm, theta, coefficients, fourier, normalization)
+    integer, optional, intent(in) :: normalization
     integer(int32), intent(in) :: lm
     real(real64), intent(in) :: theta(:), coefficients(:)
     complex(real64), intent(out) :: fourier(:,0:,:)
@@ -224,6 +229,7 @@ contains
         if (l > m) call schmidt_advance(l,m,st,ct,previous,current,powers)
         if (l == 0) cycle
         call schmidt_values(current,powers,values)
+        values = values*normalization_scale(l,normalization)
         index = coefficient_index(l,m)
         amplitude = cmplx(coefficients(index),0.0_real64,kind=real64)
         if (m > 0) amplitude = 0.5_real64*cmplx(coefficients(index),-coefficients(index+1),kind=real64)
@@ -256,7 +262,9 @@ contains
   end subroutine inverse_ring
 
   subroutine filter_coefficients(lm, raw, degree_energy, data_energy, joint, damping, power, &
-                                 coefficients, residual, penalty, degrees_of_freedom)
+                                 coefficients, residual, penalty, degrees_of_freedom, normalization)
+
+    integer, optional, intent(in) :: normalization
     integer(int32), intent(in) :: lm
     real(real64), intent(in) :: raw(:), degree_energy(:), data_energy, joint, damping, power
     real(real64), intent(out) :: coefficients(lm*(lm+2)), residual, penalty, degrees_of_freedom
@@ -264,7 +272,7 @@ contains
     integer(int32) :: l
     floor = 0.0_real64
     do l=1, lm
-      floor = floor+real(2*l+1,real64)*spectral_norm(l,joint)
+      floor = floor+real(2*l+1,real64)*spectral_norm(l,joint,normalization)
     end do
     floor = epsilon(1.0_real64)*floor/real(lm*(lm+2),real64)
     penalty = 0.0_real64
@@ -272,7 +280,7 @@ contains
     ! separate the unresolved residual from damping to avoid subtracting nearly equal totals repeatedly
     residual = max(0.0_real64,data_energy-sum(degree_energy(1:lm)))
     do l=1, lm
-      norm = spectral_norm(l,joint)
+      norm = spectral_norm(l,joint,normalization)
       weight = (real(l,real64)/real(lm,real64))**power
       multiplier = 1.0_real64/(1.0_real64+damping*weight+floor/norm)
       coefficients(l*l:(l+1)*(l+1)-1) = multiplier*raw(l*l:(l+1)*(l+1)-1)

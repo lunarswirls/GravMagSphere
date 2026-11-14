@@ -9,8 +9,8 @@ The toolkit models finite blocks, polygonal bodies, and source layers on a spher
 | Method | Fortran source / executable | Calculation |
 |---|---|---|
 | `direct_sum` | `gravmag_sphere_direct_sum` | Uses magnetic surface-charge quadrature or gravity midpoint-volume quadrature, summing contributions on a regular observation grid |
-| `spectral` | `gravmag_sphere_spectral` | Native Gauss–Legendre/Fourier projection with Fukushima-style extended-range Schmidt harmonics, no Condon-Shortley phase, a fixed gravity mass term, and optional local/hybrid corrections |
-| `gauss_legendre` | `gravmag_sphere_gauss_legendre` | Integrates magnetic and gravity volume kernels with configurable Gauss–Legendre orders and composite panels |
+| `spectral` | `gravmag_sphere_spectral` | Unnormalized spherical-harmonic fit with dense regularized least squares and optional local/hybrid corrections |
+| `gauss_legendre` | `gravmag_sphere_gauss_legendre` | Three options: unnormalized volume quadrature (1), Schmidt normalized harmonics (2), fully normalized harmonics (3) |
 | `orbital` | `orbital.f90` shared library | Evaluates magnetic volume kernels at arbitrary observation positions for prediction and inversion |
 | `dipole_grid` | `gravmag_sphere_dipole_grid_fit` | Fits equivalent magnetic point-dipole moments on a fixed source grid |
 
@@ -64,7 +64,9 @@ To run the numerical checks, install the validation dependency and execute the t
 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MPLBACKEND=Agg /Users/danywaller/code/venvs/gravmagpy/bin/python -m unittest discover -s tests -v
 ```
 
-The [native high-degree benchmark](diagnostics/native_high_degree/README.md) completed the full validation protocol at degrees 600, 1200, 2800, 4096, 5600, 8192, and 10000. Degree 10,000 took 27.79 minutes with eight threads on an Apple M4 Max. Degree 11200 passed the transform and gravity checks but reached the 30-minute protocol limit during the magnetic check.
+Gauss–Legendre option 2 retains the recent Schmidt implementation and its recorded test results. Option 3 extends the same routines to geodetic fully normalized harmonics. Select with `solver_options={"normalization": 1}`, `2`, or `3`; the default is `1`. [Normalization and migration checks](diagnostics/normalization_migration.md) explain the preserved methods.
+
+The historical Schmidt [native high-degree benchmark](diagnostics/native_high_degree/README.md) completed the full validation protocol at degrees 600, 1200, 2800, 4096, 5600, 8192, and 10000. Degree 10,000 took 27.79 minutes with eight threads on an Apple M4 Max. Degree 11200 passed the transform and gravity checks but reached the 30-minute protocol limit during the magnetic check.
 
 Imports do not compile or run models. `build_fortran()` or the first forward call compiles into a temporary-directory cache keyed by source contents, compiler version, flags, and platform. Pass `compiler=` and `build_dir=` to `build_fortran` for other locations. Wheels include the Fortran source and compile locally when used, they do not include machine-specific binaries. See [the architecture notes](docs/architecture.md).
 
@@ -102,7 +104,7 @@ plot_fields(input_path, result['output_path'])
 
 `build_fortran` supports `orbital`, `direct_sum`, `spectral`, `gauss_legendre`, `xyz_to_brtp`, and `dipole_grid`. `run_fortran` exposes the positional interfaces. Shell runners work from `examples`; their builds resolve the canonical files directly under `fortran`. Fortran `.in` files are supported directly. See [architecture and development direction](docs/architecture.md) and the [solver guide](examples/README.md).
 
-Use `run_sphere_model(model, solver="gauss_legendre")` to evaluate blocks or polygons with the Gauss–Legendre volume method in double precision. Node orders and composite subdivisions are configurable, see the [Python modeling guide](docs/sphere.md). The [three-solver diagnostic report](diagnostics/gauss_legendre_comparison/README.md) compares quadrature convergence with direct_sum and pure spectral fields at surface, orbital and far-field altitudes.
+Use `run_sphere_model(model, solver="gauss_legendre")` for the original volume method, or add `solver_options={"normalization": 2}` for Schmidt harmonics and `solver_options={"normalization": 3}` for fully normalized harmonics. Node orders and composite subdivisions are configurable, see the [Python modeling guide](docs/sphere.md). The [three-solver diagnostic report](diagnostics/gauss_legendre_comparison/README.md) compares quadrature convergence with direct_sum and pure spectral fields at surface, orbital and far-field altitudes.
 
 ## Fit orbital measurements
 

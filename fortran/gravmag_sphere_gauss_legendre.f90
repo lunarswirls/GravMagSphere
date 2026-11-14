@@ -2,6 +2,7 @@ program gravmag_sphere_gauss_legendre
   use, intrinsic :: iso_fortran_env, only: real64, int64
   use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
   use gravmag_paths, only: default_output_path
+  use gravmag_sphere_normalized, only: run_normalized
   implicit none
 
   ! restore the nested longitude, latitude, radius gauss-legendre volume method
@@ -16,6 +17,7 @@ program gravmag_sphere_gauss_legendre
   character(len=32) :: diag_env
   integer :: input_unit, output_unit, ios, body, narg, index, subdivisions
   integer :: nr, ntheta, nphi, nblim, ifield, nrem, nlat, nlon, npts
+  integer :: normalization
   integer :: radial_order, latitude_order, longitude_order
   integer :: ilat, ilon, ir, slab, span, ip, jp, kp, i, j, count, next
   integer :: iprint, nfile, nopt
@@ -32,9 +34,27 @@ program gravmag_sphere_gauss_legendre
   logical :: diagnostics
 
   narg = command_argument_count()
-  if (narg < 2 .or. narg > 7) then
+  normalization = 1
+  if (narg >= 8) then
+    call get_command_argument(8,line)
+    read(line,*,iostat=ios) normalization
+    if (ios /= 0) error stop 'error: normalization must be 1, 2 or 3'
+    if (normalization < 1 .or. normalization > 3) error stop 'error: normalization must be 1, 2 or 3'
+  end if
+  if (normalization > 1) then
+    if (narg > 24) error stop 'error: too many normalized solver arguments'
+    do index = 4, 7
+      call get_command_argument(index,line)
+      read(line,*,iostat=ios) i
+      if (ios /= 0) error stop 'error: normalized modes require volume placeholders 0 0 0 1'
+      if (i /= merge(1,0,index == 7)) error stop 'error: normalized modes require volume placeholders 0 0 0 1'
+    end do
+    call run_normalized(normalization)
+    stop
+  end if
+  if (narg < 2 .or. narg > 8) then
     write(*,'(a)') 'usage: gravmag_sphere_gauss_legendre radius_km input.in [output.txt] '// &
-      '[radial_order] [latitude_order] [longitude_order] [subdivisions]'
+      '[radial_order] [latitude_order] [longitude_order] [subdivisions] [normalization=1|2|3] [harmonic controls...]'
     stop 2
   end if
   call get_command_argument(1, line)
@@ -47,7 +67,7 @@ program gravmag_sphere_gauss_legendre
   latitude_order = 0
   longitude_order = 0
   subdivisions = 1
-  do index = 4, narg
+  do index = 4, min(narg,7)
     call get_command_argument(index, line)
     read(line,*,iostat=ios) i
     if (ios /= 0) error stop 'error: invalid quadrature option'
@@ -70,6 +90,7 @@ program gravmag_sphere_gauss_legendre
   open(newunit=output_unit, file=trim(outfile), status='replace', iostat=ios)
   if (ios /= 0) error stop 'error: cannot open output'
   write(output_unit,'(a)') '# solver=gauss_legendre'
+  write(output_unit,'(a)') '# normalization_option=1 normalization=unnormalized algorithm=volume_quadrature'
   diag_env = ''
   call get_environment_variable('GRAVMAG_DIAGNOSTICS', diag_env)
   diagnostics = len_trim(diag_env) > 0 .and. trim(diag_env) /= '0'

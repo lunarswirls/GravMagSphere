@@ -31,15 +31,16 @@ echo "+ building gravmag_sphere_spectral"
 # share only path handling with the other physical solvers
 gfortran -std=f2008 -O2 -fopenmp -ffree-line-length-none -J"${MODDIR}" -I"${MODDIR}" \
   "${source_dir}/gravmag_paths.f90" \
-  "${source_dir}/gravmag_sphere_harmonics.f90" \
-  "${source_dir}/gravmag_sphere_transform.f90" \
   "${source_dir}/gravmag_sphere_spectral.f90" \
   -o "${ROOT_DIR}/gravmag_sphere_spectral"
 
 echo "+ building gravmag_sphere_gauss_legendre"
-# gauss-legendre volume integration shares only output path handling
-gfortran -std=f2008 -O2 -ffree-line-length-none -J"${MODDIR}" -I"${MODDIR}" \
+# original volume quadrature plus Schmidt and fully normalized harmonic solvers
+gfortran -std=f2008 -O2 -fopenmp -ffree-line-length-none -J"${MODDIR}" -I"${MODDIR}" \
   "${source_dir}/gravmag_paths.f90" \
+  "${source_dir}/gravmag_sphere_harmonics.f90" \
+  "${source_dir}/gravmag_sphere_transform.f90" \
+  "${source_dir}/gravmag_sphere_normalized.f90" \
   "${source_dir}/gravmag_sphere_gauss_legendre.f90" \
   -o "${ROOT_DIR}/gravmag_sphere_gauss_legendre"
 
